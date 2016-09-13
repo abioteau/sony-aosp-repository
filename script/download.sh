@@ -37,4 +37,35 @@ cat orig/nougat/index.html.tmp | sed -n '/<div class="section overview-section f
 cat orig/nougat/index.html | sed -n '/<dt id="build-aosp-nougat-7-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.0.html
 rm orig/nougat/index.html.tmp
 
+buildInstructions=`find sonyxperiadev/*.html`
+
+for file in ${buildInstructions};
+do
+	versionName=`echo ${file} | sed 's/sonyxperiadev\/build-aosp-//g' | sed 's/[0-9.]//g' | sed 's/.html//g'`
+	versionNumber=`echo ${file} | sed 's/sonyxperiadev\/build-aosp-[a-z]*-//g' | sed 's/.html//g'`
+	outdir=sonyxperiadev/${versionName}/${versionNumber}
+
+	mkdir -p ${outdir}
+
+	grep "repo init" ${file} | grep -o -E "android-[0-9._r]*" > ${outdir}/AOSP_TAG
+
+	cat ${file} |
+		sed 's/<br \/>//g' |
+		sed 's/&lt;/\</g' |
+		sed 's/&quot;/\"/g' |
+		sed 's/&gt;/\>/g' |
+		sed 's/.*<?xml version/<?xml version/' |
+		sed 's/\/manifest>.*/\/manifest>/' |
+		sed -n '/<?xml version/,$p' | sed '/\/manifest>/q' > ${outdir}/sony.xml
+
+	cat ${file} |
+		sed 's/<br \/>//g' |
+		sed 's/.*cd /cd /g' |
+		sed 's/\/li>.*/\/li>/g' |
+		sed -n '/cd [build|hardware|external|system|packages]/,$p' | sed '/\/li\>/q' |
+		sed 's/<\/pre>//g' |
+		sed 's/<\/li>//g' |
+		sed 's/<\/code>//g' > ${outdir}/AOSP_PATCH
+done
+
 
