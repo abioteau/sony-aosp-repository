@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+<remote name="sony" fetch="git://github.com/sonyxperiadev/" />
+<project path="device/sony/amami" name="device-sony-amami" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/aries" name="device-sony-aries" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/castor" name="device-sony-castor" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/eagle" name="device-sony-eagle" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/flamingo" name="device-sony-flamingo" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/honami" name="device-sony-honami" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/leo" name="device-sony-leo" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/rhine" name="device-sony-rhine" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/scorpion" name="device-sony-scorpion" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/seagull" name="device-sony-seagull" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/shinano" name="device-sony-shinano" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/sirius" name="device-sony-sirius" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/tianchi" name="device-sony-tianchi" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/togari" name="device-sony-togari" groups="device" remote="sony" revision="l-mr0" />
+<project path="device/sony/yukon" name="device-sony-yukon" groups="device" remote="sony" revision="l-mr0" />
+<project path="kernel/sony/msm" name="kernel" groups="device" remote="sony" revision="aosp/LNX.LA.3.5.2.2-03010-8x74.0" />
+<project path="vendor/sony/system/thermanager" name="thermanager" groups="device" remote="sony" revision="master" />
+<project path="vendor/sony/system/mkqcdtbootimg" name="mkqcdtbootimg" groups="device" remote="sony" revision="master" />
+<project path="vendor/sony/system/macaddrsetup" name="macaddrsetup" groups="device" remote="sony" revision="master" />
+<project path="vendor/sony/system/timekeep" name="timekeep" groups="device" remote="sony" revision="master" />
+</manifest>
