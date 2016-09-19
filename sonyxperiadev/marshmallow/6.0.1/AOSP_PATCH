@@ -32,5 +32,5 @@ git fetch https://android.googlesource.com/platform/system/core refs/changes/92/
 cd ../../packages/apps/Nfc
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../../../../../
- 
+
 

@@ -78,6 +78,7 @@ nano .repo/local_manifests/sony.xml</pre>
 &lt;project path=&quot;device/sony/karin&quot; name=&quot;device-sony-karin&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
 &lt;project path=&quot;device/sony/karin_windy&quot; name=&quot;device-sony-karin_windy&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
 &lt;project path=&quot;device/sony/kitakami&quot; name=&quot;device-sony-kitakami&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
+&lt;project path=&quot;device/sony/kugo&quot; name=&quot;device-sony-kugo&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
 &lt;project path=&quot;device/sony/leo&quot; name=&quot;device-sony-leo&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
 &lt;project path=&quot;device/sony/loire&quot; name=&quot;device-sony-loire&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
 &lt;project path=&quot;device/sony/rhine&quot; name=&quot;device-sony-rhine&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
@@ -104,7 +105,7 @@ nano .repo/local_manifests/sony.xml</pre>
 <li style="margin-bottom: 10px">You should now have a number of new directories in your <em>vendor</em> To make sure, enter the following command in a terminal window:
 <pre class="prettyprint">ls vendor/sony</pre>
 <p>This should give you the output:</p>
-<pre class="prettyprint">kanuti-common    kitakami-ivy      kitakami-sumire   loire-suzu    rhine-honami   shinano-castor  shinano-scorpion  yukon-eagle  kitakami-karin    kitakami-suzuran  rhine-amami   rhine-togari   shinano-common  shinano-sirius    kitakami-common  kitakami-satsuki  loire-common      rhine-common  shinano-aries  shinano-leo</pre>
+<pre class="prettyprint">kanuti-common   kanuti-tulip   kitakami-common   kitakami-ivy   kitakami-karin   kitakami-satsuki   kitakami-sumire   kitakami-suzuran   loire-common   loire-suzu   lore-kugo   rhine-amami   rhine-common   rhine-honami   rhine-togari   shinano-aries   shinano-castor   shinano-common   shinano-leo   shinano-scorpion   shinano-sirius</pre>
 </li>
 <li style="margin-bottom: 10px">To download the code into the device repos created above, run the command
 <pre class="prettyprint">repo sync</pre>
@@ -148,7 +149,7 @@ git fetch https://android.googlesource.com/platform/system/core refs/changes/92/
 cd ../../packages/apps/Nfc
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../../../../../
- </pre>
+</pre>
 </li>
 </ol>
 <p><strong>Note! </strong>This information will be updated continuously for new Android versions and new devices, so you should always check the AOSP section on Developer World for the latest patches.</p>

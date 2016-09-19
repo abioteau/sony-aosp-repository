@@ -19,6 +19,7 @@
 <project path="device/sony/karin" name="device-sony-karin" groups="device" remote="sony" revision="master" />
 <project path="device/sony/karin_windy" name="device-sony-karin_windy" groups="device" remote="sony" revision="master" />
 <project path="device/sony/kitakami" name="device-sony-kitakami" groups="device" remote="sony" revision="master" />
+<project path="device/sony/kugo" name="device-sony-kugo" groups="device" remote="sony" revision="master" />
 <project path="device/sony/leo" name="device-sony-leo" groups="device" remote="sony" revision="master" />
 <project path="device/sony/rhine" name="device-sony-rhine" groups="device" remote="sony" revision="master" />
 <project path="device/sony/satsuki" name="device-sony-satsuki" groups="device" remote="sony" revision="master" />
