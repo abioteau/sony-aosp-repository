@@ -63,6 +63,7 @@ nano .repo/local_manifests/sony.xml</pre>
 &lt;manifest&gt;
 &lt;remote name=&quot;sony&quot; fetch=&quot;git://github.com/sonyxperiadev/&quot; /&gt;
 &lt;remove-project name=&quot;platform/hardware/qcom/camera&quot; /&gt;
+&lt;remove-project name=&quot;platform/packages/apps/FMRadio&quot; /&gt;
 &lt;project path=&quot;device/sony/sepolicy&quot; name=&quot;device-sony-sepolicy&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
 &lt;project path=&quot;device/sony/amami&quot; name=&quot;device-sony-amami&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
 &lt;project path=&quot;device/sony/aries&quot; name=&quot;device-sony-aries&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;m-mr1&quot; /&gt;
@@ -95,9 +96,12 @@ nano .repo/local_manifests/sony.xml</pre>
 &lt;project path=&quot;hardware/qcom/camera&quot; name=&quot;camera&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;aosp/LA.BR.1.3.3_rb2.14&quot; /&gt;
 &lt;project path=&quot;kernel/sony/msm&quot; name=&quot;kernel&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;aosp/LA.BR.1.3.3_rb2.14&quot; /&gt;
 &lt;project path=&quot;vendor/qcom/opensource/dataservices&quot; name=&quot;vendor-qcom-opensource-dataservices&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
+&lt;project path=&quot;vendor/qcom/opensource/fm&quot; name=&quot;vendor-qcom-opensource-fm&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
 &lt;project path=&quot;vendor/sony-oss/thermanager&quot; name=&quot;thermanager&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
 &lt;project path=&quot;vendor/sony-oss/macaddrsetup&quot; name=&quot;macaddrsetup&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
 &lt;project path=&quot;vendor/sony-oss/timekeep&quot; name=&quot;timekeep&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
+&lt;project path=&quot;packages/apps/ExtendedSettings&quot; name=&quot;packages_apps_ExtendedSettings&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
+&lt;project path=&quot;packages/apps/FMRadio&quot; name=&quot;packages-apps-FMRadio&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
 &lt;/manifest&gt;</pre></pre>
 <p><strong>Note!</strong> These repos include a precompiled kernel. If you want to change or improve the kernel, you can recompile a new kernel. The new kernel binary should be placed in the corresponding device repository along with new kernel modules for wireless hardware. For more information, see the page <a title="How to build and flash a Linux kernel" href="/knowledge-base/open-source/open-devices/how-to-build-and-flash-a-linux-kernel/">how to rebuild kernels for flagship Xperia devices</a>.</li>
 <li style="margin-bottom: 10px">Find the software binaries for the device you want to use on <a title="List of devices and resources" href="/open-devices/list-of-devices-and-resources/">Sony’s AOSP for Xperia devices</a></li>
