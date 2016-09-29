@@ -1,0 +1,171 @@
+From 04e595aa2e93068d1e3ec65b3d6f595d09ca819d Mon Sep 17 00:00:00 2001
+From: Abhijeet Dharmapurikar <adharmap@codeaurora.org>
+Date: Tue, 24 May 2016 15:12:11 -0700
+Subject: [PATCH] healthd: Reinitialize mChargerNames for every battery update
+
+Booting up the device without usb, the kernel sets the usb power supply
+type as UNKNOWN. The type of usb power supply changes at run-time as
+various chargers are plugged in/out. However, healthd initilizes the
+charger list only at bootup. Change it such that it checks for charger
+type changes with every battery or usb uevent.
+
+While at it, the kernel may have a power supply type which is not known
+to healthd. This is perfectly fine. Update healthd to not print a
+warning.
+
+Change-Id: I2ec9f9a420ca61814d43c316b418ce94de3691bc
+---
+ healthd/BatteryMonitor.cpp | 125 ++++++++++++++++++++++++++++-----------------
+ 1 file changed, 78 insertions(+), 47 deletions(-)
+
+diff --git a/healthd/BatteryMonitor.cpp b/healthd/BatteryMonitor.cpp
+index 54d45e6..24d7ce0 100644
+--- a/healthd/BatteryMonitor.cpp
++++ b/healthd/BatteryMonitor.cpp
+@@ -174,10 +174,8 @@ BatteryMonitor::PowerSupplyType BatteryMonitor::readPowerSupplyType(const String
+         return ANDROID_POWER_SUPPLY_TYPE_UNKNOWN;
+ 
+     ret = (BatteryMonitor::PowerSupplyType)mapSysfsString(buf, supplyTypeMap);
+-    if (ret < 0) {
+-        KLOG_WARNING(LOG_TAG, "Unknown power supply type '%s'\n", buf);
++    if (ret < 0)
+         ret = ANDROID_POWER_SUPPLY_TYPE_UNKNOWN;
+-    }
+ 
+     return ret;
+ }
+@@ -263,54 +261,87 @@ bool BatteryMonitor::update(void) {
+     unsigned int i;
+     double MaxPower = 0;
+ 
+-    for (i = 0; i < mChargerNames.size(); i++) {
+-        String8 path;
+-        path.appendFormat("%s/%s/online", POWER_SUPPLY_SYSFS_PATH,
+-                          mChargerNames[i].string());
++    // reinitialize the mChargerNames vector everytime there is an update
++    String8 path;
++    DIR* dir = opendir(POWER_SUPPLY_SYSFS_PATH);
++    if (dir == NULL) {
++        KLOG_ERROR(LOG_TAG, "Could not open %s\n", POWER_SUPPLY_SYSFS_PATH);
++    } else {
++        struct dirent* entry;
++        // reconstruct the charger strings
++        mChargerNames.clear();
++        while ((entry = readdir(dir))) {
++            const char* name = entry->d_name;
+ 
+-        if (readFromFile(path, buf, SIZE) > 0) {
+-            if (buf[0] != '0') {
+-                path.clear();
+-                path.appendFormat("%s/%s/type", POWER_SUPPLY_SYSFS_PATH,
+-                                  mChargerNames[i].string());
+-                switch(readPowerSupplyType(path)) {
+-                case ANDROID_POWER_SUPPLY_TYPE_AC:
+-                    props.chargerAcOnline = true;
+-                    break;
+-                case ANDROID_POWER_SUPPLY_TYPE_USB:
+-                    props.chargerUsbOnline = true;
+-                    break;
+-                case ANDROID_POWER_SUPPLY_TYPE_WIRELESS:
+-                    props.chargerWirelessOnline = true;
+-                    break;
+-                default:
+-                    KLOG_WARNING(LOG_TAG, "%s: Unknown power supply type\n",
+-                                 mChargerNames[i].string());
+-                }
+-                path.clear();
+-                path.appendFormat("%s/%s/current_max", POWER_SUPPLY_SYSFS_PATH,
+-                                  mChargerNames[i].string());
+-                int ChargingCurrent =
+-                    (access(path.string(), R_OK) == 0) ? getIntField(path) : 0;
++            if (!strcmp(name, ".") || !strcmp(name, ".."))
++                continue;
+ 
++            // Look for "type" file in each subdirectory
++            path.clear();
++            path.appendFormat("%s/%s/type", POWER_SUPPLY_SYSFS_PATH, name);
++            switch(readPowerSupplyType(path)) {
++            case ANDROID_POWER_SUPPLY_TYPE_AC:
++            case ANDROID_POWER_SUPPLY_TYPE_USB:
++            case ANDROID_POWER_SUPPLY_TYPE_WIRELESS:
++                // Check if any of them is online
+                 path.clear();
+-                path.appendFormat("%s/%s/voltage_max", POWER_SUPPLY_SYSFS_PATH,
+-                                  mChargerNames[i].string());
+-
+-                int ChargingVoltage =
+-                    (access(path.string(), R_OK) == 0) ? getIntField(path) :
+-                    DEFAULT_VBUS_VOLTAGE;
+-
+-                double power = ((double)ChargingCurrent / MILLION) *
+-                        ((double)ChargingVoltage / MILLION);
+-                if (MaxPower < power) {
+-                    props.maxChargingCurrent = ChargingCurrent;
+-                    props.maxChargingVoltage = ChargingVoltage;
+-                    MaxPower = power;
++                path.appendFormat("%s/%s/online", POWER_SUPPLY_SYSFS_PATH, name);
++                if (access(path.string(), R_OK) == 0) {
++                    mChargerNames.add(String8(name));
++                    if (readFromFile(path, buf, SIZE) > 0) {
++                        if (buf[0] != '0') {
++                            path.clear();
++                            path.appendFormat("%s/%s/type", POWER_SUPPLY_SYSFS_PATH,
++                                              name);
++                            switch(readPowerSupplyType(path)) {
++                            case ANDROID_POWER_SUPPLY_TYPE_AC:
++                                props.chargerAcOnline = true;
++                                break;
++                            case ANDROID_POWER_SUPPLY_TYPE_USB:
++                                props.chargerUsbOnline = true;
++                                break;
++                            case ANDROID_POWER_SUPPLY_TYPE_WIRELESS:
++                                props.chargerWirelessOnline = true;
++                                break;
++                            default:
++                                KLOG_WARNING(LOG_TAG, "%s: Unknown power supply type\n",
++                                             name);
++                            }
++
++                            //If its online, read the voltage and current for power
++                            path.clear();
++                            path.appendFormat("%s/%s/current_max", POWER_SUPPLY_SYSFS_PATH,
++                                            name);
++                            int ChargingCurrent =
++                                          (access(path.string(), R_OK) == 0) ? getIntField(path) : 0;
++
++                            path.clear();
++                            path.appendFormat("%s/%s/voltage_max", POWER_SUPPLY_SYSFS_PATH,
++                                            name);
++
++                            int ChargingVoltage =
++                              (access(path.string(), R_OK) == 0) ? getIntField(path) :
++                              DEFAULT_VBUS_VOLTAGE;
++
++                            double power = ((double)ChargingCurrent / MILLION) *
++                                    ((double)ChargingVoltage / MILLION);
++                            if (MaxPower < power) {
++                                props.maxChargingCurrent = ChargingCurrent;
++                                props.maxChargingVoltage = ChargingVoltage;
++                                MaxPower = power;
++                            }
++                        }
++                    }
+                 }
+-            }
+-        }
+-    }
++                break;
++            case ANDROID_POWER_SUPPLY_TYPE_BATTERY:
++                break;
++            default:
++                break;
++            } //switch
++        } //while
++        closedir(dir);
++    }//else
+ 
+     logthis = !healthd_board_battery_update(&props);
+ 
+-- 
+1.9.1
+
