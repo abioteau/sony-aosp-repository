@@ -31,8 +31,8 @@ wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-t
 cat orig/nougat/index.html.tmp | sed -n '/<div class="section overview-section faq-overview-section"/,$p' | sed '/div>/q' > orig/nougat/index.html
 cat orig/nougat/index.html | sed -n '/<dt id="build-aosp-nougat-7-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.0.html
 
+#For each AOSP build instructions
 buildInstructions=`find sonyxperiadev/build-aosp-*.html`
-
 for file in ${buildInstructions};
 do
 	versionName=`echo ${file} | sed 's/sonyxperiadev\/build-aosp-//g' | sed 's/[0-9.]//g' | sed 's/.html//g'`
@@ -41,8 +41,10 @@ do
 
 	mkdir -p ${outdir}
 
+	# Extract AOSP reference tag
 	grep "repo init" ${file} | grep -o -E "android-[0-9._r]*" > ${outdir}/AOSP_TAG
 
+	# Extract Sony repository manifest
 	cat ${file} | \
 		sed 's/<br \/>//g' | \
 		sed 's/&lt;/\</g' | \
@@ -52,6 +54,7 @@ do
 		sed 's/\/manifest>.*/\/manifest>/g' | \
 		sed -n '/<?xml version/,$p' | sed '/\/manifest>/q' > ${outdir}/sony.xml
 
+	# Extract list of AOSP patches
 	cat ${file} | \
 		sed 's/<br \/>//g' | \
 		sed 's/.*cd /cd /g' | \
@@ -60,6 +63,15 @@ do
 		sed 's/<\/pre>//g' | \
 		sed 's/<\/li>//g' | \
 		sed 's/<\/code>//g' > ${outdir}/AOSP_PATCH
+
+	# Get AOSP patches
+	echo "BASEDIR=`pwd`" > orig/${versionName}-${versionNumber}-patch.sh
+	chmod +x orig/${versionName}-${versionNumber}-patch.sh
+	grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | sed 's/&amp;//g' | \
+	sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z\/]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}-patch.sh
+	grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | sed 's/&amp;//g' | \
+	sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z\/]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}-patch.sh
+	./orig/${versionName}-${versionNumber}-patch.sh
 done
 
 # Get AOSP software binaries for Sony Mobile web page
