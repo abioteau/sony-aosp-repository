@@ -1,0 +1,38 @@
+From 007bb5e32a61da926710a3d0b32a172b6c36302b Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Mon, 14 Sep 2015 10:58:47 +0200
+Subject: [PATCH] add PN54x chip selection
+
+HAL supports both PN547C2 and PN548C2
+
+default remains PN548C2
+
+for PN547C2 support
+NFC_NXP_CHIP_TYPE:=PN547C2
+has to be added to BoardConfig.mk
+
+Change-Id: I796136852280d98d3c4aee5e736b23467a1609b6
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ halimpl/pn54x/Android.mk | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/halimpl/pn54x/Android.mk b/halimpl/pn54x/Android.mk
+index c923a46..78d794d 100644
+--- a/halimpl/pn54x/Android.mk
++++ b/halimpl/pn54x/Android.mk
+@@ -53,7 +53,11 @@ LOCAL_CFLAGS += -DPN548C2=2
+ endif
+ 
+ #### Select the CHIP ####
++ifeq ($(NFC_NXP_CHIP_TYPE),PN547C2)
++LOCAL_CFLAGS += -DNFC_NXP_CHIP_TYPE=PN547C2
++else
+ LOCAL_CFLAGS += -DNFC_NXP_CHIP_TYPE=PN548C2
++endif
+ 
+ LOCAL_CFLAGS += -DANDROID \
+         -DNXP_UICC_ENABLE -DNXP_HW_SELF_TEST
+-- 
+1.9.1
+

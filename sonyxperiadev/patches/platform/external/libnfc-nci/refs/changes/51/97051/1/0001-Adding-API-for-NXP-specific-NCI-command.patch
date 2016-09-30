@@ -1,0 +1,436 @@
+From 3973e2319580e0468f60f1497b329fe20756a2aa Mon Sep 17 00:00:00 2001
+From: Jizhou Liao <jizhou.liao@nxp.com>
+Date: Fri, 6 Jun 2014 15:45:52 -0700
+Subject: [PATCH] Adding API for NXP specific NCI command
+
+This API provides the extension of NCI command for NXP's NFCC
+so proprietary NCI commands can be sent by higher layer to NFCC.
+---
+ src/nfa/dm/nfa_dm_act.c     | 22 ++++++++++++++++++
+ src/nfa/dm/nfa_dm_api.c     | 46 ++++++++++++++++++++++++++++++++++++++
+ src/nfa/dm/nfa_dm_main.c    |  3 ++-
+ src/nfa/include/nfa_api.h   | 22 ++++++++++++++++++
+ src/nfa/int/nfa_dm_int.h    | 21 ++++++++++++++++++
+ src/nfc/include/nci_hmsgs.h | 20 +++++++++++++++++
+ src/nfc/int/nfc_int.h       |  2 ++
+ src/nfc/nci/nci_hrcv.c      | 50 +++++++++++++++++++++++++++++++++++++++++
+ src/nfc/nfc/nfc_ncif.c      | 13 +++++++++++
+ src/nfc/nfc/nfc_vs.c        | 54 +++++++++++++++++++++++++++++++++++++++++++++
+ 10 files changed, 252 insertions(+), 1 deletion(-)
+
+diff --git a/src/nfa/dm/nfa_dm_act.c b/src/nfa/dm/nfa_dm_act.c
+index 05745b0..45363e2 100644
+--- a/src/nfa/dm/nfa_dm_act.c
++++ b/src/nfa/dm/nfa_dm_act.c
+@@ -883,6 +883,28 @@ BOOLEAN nfa_dm_act_send_vsc(tNFA_DM_MSG *p_data)
+ 
+ /*******************************************************************************
+ **
++** Function         nfa_dm_act_send_nxp
++**
++** Description      Send the NXP NCI command to the NCI command queue
++**
++** Returns          FALSE (message buffer is NOT freed by caller)
++**
++*******************************************************************************/
++BOOLEAN nfa_dm_act_send_nxp(tNFA_DM_MSG *p_data)
++{
++    BT_HDR  *p_cmd = (BT_HDR *)p_data;
++
++    p_cmd->offset   = sizeof (tNFA_DM_API_SEND_VSC) - BT_HDR_SIZE;
++    p_cmd->len      = p_data->send_vsc.cmd_params_len;
++    NFC_SendNxpNciCommand (p_cmd, p_data->send_vsc.p_cback);
++
++    /* Most dm action functions return TRUE, so nfa-sys frees the GKI buffer carrying the message,
++     * This action function re-use the GKI buffer to send the VSC, so the GKI buffer can not be freed by nfa-sys */
++    return (FALSE);
++}
++
++/*******************************************************************************
++**
+ ** Function         nfa_dm_start_polling
+ **
+ ** Description      Start polling
+diff --git a/src/nfa/dm/nfa_dm_api.c b/src/nfa/dm/nfa_dm_api.c
+index d2751ad..37e4561 100644
+--- a/src/nfa/dm/nfa_dm_api.c
++++ b/src/nfa/dm/nfa_dm_api.c
+@@ -1187,6 +1187,52 @@ tNFA_STATUS NFA_SendVsCommand (UINT8            oid,
+ 
+ /*******************************************************************************
+ **
++** Function         NFA_SendNxpNciCommand
++**
++** Description      This function is called to send an NXP NCI Vendor Specific
++**                  command to NFCC.
++**
++**                  cmd_params_len  - The command parameter len
++**                  p_cmd_params    - The command parameter
++**                  p_cback         - The callback function to receive the command
++**
++** Returns          NFA_STATUS_OK if successfully initiated
++**                  NFA_STATUS_FAILED otherwise
++**
++*******************************************************************************/
++tNFA_STATUS NFA_SendNxpNciCommand (UINT8            cmd_params_len,
++                                   UINT8            *p_cmd_params,
++                                   tNFA_VSC_CBACK    *p_cback)
++{
++    tNFA_DM_API_SEND_VSC *p_msg;
++    UINT16  size = sizeof(tNFA_DM_API_SEND_VSC) + cmd_params_len;
++
++    if ((p_msg = (tNFA_DM_API_SEND_VSC *) GKI_getbuf (size)) != NULL)
++    {
++        p_msg->hdr.event        = NFA_DM_API_SEND_NXP_EVT;
++        p_msg->p_cback          = p_cback;
++        if (cmd_params_len && p_cmd_params)
++        {
++            p_msg->cmd_params_len   = cmd_params_len;
++            p_msg->p_cmd_params     = (UINT8 *)(p_msg + 1);
++            memcpy (p_msg->p_cmd_params, p_cmd_params, cmd_params_len);
++        }
++        else
++        {
++            p_msg->cmd_params_len   = 0;
++            p_msg->p_cmd_params     = NULL;
++        }
++
++        nfa_sys_sendmsg (p_msg);
++
++        return (NFA_STATUS_OK);
++    }
++
++    return (NFA_STATUS_FAILED);
++}
++
++/*******************************************************************************
++**
+ ** Function         NFA_SetTraceLevel
+ **
+ ** Description      This function sets the trace level for NFA.  If called with
+diff --git a/src/nfa/dm/nfa_dm_main.c b/src/nfa/dm/nfa_dm_main.c
+index 851329a..ee06a0e 100644
+--- a/src/nfa/dm/nfa_dm_main.c
++++ b/src/nfa/dm/nfa_dm_main.c
+@@ -98,7 +98,8 @@ const tNFA_DM_ACTION nfa_dm_action[] =
+     nfa_dm_ndef_dereg_hdlr,             /* NFA_DM_API_DEREG_NDEF_HDLR_EVT       */
+     nfa_dm_act_reg_vsc,                 /* NFA_DM_API_REG_VSC_EVT               */
+     nfa_dm_act_send_vsc,                /* NFA_DM_API_SEND_VSC_EVT              */
+-    nfa_dm_act_disable_timeout          /* NFA_DM_TIMEOUT_DISABLE_EVT           */
++    nfa_dm_act_disable_timeout,          /* NFA_DM_TIMEOUT_DISABLE_EVT           */
++    nfa_dm_act_send_nxp                 /* NFA_DM_API_SEND_NXP_EVT              */
+ };
+ 
+ /*****************************************************************************
+diff --git a/src/nfa/include/nfa_api.h b/src/nfa/include/nfa_api.h
+index 811eb0a..b726a47 100644
+--- a/src/nfa/include/nfa_api.h
++++ b/src/nfa/include/nfa_api.h
+@@ -1238,6 +1238,28 @@ NFC_API extern tNFA_STATUS NFA_SendVsCommand (UINT8            oid,
+                                               UINT8            *p_cmd_params,
+                                               tNFA_VSC_CBACK   *p_cback);
+ 
++
++/*******************************************************************************
++**
++** Function         NFA_SendNxpNciCommand
++**
++** Description      This function is called to send NXP NCI Vendor Specific
++**                  command to NFCC.
++**
++**                  cmd_params_len  - The command parameter len
++**                  p_cmd_params    - The command parameter
++**                  p_cback         - The callback function to receive the command
++**
++** Returns          NFA_STATUS_OK if successfully initiated
++**                  NFA_STATUS_FAILED otherwise
++**
++*******************************************************************************/
++
++NFC_API extern tNFA_STATUS NFA_SendNxpNciCommand (UINT8            cmd_params_len,
++                                                  UINT8            *p_cmd_params,
++                                                  tNFA_VSC_CBACK   *p_cback);
++
++
+ /*******************************************************************************
+ **
+ ** Function         NFA_SetTraceLevel
+diff --git a/src/nfa/int/nfa_dm_int.h b/src/nfa/int/nfa_dm_int.h
+index 420878d..9c01f9f 100644
+--- a/src/nfa/int/nfa_dm_int.h
++++ b/src/nfa/int/nfa_dm_int.h
+@@ -15,6 +15,25 @@
+  *  limitations under the License.
+  *
+  ******************************************************************************/
++/******************************************************************************
++ *
++ *  The original Work has been changed by NXP Semiconductors.
++ *
++ *  Copyright (C) 2013-2014 NXP Semiconductors
++ *
++ *  Licensed under the Apache License, Version 2.0 (the "License");
++ *  you may not use this file except in compliance with the License.
++ *  You may obtain a copy of the License at
++ *
++ *  http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing, software
++ *  distributed under the License is distributed on an "AS IS" BASIS,
++ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ *  See the License for the specific language governing permissions and
++ *  limitations under the License.
++ *
++ ******************************************************************************/
+ 
+ 
+ /******************************************************************************
+@@ -63,6 +82,7 @@ enum
+     NFA_DM_API_REG_VSC_EVT,
+     NFA_DM_API_SEND_VSC_EVT,
+     NFA_DM_TIMEOUT_DISABLE_EVT,
++    NFA_DM_API_SEND_NXP_EVT,
+     NFA_DM_MAX_EVT
+ };
+ 
+@@ -582,6 +602,7 @@ BOOLEAN nfa_dm_ndef_dereg_hdlr (tNFA_DM_MSG *p_data);
+ BOOLEAN nfa_dm_tout (tNFA_DM_MSG *p_data);
+ BOOLEAN nfa_dm_act_reg_vsc (tNFA_DM_MSG *p_data);
+ BOOLEAN nfa_dm_act_send_vsc (tNFA_DM_MSG *p_data);
++BOOLEAN nfa_dm_act_send_nxp(tNFA_DM_MSG *p_data);
+ BOOLEAN nfa_dm_act_disable_timeout (tNFA_DM_MSG *p_data);
+ BOOLEAN nfa_dm_act_nfc_cback_data (tNFA_DM_MSG *p_data);
+ 
+diff --git a/src/nfc/include/nci_hmsgs.h b/src/nfc/include/nci_hmsgs.h
+index c1fdfb0..5435ff1 100644
+--- a/src/nfc/include/nci_hmsgs.h
++++ b/src/nfc/include/nci_hmsgs.h
+@@ -15,6 +15,25 @@
+  *  limitations under the License.
+  *
+  ******************************************************************************/
++/******************************************************************************
++ *
++ *  The original Work has been changed by NXP Semiconductors.
++ *
++ *  Copyright (C) 2013-2014 NXP Semiconductors
++ *
++ *  Licensed under the Apache License, Version 2.0 (the "License");
++ *  you may not use this file except in compliance with the License.
++ *  You may obtain a copy of the License at
++ *
++ *  http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing, software
++ *  distributed under the License is distributed on an "AS IS" BASIS,
++ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ *  See the License for the specific language governing permissions and
++ *  limitations under the License.
++ *
++ ******************************************************************************/
+ 
+ 
+ /******************************************************************************
+@@ -39,6 +58,7 @@ void nci_proc_core_ntf (BT_HDR *p_msg);
+ void nci_proc_rf_management_ntf (BT_HDR *p_msg);
+ void nci_proc_ee_management_ntf (BT_HDR *p_msg);
+ void nci_proc_prop_rsp (BT_HDR *p_msg);
++void nci_proc_prop_nxp_rsp (BT_HDR *p_msg);
+ void nci_proc_prop_ntf (BT_HDR *p_msg);
+ 
+ 
+diff --git a/src/nfc/int/nfc_int.h b/src/nfc/int/nfc_int.h
+index 7953991..af16eb8 100644
+--- a/src/nfc/int/nfc_int.h
++++ b/src/nfc/int/nfc_int.h
+@@ -162,6 +162,7 @@ typedef void (tNFC_PWR_ST_CBACK) (void);
+ 
+ /* NCI command buffer contains a VSC (in BT_HDR.layer_specific) */
+ #define NFC_WAIT_RSP_VSC            0x01
++#define NFC_WAIT_RSP_NXP            0x02
+ 
+ /* NFC control blocks */
+ typedef struct
+@@ -173,6 +174,7 @@ typedef struct
+     tNFC_RESPONSE_CBACK *p_resp_cback;
+     tNFC_TEST_CBACK     *p_test_cback;
+     tNFC_VS_CBACK       *p_vs_cb[NFC_NUM_VS_CBACKS];/* Register for vendor specific events  */
++    UINT8               nxpCbflag;
+ 
+ #if (NFC_RW_ONLY == FALSE)
+     /* NFCC information at init rsp */
+diff --git a/src/nfc/nci/nci_hrcv.c b/src/nfc/nci/nci_hrcv.c
+index d0a9fd4..b93b68e 100644
+--- a/src/nfc/nci/nci_hrcv.c
++++ b/src/nfc/nci/nci_hrcv.c
+@@ -15,6 +15,25 @@
+  *  limitations under the License.
+  *
+  ******************************************************************************/
++/******************************************************************************
++ *
++ *  The original Work has been changed by NXP Semiconductors.
++ *
++ *  Copyright (C) 2013-2014 NXP Semiconductors
++ *
++ *  Licensed under the Apache License, Version 2.0 (the "License");
++ *  you may not use this file except in compliance with the License.
++ *  You may obtain a copy of the License at
++ *
++ *  http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing, software
++ *  distributed under the License is distributed on an "AS IS" BASIS,
++ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ *  See the License for the specific language governing permissions and
++ *  limitations under the License.
++ *
++ ******************************************************************************/
+ 
+ 
+ /******************************************************************************
+@@ -450,6 +469,37 @@ void nci_proc_prop_rsp (BT_HDR *p_msg)
+ 
+ /*******************************************************************************
+ **
++** Function         nci_proc_prop_nxp_rsp
++**
++** Description      Process NXP NCI responses
++**
++** Returns          void
++**
++*******************************************************************************/
++void nci_proc_prop_nxp_rsp (BT_HDR *p_msg)
++{
++    UINT8   *p;
++    UINT8   *p_evt;
++    UINT8   *pp, len, op_code;
++    tNFC_VS_CBACK   *p_cback = (tNFC_VS_CBACK *)nfc_cb.p_vsc_cback;
++
++    /* find the start of the NCI message and parse the NCI header */
++    p   = p_evt = (UINT8 *) (p_msg + 1) + p_msg->offset;
++    pp  = p+1;
++    NCI_MSG_PRS_HDR1 (pp, op_code);
++    len = *pp++;
++
++    /*If there's a pending/stored command, restore the associated address of the callback function */
++    if (p_cback)
++    {
++        (*p_cback) ((tNFC_VS_EVT) (NCI_RSP_BIT|op_code), p_msg->len, p_evt);
++        nfc_cb.p_vsc_cback = NULL;
++    }
++    nfc_ncif_update_window ();
++}
++
++/*******************************************************************************
++**
+ ** Function         nci_proc_prop_ntf
+ **
+ ** Description      Process NCI notifications in the Proprietary group
+diff --git a/src/nfc/nfc/nfc_ncif.c b/src/nfc/nfc/nfc_ncif.c
+index e89189f..e8c8983 100644
+--- a/src/nfc/nfc/nfc_ncif.c
++++ b/src/nfc/nfc/nfc_ncif.c
+@@ -301,6 +301,12 @@ void nfc_ncif_check_cmd_queue (BT_HDR *p_buf)
+                 /* save the callback for NCI VSCs)  */
+                 nfc_cb.p_vsc_cback = (void *)((tNFC_NCI_VS_MSG *)p_buf)->p_cback;
+             }
++            else if (p_buf->layer_specific == NFC_WAIT_RSP_NXP)
++            {
++                /* save the callback for NCI NXPs)  */
++                nfc_cb.p_vsc_cback = (void *)((tNFC_NCI_VS_MSG *)p_buf)->p_cback;
++                nfc_cb.nxpCbflag = TRUE;
++            }
+ 
+             /* send to HAL */
+             HAL_WRITE(p_buf);
+@@ -394,6 +400,13 @@ BOOLEAN nfc_ncif_process_event (BT_HDR *p_msg)
+ 
+     p = (UINT8 *) (p_msg + 1) + p_msg->offset;
+ 
++
++    if (nfc_cb.nxpCbflag == TRUE)
++    {
++        nci_proc_prop_nxp_rsp(p_msg);
++        nfc_cb.nxpCbflag = FALSE;
++        return (free);
++    }
+     pp = p;
+     NCI_MSG_PRS_HDR0 (pp, mt, pbf, gid);
+ 
+diff --git a/src/nfc/nfc/nfc_vs.c b/src/nfc/nfc/nfc_vs.c
+index 90cef25..a98be9e 100644
+--- a/src/nfc/nfc/nfc_vs.c
++++ b/src/nfc/nfc/nfc_vs.c
+@@ -15,6 +15,25 @@
+  *  limitations under the License.
+  *
+  ******************************************************************************/
++/******************************************************************************
++ *
++ *  The original Work has been changed by NXP Semiconductors.
++ *
++ *  Copyright (C) 2013-2014 NXP Semiconductors
++ *
++ *  Licensed under the Apache License, Version 2.0 (the "License");
++ *  you may not use this file except in compliance with the License.
++ *  You may obtain a copy of the License at
++ *
++ *  http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing, software
++ *  distributed under the License is distributed on an "AS IS" BASIS,
++ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ *  See the License for the specific language governing permissions and
++ *  limitations under the License.
++ *
++ ******************************************************************************/
+ 
+ 
+ /******************************************************************************
+@@ -141,7 +160,42 @@ tNFC_STATUS NFC_SendVsCommand (UINT8          oid,
+     return status;
+ }
+ 
++/*******************************************************************************
++**
++** Function         NFC_SendNxpNciCommand
++**
++** Description      This function is called to send the given nxp specific
++**                  command to NFCC. The response from NFCC is reported to the
++**                  given tNFC_VS_CBACK.
++**
++** Parameters       p_data - The command buffer
++**
++** Returns          tNFC_STATUS
++**
++*******************************************************************************/
++tNFC_STATUS NFC_SendNxpNciCommand (BT_HDR        *p_data,
++                               tNFC_VS_CBACK *p_cback)
++{
++    tNFC_STATUS     status = NFC_STATUS_OK;
++    UINT8           *pp;
++
++    /* Validate parameters */
++    if ((p_data == NULL) || (p_data->len > NCI_MAX_VSC_SIZE))
++    {
++        NFC_TRACE_ERROR1 ("buffer offset must be >= %d", NCI_VSC_MSG_HDR_SIZE);
++        if (p_data)
++            GKI_freebuf (p_data);
++        return NFC_STATUS_INVALID_PARAM;
++    }
+ 
++    p_data->event           = BT_EVT_TO_NFC_NCI;
++    p_data->layer_specific  = NFC_WAIT_RSP_NXP;
++    /* save the callback function in the BT_HDR, to receive the response */
++    ((tNFC_NCI_VS_MSG *) p_data)->p_cback = p_cback;
++    pp              = (UINT8 *) (p_data + 1) + p_data->offset;
+ 
++    nfc_ncif_check_cmd_queue (p_data);
++    return status;
++}
+ 
+ #endif /* NFC_INCLUDED == TRUE */
+-- 
+1.9.1
+

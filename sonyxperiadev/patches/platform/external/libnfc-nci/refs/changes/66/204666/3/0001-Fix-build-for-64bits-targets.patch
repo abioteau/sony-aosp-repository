@@ -1,0 +1,292 @@
+From 4f4a98c97f29f180cb42c3efc80ca91f657685c7 Mon Sep 17 00:00:00 2001
+From: Humberto Borba <humberos@gmail.com>
+Date: Mon, 29 Feb 2016 00:05:58 -0300
+Subject: [PATCH] Fix build for 64bits targets
+
+Signed-off-by: Humberto Borba <humberos@gmail.com>
+Change-Id: I6e38388c1eb07ff09fda10fbdf248e9244075166
+---
+ halimpl/pn54x/Android.mk                      |  2 +-
+ halimpl/pn54x/dnld/phDnldNfc.c                |  8 ++++----
+ halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.c | 12 ++++++------
+ halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.h | 10 +++++-----
+ halimpl/pn54x/tml/phOsalNfc_Timer.c           |  6 +++---
+ halimpl/pn54x/tml/phTmlNfc.c                  |  4 ++--
+ halimpl/pn54x/tml/phTmlNfc_i2c.c              | 24 ++++++++++++------------
+ 7 files changed, 33 insertions(+), 33 deletions(-)
+
+diff --git a/halimpl/pn54x/Android.mk b/halimpl/pn54x/Android.mk
+index 4d2b904..faffa8f 100755
+--- a/halimpl/pn54x/Android.mk
++++ b/halimpl/pn54x/Android.mk
+@@ -32,7 +32,7 @@ LOCAL_ARM_MODE := arm
+ LOCAL_PATH := $(call my-dir)
+ include $(CLEAR_VARS)
+ LOCAL_MODULE := nfc_nci.pn54x.default
+-LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
++LOCAL_MODULE_RELATIVE_PATH := hw
+ LOCAL_SRC_FILES := $(call all-c-files-under, .)  $(call all-cpp-files-under, .)
+ LOCAL_SHARED_LIBRARIES := liblog libcutils libhardware_legacy libdl libstlport
+ LOCAL_MODULE_TAGS := optional
+diff --git a/halimpl/pn54x/dnld/phDnldNfc.c b/halimpl/pn54x/dnld/phDnldNfc.c
+index 080aeb4..1e9909d 100755
+--- a/halimpl/pn54x/dnld/phDnldNfc.c
++++ b/halimpl/pn54x/dnld/phDnldNfc.c
+@@ -875,7 +875,7 @@ NFCSTATUS phDnldNfc_InitImgInfo(void)
+     wStatus = phDnldNfc_LoadFW(FW_LIB_PATH, &pImageInfo, &ImageInfoLen);
+ 
+     NXPLOG_FWDNLD_D("FW Image Length - ImageInfoLen %d",ImageInfoLen);
+-    NXPLOG_FWDNLD_D("FW Image Info Pointer - pImageInfo %x",(uint32_t)pImageInfo);
++    NXPLOG_FWDNLD_D("FW Image Info Pointer - pImageInfo %x",(uintptr_t)pImageInfo);
+ 
+     if((pImageInfo == NULL) || (ImageInfoLen == 0))
+     {
+@@ -905,7 +905,7 @@ NFCSTATUS phDnldNfc_InitImgInfo(void)
+            NXPLOG_FWDNLD_D("FW Major Version Num - %x",gpphDnldContext->nxp_nfc_fw[5]);
+            NXPLOG_FWDNLD_D("FW Minor Version Num - %x",gpphDnldContext->nxp_nfc_fw[4]);
+            NXPLOG_FWDNLD_D("FW Image Length - %d",ImageInfoLen);
+-           NXPLOG_FWDNLD_D("FW Image Info Pointer - %x",(uint32_t)pImageInfo);
++           NXPLOG_FWDNLD_D("FW Image Info Pointer - %x",(uintptr_t)pImageInfo);
+ 
+            /* get the FW version */
+            wFwVer = (((uint16_t)(gpphDnldContext->nxp_nfc_fw[5]) << 8U) | (gpphDnldContext->nxp_nfc_fw[4]));
+@@ -965,7 +965,7 @@ NFCSTATUS phDnldNfc_LoadRecInfo(void)
+        if((NULL != gpphDnldContext->nxp_nfc_fwp) && (0 != gpphDnldContext->nxp_nfc_fwp_len))
+        {
+            NXPLOG_FWDNLD_D("Recovery Image Length - %d",ImageInfoLen);
+-           NXPLOG_FWDNLD_D("Recovery Image Info Pointer - %x",(uint32_t)pImageInfo);
++           NXPLOG_FWDNLD_D("Recovery Image Info Pointer - %x",(uintptr_t)pImageInfo);
+            wStatus = NFCSTATUS_SUCCESS;
+        }
+        else
+@@ -1022,7 +1022,7 @@ NFCSTATUS phDnldNfc_LoadPKInfo(void)
+        if((NULL != gpphDnldContext->nxp_nfc_fwp) && (0 != gpphDnldContext->nxp_nfc_fwp_len))
+        {
+            NXPLOG_FWDNLD_D("PKU Image Length - %d",ImageInfoLen);
+-           NXPLOG_FWDNLD_D("PKU Image Info Pointer - %x",(uint32_t)pImageInfo);
++           NXPLOG_FWDNLD_D("PKU Image Info Pointer - %x",(uintptr_t)pImageInfo);
+            wStatus = NFCSTATUS_SUCCESS;
+        }
+        else
+diff --git a/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.c b/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.c
+index 79a5d1d..1da1d4f 100755
+--- a/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.c
++++ b/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.c
+@@ -53,7 +53,7 @@ typedef struct phDal4Nfc_message_queue
+ **                  -1, if failed to allocate memory or to init mutex
+ **
+ *******************************************************************************/
+-int phDal4Nfc_msgget(key_t key, int msgflg)
++intptr_t phDal4Nfc_msgget(key_t key, int msgflg)
+ {
+     phDal4Nfc_message_queue_t * pQueue;
+ 
+@@ -72,7 +72,7 @@ int phDal4Nfc_msgget(key_t key, int msgflg)
+         return -1;
+     }
+ 
+-    return ((int) pQueue);
++    return ((intptr_t) pQueue);
+ }
+ 
+ /*******************************************************************************
+@@ -86,7 +86,7 @@ int phDal4Nfc_msgget(key_t key, int msgflg)
+ ** Returns          None
+ **
+ *******************************************************************************/
+-void phDal4Nfc_msgrelease(int msqid)
++void phDal4Nfc_msgrelease(intptr_t msqid)
+ {
+     phDal4Nfc_message_queue_t * pQueue = (phDal4Nfc_message_queue_t*)msqid;
+ 
+@@ -119,7 +119,7 @@ void phDal4Nfc_msgrelease(int msqid)
+ **                  -1, if invalid handle is passed
+ **
+ *******************************************************************************/
+-int phDal4Nfc_msgctl(int msqid, int cmd, void *buf)
++int phDal4Nfc_msgctl(intptr_t msqid, int cmd, void *buf)
+ {
+     phDal4Nfc_message_queue_t * pQueue;
+     phDal4Nfc_message_queue_item_t * p;
+@@ -168,7 +168,7 @@ int phDal4Nfc_msgctl(int msqid, int cmd, void *buf)
+ **                  -1, if invalid parameter passed or failed to allocate memory
+ **
+ *******************************************************************************/
+-int phDal4Nfc_msgsnd(int msqid, phLibNfc_Message_t * msg, int msgflg)
++intptr_t phDal4Nfc_msgsnd(intptr_t msqid, phLibNfc_Message_t * msg, int msgflg)
+ {
+     phDal4Nfc_message_queue_t * pQueue;
+     phDal4Nfc_message_queue_item_t * p;
+@@ -225,7 +225,7 @@ int phDal4Nfc_msgsnd(int msqid, phLibNfc_Message_t * msg, int msgflg)
+ **                  -1, if invalid parameter passed
+ **
+ *******************************************************************************/
+-int phDal4Nfc_msgrcv(int msqid, phLibNfc_Message_t * msg, long msgtyp, int msgflg)
++int phDal4Nfc_msgrcv(intptr_t msqid, phLibNfc_Message_t * msg, long msgtyp, int msgflg)
+ {
+     phDal4Nfc_message_queue_t * pQueue;
+     phDal4Nfc_message_queue_item_t * p;
+diff --git a/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.h b/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.h
+index 7f365f2..80d34d5 100755
+--- a/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.h
++++ b/halimpl/pn54x/tml/phDal4Nfc_messageQueueLib.h
+@@ -24,10 +24,10 @@
+ #include <linux/ipc.h>
+ #include <phNfcTypes.h>
+ 
+-int phDal4Nfc_msgget(key_t key, int msgflg);
+-void phDal4Nfc_msgrelease(int msqid);
+-int phDal4Nfc_msgctl(int msqid, int cmd, void *buf);
+-int phDal4Nfc_msgsnd(int msqid, phLibNfc_Message_t * msg, int msgflg);
+-int phDal4Nfc_msgrcv(int msqid, phLibNfc_Message_t * msg, long msgtyp, int msgflg);
++intptr_t phDal4Nfc_msgget(key_t key, int msgflg);
++void phDal4Nfc_msgrelease(intptr_t msqid);
++int phDal4Nfc_msgctl(intptr_t msqid, int cmd, void *buf);
++intptr_t phDal4Nfc_msgsnd(intptr_t msqid, phLibNfc_Message_t * msg, int msgflg);
++int phDal4Nfc_msgrcv(intptr_t msqid, phLibNfc_Message_t * msg, long msgtyp, int msgflg);
+ 
+ #endif /*  PHDAL4NFC_MESSAGEQUEUE_H  */
+diff --git a/halimpl/pn54x/tml/phOsalNfc_Timer.c b/halimpl/pn54x/tml/phOsalNfc_Timer.c
+index bc85a1c..f4a65c5 100755
+--- a/halimpl/pn54x/tml/phOsalNfc_Timer.c
++++ b/halimpl/pn54x/tml/phOsalNfc_Timer.c
+@@ -333,12 +333,12 @@ static void phOsalNfc_DeferredCall (void *pParams)
+     if(NULL != pParams)
+     {
+         /* Retrieve the index at which the timer handle structure is stored */
+-        dwIndex = (uint32_t)pParams - PH_NFC_TIMER_BASE_ADDRESS - 0x01;
++        dwIndex = (uintptr_t)pParams - PH_NFC_TIMER_BASE_ADDRESS - 0x01;
+         pTimerHandle = (phOsalNfc_TimerHandle_t *)&apTimerInfo[dwIndex];
+         if(pTimerHandle->Application_callback != NULL)
+         {
+             /* Invoke the callback function with osal Timer ID */
+-            pTimerHandle->Application_callback((uint32_t)pParams, pTimerHandle->pContext);
++            pTimerHandle->Application_callback((uintptr_t)pParams, pTimerHandle->pContext);
+         }
+     }
+ 
+@@ -390,7 +390,7 @@ static void phOsalNfc_Timer_Expired(union sigval sv)
+     pTimerHandle->eState = eTimerStopped;
+ 
+     pTimerHandle->tDeferedCallInfo.pDeferedCall = &phOsalNfc_DeferredCall;
+-    pTimerHandle->tDeferedCallInfo.pParam = (void *) (sv.sival_int);
++    pTimerHandle->tDeferedCallInfo.pParam = (void *) ((intptr_t)(sv.sival_int));
+ 
+     pTimerHandle->tOsalMessage.eMsgType = PH_LIBNFC_DEFERREDCALL_MSG;
+     pTimerHandle->tOsalMessage.pMsgData = (void *)&pTimerHandle->tDeferedCallInfo;
+diff --git a/halimpl/pn54x/tml/phTmlNfc.c b/halimpl/pn54x/tml/phTmlNfc.c
+index 91bd9bb..eb837d3 100755
+--- a/halimpl/pn54x/tml/phTmlNfc.c
++++ b/halimpl/pn54x/tml/phTmlNfc.c
+@@ -355,7 +355,7 @@ static void phTmlNfc_TmlThread(void *pParam)
+             dwNoBytesWrRd = PH_TMLNFC_RESET_VALUE;
+ 
+             /* Read the data from the file onto the buffer */
+-            if (NFCSTATUS_INVALID_DEVICE != (uint32_t)gpphTmlNfc_Context->pDevHandle)
++            if (NFCSTATUS_INVALID_DEVICE != (uintptr_t)gpphTmlNfc_Context->pDevHandle)
+             {
+                 NXPLOG_TML_D("PN547 - Invoking I2C Read.....\n");
+                 dwNoBytesWrRd = phTmlNfc_i2c_read(gpphTmlNfc_Context->pDevHandle, temp, 260);
+@@ -466,7 +466,7 @@ static void phTmlNfc_TmlWriterThread(void *pParam)
+             NXPLOG_TML_D("PN547 - Write requested.....\n");
+             /* Set the variable to success initially */
+             wStatus = NFCSTATUS_SUCCESS;
+-            if (NFCSTATUS_INVALID_DEVICE != (uint32_t)gpphTmlNfc_Context->pDevHandle)
++            if (NFCSTATUS_INVALID_DEVICE != (uintptr_t)gpphTmlNfc_Context->pDevHandle)
+             {
+                 retry:
+ 
+diff --git a/halimpl/pn54x/tml/phTmlNfc_i2c.c b/halimpl/pn54x/tml/phTmlNfc_i2c.c
+index 7e9729e..d1711cf 100755
+--- a/halimpl/pn54x/tml/phTmlNfc_i2c.c
++++ b/halimpl/pn54x/tml/phTmlNfc_i2c.c
+@@ -59,7 +59,7 @@ void phTmlNfc_i2c_close(void *pDevHandle)
+ {
+     if (NULL != pDevHandle)
+     {
+-        close((int32_t)pDevHandle);
++        close((intptr_t)pDevHandle);
+     }
+ 
+     return;
+@@ -94,14 +94,14 @@ NFCSTATUS phTmlNfc_i2c_open_and_configure(pphTmlNfc_Config_t pConfig, void ** pL
+         return NFCSTATUS_INVALID_DEVICE;
+     }
+ 
+-    *pLinkHandle = (void*) nHandle;
++    *pLinkHandle = (void*) (intptr_t)nHandle;
+ 
+     /*Reset PN547*/
+-    phTmlNfc_i2c_reset((void *)nHandle, 1);
++    phTmlNfc_i2c_reset((void *)(intptr_t)nHandle, 1);
+     usleep(100 * 1000);
+-    phTmlNfc_i2c_reset((void *)nHandle, 0);
++    phTmlNfc_i2c_reset((void *)(intptr_t)nHandle, 0);
+     usleep(100 * 1000);
+-    phTmlNfc_i2c_reset((void *)nHandle, 1);
++    phTmlNfc_i2c_reset((void *)(intptr_t)nHandle, 1);
+ 
+     return NFCSTATUS_SUCCESS;
+ }
+@@ -149,11 +149,11 @@ int phTmlNfc_i2c_read(void *pDevHandle, uint8_t * pBuffer, int nNbBytesToRead)
+        when the pn547 does not respond and we need to switch to FW download
+        mode. This should be done via a control socket instead. */
+     FD_ZERO(&rfds);
+-    FD_SET((int) pDevHandle, &rfds);
++    FD_SET((intptr_t) pDevHandle, &rfds);
+     tv.tv_sec = 2;
+     tv.tv_usec = 1;
+ 
+-    ret_Select = select((int)((int)pDevHandle + (int)1), &rfds, NULL, NULL, &tv);
++    ret_Select = select((int)((intptr_t)pDevHandle + (int)1), &rfds, NULL, NULL, &tv);
+     if (ret_Select < 0)
+     {
+         NXPLOG_TML_E("i2c select() errno : %x",errno);
+@@ -166,7 +166,7 @@ int phTmlNfc_i2c_read(void *pDevHandle, uint8_t * pBuffer, int nNbBytesToRead)
+     }
+     else
+     {
+-        ret_Read = read((int)pDevHandle, pBuffer, totalBtyesToRead - numRead);
++        ret_Read = read((intptr_t)pDevHandle, pBuffer, totalBtyesToRead - numRead);
+         if (ret_Read > 0)
+         {
+             numRead += ret_Read;
+@@ -193,7 +193,7 @@ int phTmlNfc_i2c_read(void *pDevHandle, uint8_t * pBuffer, int nNbBytesToRead)
+ 
+         if(numRead < totalBtyesToRead)
+         {
+-            ret_Read = read((int)pDevHandle, pBuffer, totalBtyesToRead - numRead);
++            ret_Read = read((intptr_t)pDevHandle, pBuffer, totalBtyesToRead - numRead);
+             if (ret_Read != totalBtyesToRead - numRead)
+             {
+                 NXPLOG_TML_E("_i2c_read() [hdr] errno : %x",errno);
+@@ -212,7 +212,7 @@ int phTmlNfc_i2c_read(void *pDevHandle, uint8_t * pBuffer, int nNbBytesToRead)
+         {
+             totalBtyesToRead = pBuffer[NORMAL_MODE_LEN_OFFSET] + NORMAL_MODE_HEADER_LEN;
+         }
+-        ret_Read = read((int)pDevHandle, (pBuffer + numRead), totalBtyesToRead - numRead);
++        ret_Read = read((intptr_t)pDevHandle, (pBuffer + numRead), totalBtyesToRead - numRead);
+         if (ret_Read > 0)
+         {
+             numRead += ret_Read;
+@@ -275,7 +275,7 @@ int phTmlNfc_i2c_write(void *pDevHandle, uint8_t * pBuffer, int nNbBytesToWrite)
+             }
+ 
+         }
+-        ret = write((int32_t)pDevHandle, pBuffer + numWrote, numBytes - numWrote);
++        ret = write((intptr_t)pDevHandle, pBuffer + numWrote, numBytes - numWrote);
+         if (ret > 0)
+         {
+             numWrote += ret;
+@@ -326,7 +326,7 @@ int phTmlNfc_i2c_reset(void *pDevHandle, long level)
+         return -1;
+     }
+ 
+-    ret = ioctl((int32_t)pDevHandle, PN544_SET_PWR, level);
++    ret = ioctl((intptr_t)pDevHandle, PN544_SET_PWR, level);
+     if(level == 2 && ret == 0)
+     {
+         bFwDnldFlag = TRUE;
+-- 
+1.9.1
+
