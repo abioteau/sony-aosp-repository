@@ -68,9 +68,9 @@ do
 	echo "BASEDIR=`pwd`" > orig/${versionName}-${versionNumber}-patch.sh
 	chmod +x orig/${versionName}-${versionNumber}-patch.sh
 	grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | sed 's/&amp;//g' | \
-	sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z\/]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}-patch.sh
+	sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}-patch.sh
 	grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | sed 's/&amp;//g' | \
-	sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z\/]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}-patch.sh
+	sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}-patch.sh
 	./orig/${versionName}-${versionNumber}-patch.sh
 done
 
