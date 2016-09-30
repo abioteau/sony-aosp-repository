@@ -7,6 +7,7 @@ cd ../../hardware/qcom/audio
 git revert --no-edit 1c9849ca9873ec815caf52935aa772b22658219e
 git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/79/267279/1 &amp;&amp; git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/80/267280/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/35/274235/6 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../bt
 git revert --no-edit c7dc913784965e4ce705c2045f0a8b43fcd1db1c
 cd ../display
