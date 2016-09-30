@@ -97,4 +97,12 @@ do
 	counter=$((counter+1))
 done
 
+# Get list of devices and ressources for Sony Mobile web page
+wget "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" -O orig/list.html
+cat orig/list.html | sed -n '/<article class="article page-article"/,$p' | sed '/article>/q' > sonyxperiadev/list-of-devices-and-resources.html
+
+# Get latest update for Sony Mobile web page
+wget "http://developer.sonymobile.com/open-devices/latest-updates/" -O orig/latest.html
+cat orig/latest.html | sed -n '/<article class="article page-article"/,$p' | sed '/article>/q' > sonyxperiadev/latest-updates.html
+
 rm -rf orig
