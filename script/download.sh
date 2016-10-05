@@ -73,6 +73,19 @@ do
 	grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
 	sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}-patch.sh
 	./orig/${versionName}-${versionNumber}-patch.sh
+
+	# Generate script to apply AOSP patches
+	echo "#!/bin/bash" > orig/${versionName}-${versionNumber}-apply_patch.sh
+	echo "if [$# -ne 2]" >> orig/${versionName}-${versionNumber}-apply_patch.sh
+	echo "then" >> orig/${versionName}-${versionNumber}-apply_patch.sh
+	echo "    [USAGE] ./apply_patch.sh <git_branch> <patch_directory>" >> orig/${versionName}-${versionNumber}-apply_patch.sh
+	echo "    exit 1" >> orig/${versionName}-${versionNumber}-apply_patch.sh
+	echo "fi" >> orig/${versionName}-${versionNumber}-apply_patch.sh
+	echo "" >> orig/${versionName}-${versionNumber}-apply_patch.sh
+    cat ${outdir}/AOSP_PATCH | sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_]*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am \$2\/sonyxperiadev\/patches\/\1\/\2\/*.patch/g' >> orig/${versionName}-${versionNumber}-apply_patch.sh
+    cat orig/${versionName}-${versionNumber}-apply_patch.sh | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& git checkout -b \$1/g' > ${outdir}/apply_patch.sh
+	echo "repo status" >> ${outdir}/apply_patch.sh
+
 done
 
 # Get AOSP software binaries for Sony Mobile web page
