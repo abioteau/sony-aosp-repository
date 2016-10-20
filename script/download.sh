@@ -10,6 +10,11 @@ mkdir -p sonyxperiadev
 mkdir -p orig/kitkat
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-kitkat-for-unlocked-xperia-devices/" -O orig/kitkat/index.html
 cat orig/kitkat/index.html | sed -n '/<article class="article page-article"/,$p' | sed '/article>/q' > sonyxperiadev/build-aosp-kitkat-4.4.html
+if [[ ! -s sonyxperiadev/build-aosp-kitkat-4.4.html ]]
+then
+	git checkout -- sonyxperiadev/build-aosp-kitkat-4.4.html
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-kitkat-4.4.html" >> error.log
+fi
 
 # Get AOSP Lollipop Instruction for Sony Mobile web page
 mkdir -p orig/lollipop
@@ -17,6 +22,11 @@ wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-t
 cat orig/lollipop/index.html.tmp | sed -n '/<div class="section overview-section faq-overview-section"/,$p' | sed '/div>/q' > orig/lollipop/index.html
 cat orig/lollipop/index.html | sed -n '/<dt id="build-aosp-lollipop-5-1"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-lollipop-5.1.html
 cat orig/lollipop/index.html | sed -n '/<dt id="build-aosp-lollipop-5-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-lollipop-5.0.html
+if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.0.html ]]
+then
+	git checkout -- sonyxperiadev/build-aosp-lollipop-5.0.html
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.0.html" >> error.log
+fi
 
 # Get AOSP Marshmallow Instruction for Sony Mobile web page
 mkdir -p orig/marshmallow
@@ -24,12 +34,22 @@ wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-t
 cat orig/marshmallow/index.html.tmp | sed -n '/<div class="section overview-section faq-overview-section"/,$p' | sed '/div>/q' > orig/marshmallow/index.html
 cat orig/marshmallow/index.html | sed -n '/<dt id="build-aosp-marshmallow-experimental"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-marshmallow-6.0.1.html
 cat orig/marshmallow/index.html | sed -n '/<dt id="build-aosp-marshmallow-6-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-marshmallow-6.0.html
+if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.html ]]
+then
+	git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.html
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.html" >> error.log
+fi
 
 # Get AOSP Nougat Instruction for Sony Mobile web page
 mkdir -p orig/nougat
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-nougat-for-unlocked-xperia-devices/" -O orig/nougat/index.html.tmp
 cat orig/nougat/index.html.tmp | sed -n '/<div class="section overview-section faq-overview-section"/,$p' | sed '/div>/q' > orig/nougat/index.html
 cat orig/nougat/index.html | sed -n '/<dt id="build-aosp-nougat-7-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.0.html
+if [[ ! -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
+then
+	git checkout -- sonyxperiadev/build-aosp-nougat-7.0.html
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.0.html" >> error.log
+fi
 
 if [[ -n $(git status -s sonyxperiadev) ]]
 then
@@ -106,6 +126,11 @@ fi
 mkdir -p orig/binaries
 wget "http://developer.sonymobile.com/downloads/software-binaries/" -O orig/binaries/index.html
 cat orig/binaries/index.html | sed -n '/<div class="section downloads-section"/,$p' | sed '/div>/q' > sonyxperiadev/software-binaries.html
+if [[ ! -s sonyxperiadev/software-binaries.html ]]
+then
+	git checkout -- sonyxperiadev/software-binaries.html
+	echo "`date` - Fail to get sonyxperiadev/software-binaries.html" >> error.log
+fi
 
 mkdir -p sonyxperiadev/binaries
 cat orig/binaries/index.html | sed -n '/<tbody/,$p' | sed '/\/tbody>/q' > orig/binaries/body.html
@@ -128,9 +153,19 @@ done
 # Get list of devices and ressources for Sony Mobile web page
 wget "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" -O orig/list.html
 cat orig/list.html | sed -n '/<article class="article page-article"/,$p' | sed '/article>/q' > sonyxperiadev/list-of-devices-and-resources.html
+if [[ ! -s sonyxperiadev/list-of-devices-and-resources.html ]]
+then
+	git checkout -- sonyxperiadev/list-of-devices-and-resources.html
+	echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html" >> error.log
+fi
 
 # Get latest update for Sony Mobile web page
 wget "http://developer.sonymobile.com/open-devices/latest-updates/" -O orig/latest.html
 cat orig/latest.html | sed -n '/<article class="article page-article"/,$p' | sed '/article>/q' > sonyxperiadev/latest-updates.html
+if [[ ! -s sonyxperiadev/latest-updates.html ]]
+then
+	git checkout -- sonyxperiadev/latest-updates.html
+	echo "`date` - Fail to get sonyxperiadev/latest-updates.html" >> error.log
+fi
 
 rm -rf orig
