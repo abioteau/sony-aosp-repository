@@ -60,7 +60,7 @@ cd ../../packages/apps/Nfc && git checkout -b $GIT_BRANCH
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../Music && git checkout -b $GIT_BRANCH
 git cherry-pick 6036ce6127022880a3d9c99bd15db4c968f3e6a3
-cd ../../../../../
+cd ../../../
 
 
 
