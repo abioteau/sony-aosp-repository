@@ -33,6 +33,11 @@ mkdir -p orig/marshmallow
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-marshmallow-for-unlocked-xperia-devices/" -O orig/marshmallow/index.html.tmp
 cat orig/marshmallow/index.html.tmp | sed -n '/<div class="section overview-section faq-overview-section"/,$p' | sed '/div>/q' > orig/marshmallow/index.html
 cat orig/marshmallow/index.html | sed -n '/<dt id="build-aosp-marshmallow-experimental"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-marshmallow-6.0.1.html
+if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.1.html ]]
+then
+	git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.1.html
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.1.html" >> error.log
+fi
 cat orig/marshmallow/index.html | sed -n '/<dt id="build-aosp-marshmallow-6-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-marshmallow-6.0.html
 if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.html ]]
 then
@@ -44,6 +49,12 @@ fi
 mkdir -p orig/nougat
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-nougat-for-unlocked-xperia-devices/" -O orig/nougat/index.html.tmp
 cat orig/nougat/index.html.tmp | sed -n '/<div class="section overview-section faq-overview-section"/,$p' | sed '/div>/q' > orig/nougat/index.html
+cat orig/nougat/index.html | sed -n '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.1.html
+if [[ ! -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
+then
+	git checkout -- sonyxperiadev/build-aosp-nougat-7.1.html
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.1.html" >> error.log
+fi
 cat orig/nougat/index.html | sed -n '/<dt id="build-aosp-nougat-7-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.0.html
 if [[ ! -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
 then
