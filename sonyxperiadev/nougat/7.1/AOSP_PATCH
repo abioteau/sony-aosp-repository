@@ -1,0 +1,16 @@
+cd external/toybox
+git fetch https://android.googlesource.com/platform/external/toybox refs/changes/74/265074/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git cherry-pick d3e8dd1bf56afc2277960472a46907d419e4b3da
+git cherry-pick 1c028ca33dc059a9d8f18daafcd77b5950268f41
+git cherry-pick cb49c305e3c78179b19d6f174ae73309544292b8
+cd ../../hardware/qcom/audio
+git revert --no-edit 66796eef5ebf71befa37b74f6507efae80d51ea0
+git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/91/294291/1 &amp;&amp; git cherry-pick FETCH_HEAD
+cd ../../../system/core
+git fetch https://android.googlesource.com/platform/system/core refs/changes/52/269652/1 &amp;&amp; git cherry-pick FETCH_HEAD
+cd ../../packages/apps/Music
+git cherry-pick 6036ce6127022880a3d9c99bd15db4c968f3e6a3
+cd ../../../
+
+
+
