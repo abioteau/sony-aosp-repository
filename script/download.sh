@@ -21,6 +21,11 @@ mkdir -p orig/lollipop
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-lollipop-for-unlocked-xperia-devices/" -O orig/lollipop/index.html.tmp
 cat orig/lollipop/index.html.tmp | sed -n '/<div class="section overview-section faq-overview-section"/,$p' | sed '/div>/q' > orig/lollipop/index.html
 cat orig/lollipop/index.html | sed -n '/<dt id="build-aosp-lollipop-5-1"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-lollipop-5.1.html
+if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.1.html ]]
+then
+	git checkout -- sonyxperiadev/build-aosp-lollipop-5.1.html
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.1.html" >> error.log
+fi
 cat orig/lollipop/index.html | sed -n '/<dt id="build-aosp-lollipop-5-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-lollipop-5.0.html
 if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.0.html ]]
 then
