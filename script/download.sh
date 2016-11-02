@@ -4,6 +4,8 @@
 # Permission to copy and modify is granted under the GPLv3 license
 # Last revised 09/12/2016
 
+echo "`date` - Start" >> script.log
+
 mkdir -p sonyxperiadev
 
 # Get AOSP Kitkat Instruction for Sony Mobile web page
@@ -13,7 +15,7 @@ cat orig/kitkat/index.html | sed -n '/<article class="article page-article"/,$p'
 if [[ ! -s sonyxperiadev/build-aosp-kitkat-4.4.html ]]
 then
 	git checkout -- sonyxperiadev/build-aosp-kitkat-4.4.html
-	echo "`date` - Fail to get sonyxperiadev/build-aosp-kitkat-4.4.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-kitkat-4.4.html" >> script.log
 fi
 
 # Get AOSP Lollipop Instruction for Sony Mobile web page
@@ -24,13 +26,13 @@ cat orig/lollipop/index.html | sed -n '/<dt id="build-aosp-lollipop-5-1"/,$p' | 
 if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.1.html ]]
 then
 	git checkout -- sonyxperiadev/build-aosp-lollipop-5.1.html
-	echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.1.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.1.html" >> script.log
 fi
 cat orig/lollipop/index.html | sed -n '/<dt id="build-aosp-lollipop-5-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-lollipop-5.0.html
 if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.0.html ]]
 then
 	git checkout -- sonyxperiadev/build-aosp-lollipop-5.0.html
-	echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.0.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.0.html" >> script.log
 fi
 
 # Get AOSP Marshmallow Instruction for Sony Mobile web page
@@ -41,13 +43,13 @@ cat orig/marshmallow/index.html | sed -n '/<dt id="build-aosp-marshmallow-experi
 if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.1.html ]]
 then
 	git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.1.html
-	echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.1.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.1.html" >> script.log
 fi
 cat orig/marshmallow/index.html | sed -n '/<dt id="build-aosp-marshmallow-6-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-marshmallow-6.0.html
 if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.html ]]
 then
 	git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.html
-	echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.html" >> script.log
 fi
 
 # Get AOSP Nougat Instruction for Sony Mobile web page
@@ -58,13 +60,13 @@ cat orig/nougat/index.html | sed -n '/<dt id="build-experimental-aosp-nougat-7-1
 if [[ ! -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
 then
 	git checkout -- sonyxperiadev/build-aosp-nougat-7.1.html
-	echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.1.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.1.html" >> script.log
 fi
 cat orig/nougat/index.html | sed -n '/<dt id="build-aosp-nougat-7-0"/,$p' | sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.0.html
 if [[ ! -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
 then
 	git checkout -- sonyxperiadev/build-aosp-nougat-7.0.html
-	echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.0.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.0.html" >> script.log
 fi
 
 #For each AOSP build instructions
@@ -165,7 +167,7 @@ cat orig/binaries/index.html | sed -n '/<div class="section downloads-section"/,
 if [[ ! -s sonyxperiadev/software-binaries.html ]]
 then
 	git checkout -- sonyxperiadev/software-binaries.html
-	echo "`date` - Fail to get sonyxperiadev/software-binaries.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/software-binaries.html" >> script.log
 fi
 
 mkdir -p sonyxperiadev/binaries
@@ -192,7 +194,7 @@ cat orig/list.html | sed -n '/<article class="article page-article"/,$p' | sed '
 if [[ ! -s sonyxperiadev/list-of-devices-and-resources.html ]]
 then
 	git checkout -- sonyxperiadev/list-of-devices-and-resources.html
-	echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html" >> script.log
 fi
 
 # Get latest update for Sony Mobile web page
@@ -201,7 +203,9 @@ cat orig/latest.html | sed -n '/<article class="article page-article"/,$p' | sed
 if [[ ! -s sonyxperiadev/latest-updates.html ]]
 then
 	git checkout -- sonyxperiadev/latest-updates.html
-	echo "`date` - Fail to get sonyxperiadev/latest-updates.html" >> error.log
+	echo "`date` - Fail to get sonyxperiadev/latest-updates.html" >> script.log
 fi
 
 rm -rf orig
+
+echo "`date` - End" >> script.log
