@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions for Sony Xperia
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 09/12/2016
+# Last revised 11/04/2016
 
 echo "`date` - Start" >> script.log
 
@@ -125,6 +125,10 @@ do
 
 	# Generate script to apply AOSP patches
 	echo "#!/bin/bash" > ${outdir}/apply_patch.sh
+	echo "# Script to apply Sony Xperia patches" >> ${outdir}/apply_patch.sh
+	echo "# Copyright (C) 2016 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
+	echo "# Permission to copy and modify is granted under the GPLv3 license" >> ${outdir}/apply_patch.sh
+	echo "# Last revised 11/04/2016" >> ${outdir}/apply_patch.sh
 	echo "" >> ${outdir}/apply_patch.sh
 	echo "cd \`dirname \$0\`/../../.." >> ${outdir}/apply_patch.sh
 	echo "ROOTDIR=\`pwd\`" >> ${outdir}/apply_patch.sh
