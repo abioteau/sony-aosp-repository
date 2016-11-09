@@ -28,7 +28,6 @@ git revert --no-edit 583ecf5ed2a4be0d05229b8c6726680c3836be8b
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/70/212570/5 &amp;&amp; git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/80/212580/2 &amp;&amp; git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/61/213261/1 &amp;&amp; git cherry-pick FETCH_HEAD
-git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/21/245721/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../../system/core
 git fetch https://android.googlesource.com/platform/system/core refs/changes/52/269652/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../packages/apps/Nfc

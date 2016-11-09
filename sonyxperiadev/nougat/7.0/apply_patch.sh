@@ -57,7 +57,6 @@ git revert --no-edit 583ecf5ed2a4be0d05229b8c6726680c3836be8b
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/70/212570/5/*.patch`
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/80/212580/2/*.patch`
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/61/213261/1/*.patch`
-git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/21/245721/1/*.patch`
 cd ../../../system/core && git checkout -b $GIT_BRANCH
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/52/269652/1/*.patch`
 cd ../../packages/apps/Nfc && git checkout -b $GIT_BRANCH
