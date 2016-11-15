@@ -1,0 +1,10 @@
+language: generic
+
+before_install:
+    sudo apt-get install dos2unix
+
+script:
+    ./script/download.sh && ./script/push.sh
+
+after_sucess:
+
