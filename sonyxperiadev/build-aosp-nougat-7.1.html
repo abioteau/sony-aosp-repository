@@ -52,7 +52,7 @@ chmod a+x ~/bin/repo</pre>
 <li style="margin-bottom: 10px">In a terminal window, enter the following commands:
 <pre class="prettyprint">mkdir ~/android
 cd ~/android
-repo init -u https://android.googlesource.com/platform/manifest -b android-7.1.0_r4</pre>
+repo init -u https://android.googlesource.com/platform/manifest -b android-7.1.0_r7</pre>
 <p><strong>Note!</strong> The downloaded data is around 20 GB, and for a successful build you need 100 GB free hard disk space. Depending on your Internet connection, it can take quite a long time to download the source code. When the download has finished you have the basic AOSP source code on your computer.</li>
 <li style="margin-bottom: 10px">Create and open a file where you will later add Sony’s repos containing the device configurations for Xperia devices, by entering the following commands:
 <pre class="prettyprint">mkdir .repo/local_manifests/
@@ -109,8 +109,7 @@ nano .repo/local_manifests/sony.xml</pre>
 </strong>In order for certain functions to work on the hardware in Xperia devices, you need to add a set of patches from the AOSP master branch. This is done by executing the following commands:</p>
 <ol>
 <li>In a terminal window, enter:
-<pre class="prettyprint">
-cd external/toybox
+<pre class="prettyprint">cd external/toybox
 git fetch https://android.googlesource.com/platform/external/toybox refs/changes/74/265074/1 &amp;&amp; git cherry-pick FETCH_HEAD
 git cherry-pick d3e8dd1bf56afc2277960472a46907d419e4b3da
 git cherry-pick 1c028ca33dc059a9d8f18daafcd77b5950268f41

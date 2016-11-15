@@ -20,7 +20,7 @@ GIT_BRANCH=$4
 
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
-~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $AOSP_MIRROR_URL/git-repo.git -b android-6.0.1_r70
+~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $AOSP_MIRROR_URL/git-repo.git -b android-6.0.1_r74
 cp $ROOTDIR/sonyxperiadev/marshmallow/6.0.1/sony.xml .repo/manifests/sony.xml
 sed -i "s/fetch=\".*\"/fetch=\"$SONY_MIRROR_URL\"/" .repo/manifests/sony.xml
 sed -i "/^<project/ s/name=\"/name=\"sonyxperiadev\//" .repo/manifests/sony.xml
@@ -65,6 +65,6 @@ cd ../../../../../
 
 
 ~/bin/repo status
-~/bin/repo forall -p -c git log --oneline android-6.0.1_r70..$GIT_BRANCH
+~/bin/repo forall -p -c git log --oneline android-6.0.1_r74..$GIT_BRANCH
 
 cd $ROOTDIR
