@@ -8,7 +8,20 @@ echo "`date` - Start" >> script.log
 
 mkdir -p sonyxperiadev
 
-# Get AOSP Kitkat Instruction for Sony Mobile web page
+# Get list of AOSP build instructions
+mkdir -p orig
+wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/" -O orig/index.html
+cat orig/index.html | \
+    sed -n '/<div class="section overview-section main-overview-section"/,$p' | \
+    sed '/<div class="column small-column sidebar-column">/q' |
+    sed 's/<div class="column small-column sidebar-column">//g' > sonyxperiadev/aosp-build-instructions.html
+if [[ ! -s sonyxperiadev/aosp-build-instructions.html ]]
+then
+    git checkout -- sonyxperiadev/aosp-build-instructions.html
+    echo "`date` - Fail to get sonyxperiadev/aosp-build-instructions.html" >> script.log
+fi
+
+# Get AOSP Kitkat build instructions
 mkdir -p orig/kitkat
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-kitkat-for-unlocked-xperia-devices/" -O orig/kitkat/index.html
 cat orig/kitkat/index.html | \
@@ -20,7 +33,7 @@ then
     echo "`date` - Fail to get sonyxperiadev/build-aosp-kitkat-4.4.html" >> script.log
 fi
 
-# Get AOSP Lollipop Instruction for Sony Mobile web page
+# Get AOSP Lollipop build instructions
 mkdir -p orig/lollipop
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-lollipop-for-unlocked-xperia-devices/" -O orig/lollipop/index.html.tmp
 cat orig/lollipop/index.html.tmp | \
@@ -43,7 +56,7 @@ then
     echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.0.html" >> script.log
 fi
 
-# Get AOSP Marshmallow Instruction for Sony Mobile web page
+# Get AOSP Marshmallow build instructions
 mkdir -p orig/marshmallow
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-marshmallow-for-unlocked-xperia-devices/" -O orig/marshmallow/index.html.tmp
 cat orig/marshmallow/index.html.tmp | \
@@ -66,7 +79,7 @@ then
     echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.html" >> script.log
 fi
 
-# Get AOSP Nougat Instruction for Sony Mobile web page
+# Get AOSP Nougat build instructions
 mkdir -p orig/nougat
 wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-nougat-for-unlocked-xperia-devices/" -O orig/nougat/index.html.tmp
 cat orig/nougat/index.html.tmp | \
@@ -192,7 +205,7 @@ do
     /usr/bin/dos2unix ${outdir}/apply_patch.sh
 done
 
-# Get AOSP software binaries for Sony Mobile web page
+# Get Sony software binaries
 mkdir -p orig/binaries
 wget "http://developer.sonymobile.com/downloads/software-binaries/" -O orig/binaries/index.html
 cat orig/binaries/index.html | \
@@ -204,6 +217,7 @@ then
     echo "`date` - Fail to get sonyxperiadev/software-binaries.html" >> script.log
 fi
 
+# For each Sony software binaries
 mkdir -p sonyxperiadev/binaries
 cat orig/binaries/index.html | \
     sed -n '/<tbody/,$p' | \
@@ -231,7 +245,7 @@ do
     counter=$((counter+1))
 done
 
-# Get list of devices and ressources for Sony Mobile web page
+# Get list of devices and ressources
 wget "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" -O orig/list.html
 cat orig/list.html | \
     sed -n '/<article class="article page-article"/,$p' | \
@@ -242,7 +256,7 @@ then
     echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html" >> script.log
 fi
 
-# Get latest update for Sony Mobile web page
+# Get latest update
 wget "http://developer.sonymobile.com/open-devices/latest-updates/" -O orig/latest.html
 cat orig/latest.html | \
     sed -n '/<article class="article page-article"/,$p' | \
