@@ -1,3 +1,4 @@
 *.log
 orig/*
-sonyxperiadev/binaries/*
+sonyxperiadev/binary/*
+vendor/*

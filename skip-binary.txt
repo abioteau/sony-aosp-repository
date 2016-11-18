@@ -1,0 +1,10 @@
+SW_binaries_for_Xperia_AOSP_M_MR1_v04.zip
+SW_binaries_for_Xperia_AOSP_L_MR1_v19a.zip
+SW_binaries_for_Xperia_AOSP_M_v05a.zip
+SW_binaries_for_Xperia_AOSP_M-preview_v01.zip
+SW_binaries_for_Xperia_AOSP_L_MR0_v8.zip
+SW_binaries_for_Xperia_AOSP_KK_MR2_v3.zip
+SW_binaries_for_Xperia_L_v1.1.zip
+SW_binaries_for_Xperia_Z_Xperia_Tablet_Z_v3.1.zip
+SW_binaries_for_Xperia_S_v1.tar.zip
+SW_binaries_for_Xperia_AOSP_M_MR1_v05.zip

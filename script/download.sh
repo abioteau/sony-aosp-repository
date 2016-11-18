@@ -226,45 +226,16 @@ do
     /usr/bin/dos2unix ${outdir}/apply_patch.sh
 done
 
-# Get list of Sony software binaries
-mkdir -p orig/binaries
-wget "http://developer.sonymobile.com/downloads/software-binaries/" -O orig/binaries/index.html
-cat orig/binaries/index.html | \
-    sed -n '/<div class="section downloads-section"/,$p' | \
-    sed '/div>/q' > sonyxperiadev/software-binaries.html
-if [[ ! -s sonyxperiadev/software-binaries.html ]]
+# Get latest update
+wget "http://developer.sonymobile.com/open-devices/latest-updates/" -O orig/latest.html
+cat orig/latest.html | \
+    sed -n '/<article class="article page-article"/,$p' | \
+    sed '/article>/q' > sonyxperiadev/latest-updates.html
+if [[ ! -s sonyxperiadev/latest-updates.html ]]
 then
-    git checkout -- sonyxperiadev/software-binaries.html
-    echo "`date` - Fail to get sonyxperiadev/software-binaries.html"
+    git checkout -- sonyxperiadev/latest-updates.html
+    echo "`date` - Fail to get sonyxperiadev/latest-updates.html"
 fi
-
-# For each Sony software binaries
-mkdir -p sonyxperiadev/binaries
-cat orig/binaries/index.html | \
-    sed -n '/<tbody/,$p' | \
-    sed '/\/tbody>/q' > orig/binaries/body.html
-binariesNumber=`cat orig/binaries/body.html | grep -c "<tr>"`
-counter=0
-while [[ ${counter} < ${binariesNumber} ]];
-do
-    cat orig/binaries/body.html | \
-        sed -n '/<tr/,$p' | \
-        sed '/\/tr>/q' > orig/binaries/body-${counter}.html
-
-    grep -o 'http://dl-developer.sonymobile.com/eula[^"]*' orig/binaries/body-${counter}.html | \
-        grep AOSP | \
-        xargs -I {} wget {} -O orig/binaries/eula-${counter}.html
-    grep -o "restricted/[^\']*" orig/binaries/eula-${counter}.html | \
-        sed 's/\?param=//g' | \
-        sed 's/restricted\///g' | \
-        xargs -I {} wget -c --no-cookies --header "Cookie: dw_accepted=true" "http://dl-developer.sonymobile.com/eula/restricted/"{} -O sonyxperiadev/binaries/{}
-
-    cat orig/binaries/body.html | \
-        sed -n '/\/tr>/,$p' | \
-        sed '1s/<\/tr>//g' > orig/binaries/body.html.tmp
-    cp orig/binaries/body.html.tmp orig/binaries/body.html
-    counter=$((counter+1))
-done
 
 # Get list of devices and ressources
 wget "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" -O orig/list.html
@@ -277,15 +248,57 @@ then
     echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html"
 fi
 
-# Get latest update
-wget "http://developer.sonymobile.com/open-devices/latest-updates/" -O orig/latest.html
-cat orig/latest.html | \
-    sed -n '/<article class="article page-article"/,$p' | \
-    sed '/article>/q' > sonyxperiadev/latest-updates.html
-if [[ ! -s sonyxperiadev/latest-updates.html ]]
+# Get list of Sony software binaries
+mkdir -p orig/binary
+wget "http://developer.sonymobile.com/downloads/software-binaries/" -O orig/binary/index.html
+cat orig/binary/index.html | \
+    sed -n '/<div class="section downloads-section"/,$p' | \
+    sed '/div>/q' > sonyxperiadev/software-binaries.html
+if [[ ! -s sonyxperiadev/software-binaries.html ]]
 then
-    git checkout -- sonyxperiadev/latest-updates.html
-    echo "`date` - Fail to get sonyxperiadev/latest-updates.html"
+    git checkout -- sonyxperiadev/software-binaries.html
+    echo "`date` - Fail to get sonyxperiadev/software-binaries.html"
 fi
+
+# For each Sony software binaries
+mkdir -p sonyxperiadev/binary
+cat orig/binary/index.html | \
+    sed -n '/<tbody/,$p' | \
+    sed '/\/tbody>/q' > orig/binary/body.html
+binariesNumber=`cat orig/binary/body.html | grep -c "<tr>"`
+counter=0
+while [[ ${counter} < ${binariesNumber} ]];
+do
+    cat orig/binary/body.html | \
+        sed -n '/<tr/,$p' | \
+        sed '/\/tr>/q' > orig/binary/body-${counter}.html
+
+    grep -o 'http://dl-developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html | \
+        xargs -I {} wget {} -O orig/binary/eula-${counter}.html
+    binaryFile=`grep -o "restricted/[^\']*" orig/binary/eula-${counter}.html | \
+        sed 's/\?param=//g' | \
+        sed 's/restricted\///g'`
+    skipBinaryFile=`grep -c -o "${binaryFile}" skip-binary.txt`
+    if [[ ${skipBinaryFile} == 0 ]]
+    then
+        wget -c --no-cookies --header "Cookie: dw_accepted=true" "http://dl-developer.sonymobile.com/eula/restricted/${binaryFile}" -O sonyxperiadev/binary/"${binaryFile}"
+        commitMessage=`echo "released \`date +%Y-%m-%d\` => ${binaryFile}" | \
+            sed 's/SW_binaries_for_//g' | \
+            sed 's/.zip//g'`
+        branchName=`echo "${binaryFile}" | \
+            sed 's/SW_binaries_for_Xperia_AOSP_//g' | \
+            sed 's/_v.*//g' | \
+            tr '[:upper:]' '[:lower:]' | \
+            tr '_' '-'`
+        ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${branchName}"
+        echo "${binaryFile}" >> skip-binary.txt
+    fi
+
+    cat orig/binary/body.html | \
+        sed -n '/\/tr>/,$p' | \
+        sed '1s/<\/tr>//g' > orig/binary/body.html.tmp
+    cp orig/binary/body.html.tmp orig/binary/body.html
+    counter=$((counter+1))
+done
 
 rm -rf orig

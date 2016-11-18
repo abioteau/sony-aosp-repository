@@ -13,10 +13,15 @@ commit_sonyxperiadev_files() {
 }
 
 upload_files() {
-  git remote add origin-travis https://${GH_TOKEN}@github.com/abioteau/sony-aosp-repository.git > /dev/null 2>&1
+  cd $2
+  git remote add origin-travis https://${GH_TOKEN}@github.com/$1 > /dev/null 2>&1
   git push --quiet --set-upstream origin-travis master
+  cd -
 }
 
 setup_git
 commit_sonyxperiadev_files
-upload_files
+upload_files abioteau/sony-aosp-repository.git
+upload_files abioteau/vendor_nxp.git vendor/nxp
+upload_files abioteau/vendor_sony.git vendor/sony
+upload_files abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt
