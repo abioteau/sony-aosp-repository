@@ -4,8 +4,6 @@
 # Permission to copy and modify is granted under the GPLv3 license
 # Last revised 11/04/2016
 
-echo "`date` - Start" >> script.log
-
 mkdir -p sonyxperiadev
 
 # Get list of AOSP build instructions
@@ -18,8 +16,13 @@ cat orig/index.html | \
 if [[ ! -s sonyxperiadev/aosp-build-instructions.html ]]
 then
     git checkout -- sonyxperiadev/aosp-build-instructions.html
-    echo "`date` - Fail to get sonyxperiadev/aosp-build-instructions.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/aosp-build-instructions.html"
+else
+    aospVersionNumber=`cat sonyxperiadev/aosp-build-instructions.html | \
+        grep -c "http://developer.sonymobile.com/open-devices/aosp-build-instructions/"`
+    aospVersionCounter=0
 fi
+
 
 # Get AOSP Kitkat build instructions
 mkdir -p orig/kitkat
@@ -30,8 +33,9 @@ cat orig/kitkat/index.html | \
 if [[ ! -s sonyxperiadev/build-aosp-kitkat-4.4.html ]]
 then
     git checkout -- sonyxperiadev/build-aosp-kitkat-4.4.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-kitkat-4.4.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/build-aosp-kitkat-4.4.html"
 fi
+aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Lollipop build instructions
 mkdir -p orig/lollipop
@@ -45,7 +49,7 @@ cat orig/lollipop/index.html | \
 if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.1.html ]]
 then
     git checkout -- sonyxperiadev/build-aosp-lollipop-5.1.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.1.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.1.html"
 fi
 cat orig/lollipop/index.html | \
     sed -n '/<dt id="build-aosp-lollipop-5-0"/,$p' | \
@@ -53,8 +57,9 @@ cat orig/lollipop/index.html | \
 if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.0.html ]]
 then
     git checkout -- sonyxperiadev/build-aosp-lollipop-5.0.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.0.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.0.html"
 fi
+aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Marshmallow build instructions
 mkdir -p orig/marshmallow
@@ -68,7 +73,7 @@ cat orig/marshmallow/index.html | \
 if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.1.html ]]
 then
     git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.1.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.1.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.1.html"
 fi
 cat orig/marshmallow/index.html | \
     sed -n '/<dt id="build-aosp-marshmallow-6-0"/,$p' | \
@@ -76,8 +81,9 @@ cat orig/marshmallow/index.html | \
 if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.html ]]
 then
     git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.html"
 fi
+aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Nougat build instructions
 mkdir -p orig/nougat
@@ -85,13 +91,18 @@ wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-t
 cat orig/nougat/index.html.tmp | \
     sed -n '/<div class="section overview-section faq-overview-section"/,$p' | \
     sed '/div>/q' > orig/nougat/index.html
+aospNougatNumber=`cat orig/nougat/index.html | \
+    grep -c "<dt id=\"build"`
+aospNougatCounter=0
 cat orig/nougat/index.html | \
     sed -n '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' | \
     sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.1.html
 if [[ ! -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
 then
     git checkout -- sonyxperiadev/build-aosp-nougat-7.1.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.1.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.1.html"
+else
+    aospNougatCounter=$((aospNougatCounter+1))
 fi
 cat orig/nougat/index.html | \
     sed -n '/<dt id="build-aosp-nougat-7-0"/,$p' | \
@@ -99,12 +110,22 @@ cat orig/nougat/index.html | \
 if [[ ! -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
 then
     git checkout -- sonyxperiadev/build-aosp-nougat-7.0.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.0.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.0.html"
+else
+    aospNougatCounter=$((aospNougatCounter+1))
+fi
+aospVersionCounter=$((aospVersionCounter+1))
+
+# Check if there a new AOSP version
+if [[ ${aospVersionCounter} < ${aospVersionNumber} || ${aospNougatCounter} < ${aospNougatNumber} ]]
+then
+    echo "`date` - Download script need to be update in order to get new AOSP version"
+    exit 1
 fi
 
 #For each AOSP build instructions
-buildInstructions=`find sonyxperiadev/build-aosp-*.html`
-for file in ${buildInstructions};
+buildInstructionsFile=`find sonyxperiadev/build-aosp-*.html`
+for file in ${buildInstructionsFile};
 do
     versionName=`echo ${file} | \
                     sed 's/sonyxperiadev\/build-aosp-//g' | \
@@ -205,7 +226,7 @@ do
     /usr/bin/dos2unix ${outdir}/apply_patch.sh
 done
 
-# Get Sony software binaries
+# Get list of Sony software binaries
 mkdir -p orig/binaries
 wget "http://developer.sonymobile.com/downloads/software-binaries/" -O orig/binaries/index.html
 cat orig/binaries/index.html | \
@@ -214,7 +235,7 @@ cat orig/binaries/index.html | \
 if [[ ! -s sonyxperiadev/software-binaries.html ]]
 then
     git checkout -- sonyxperiadev/software-binaries.html
-    echo "`date` - Fail to get sonyxperiadev/software-binaries.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/software-binaries.html"
 fi
 
 # For each Sony software binaries
@@ -253,7 +274,7 @@ cat orig/list.html | \
 if [[ ! -s sonyxperiadev/list-of-devices-and-resources.html ]]
 then
     git checkout -- sonyxperiadev/list-of-devices-and-resources.html
-    echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html"
 fi
 
 # Get latest update
@@ -264,9 +285,7 @@ cat orig/latest.html | \
 if [[ ! -s sonyxperiadev/latest-updates.html ]]
 then
     git checkout -- sonyxperiadev/latest-updates.html
-    echo "`date` - Fail to get sonyxperiadev/latest-updates.html" >> script.log
+    echo "`date` - Fail to get sonyxperiadev/latest-updates.html"
 fi
 
 rm -rf orig
-
-echo "`date` - End" >> script.log
