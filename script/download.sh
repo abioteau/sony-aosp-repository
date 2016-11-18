@@ -278,7 +278,7 @@ do
     binaryFile=`grep -o "restricted/[^\']*" orig/binary/eula-${counter}.html | \
         sed 's/\?param=//g' | \
         sed 's/restricted\///g'`
-    skipBinaryFile=`grep -c -o "${binaryFile}" skip-binary.txt`
+    skipBinaryFile=`grep -c -o "${binaryFile}" sonyxperiadev/skip-binary.txt`
     if [[ ${skipBinaryFile} == 0 ]]
     then
         wget -c --no-cookies --header "Cookie: dw_accepted=true" "http://dl-developer.sonymobile.com/eula/restricted/${binaryFile}" -O sonyxperiadev/binary/"${binaryFile}"
@@ -291,7 +291,7 @@ do
             tr '[:upper:]' '[:lower:]' | \
             tr '_' '-'`
         ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${branchName}"
-        echo "${binaryFile}" >> skip-binary.txt
+        echo "${binaryFile}" >> sonyxperiadev/skip-binary.txt
     fi
 
     cat orig/binary/body.html | \

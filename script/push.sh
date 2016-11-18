@@ -15,7 +15,7 @@ commit_sonyxperiadev_files() {
 upload_files() {
   cd $2
   git remote add origin-travis https://${GH_TOKEN}@github.com/$1 > /dev/null 2>&1
-  git push --quiet --set-upstream origin-travis master
+  git push --quiet --set-upstream origin-travis `git rev-parse --abbrev-ref HEAD`
   cd -
 }
 
