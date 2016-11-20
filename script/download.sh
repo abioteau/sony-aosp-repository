@@ -6,112 +6,88 @@
 
 mkdir -p sonyxperiadev
 
+download_web_page() {
+    wget $1 -O $2
+}
+
+extract_section_from_web_page() {
+    if [ $# -eq 5 ]
+    then
+        cat "$1" | \
+        sed -n "$3" | \
+        sed "$4" | \
+        sed "$5" > "$2"
+    else
+        cat "$1" | \
+        sed -n "$3" | \
+        sed "$4" > "$2"
+    fi
+}
+
+check_null_web_page() {
+    if [[ ! -s "$1" ]]
+    then
+        git checkout -- "$1"
+        echo "`date` - Fail to get $1"
+    fi
+}
+
 # Get list of AOSP build instructions
 mkdir -p orig
-wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/" -O orig/index.html
-cat orig/index.html | \
-    sed -n '/<div class="section overview-section main-overview-section"/,$p' | \
-    sed '/<div class="column small-column sidebar-column">/q' |
-    sed 's/<div class="column small-column sidebar-column">//g' > sonyxperiadev/aosp-build-instructions.html
-if [[ ! -s sonyxperiadev/aosp-build-instructions.html ]]
+download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/" orig/index.html
+extract_section_from_web_page orig/index.html sonyxperiadev/aosp-build-instructions.html '/<div class="section overview-section main-overview-section"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
+check_null_web_page sonyxperiadev/aosp-build-instructions.html
+if [[ -s sonyxperiadev/aosp-build-instructions.html ]]
 then
-    git checkout -- sonyxperiadev/aosp-build-instructions.html
-    echo "`date` - Fail to get sonyxperiadev/aosp-build-instructions.html"
-else
     aospVersionNumber=`cat sonyxperiadev/aosp-build-instructions.html | \
         grep -c "http://developer.sonymobile.com/open-devices/aosp-build-instructions/"`
     aospVersionCounter=0
 fi
 
-
 # Get AOSP Kitkat build instructions
 mkdir -p orig/kitkat
-wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-kitkat-for-unlocked-xperia-devices/" -O orig/kitkat/index.html
-cat orig/kitkat/index.html | \
-    sed -n '/<article class="article page-article"/,$p' | \
-    sed '/article>/q' > sonyxperiadev/build-aosp-kitkat-4.4.html
-if [[ ! -s sonyxperiadev/build-aosp-kitkat-4.4.html ]]
-then
-    git checkout -- sonyxperiadev/build-aosp-kitkat-4.4.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-kitkat-4.4.html"
-fi
+download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-kitkat-for-unlocked-xperia-devices/" orig/kitkat/index.html
+extract_section_from_web_page orig/kitkat/index.html sonyxperiadev/build-aosp-kitkat-4.4.html '/<article class="article page-article"/,$p' '/article>/q'
+check_null_web_page sonyxperiadev/build-aosp-kitkat-4.4.html
 aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Lollipop build instructions
 mkdir -p orig/lollipop
-wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-lollipop-for-unlocked-xperia-devices/" -O orig/lollipop/index.html.tmp
-cat orig/lollipop/index.html.tmp | \
-    sed -n '/<div class="section overview-section faq-overview-section"/,$p' | \
-    sed '/div>/q' > orig/lollipop/index.html
-cat orig/lollipop/index.html | \
-    sed -n '/<dt id="build-aosp-lollipop-5-1"/,$p' | \
-    sed '/\/dd>/q' > sonyxperiadev/build-aosp-lollipop-5.1.html
-if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.1.html ]]
-then
-    git checkout -- sonyxperiadev/build-aosp-lollipop-5.1.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.1.html"
-fi
-cat orig/lollipop/index.html | \
-    sed -n '/<dt id="build-aosp-lollipop-5-0"/,$p' | \
-    sed '/\/dd>/q' > sonyxperiadev/build-aosp-lollipop-5.0.html
-if [[ ! -s sonyxperiadev/build-aosp-lollipop-5.0.html ]]
-then
-    git checkout -- sonyxperiadev/build-aosp-lollipop-5.0.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-lollipop-5.0.html"
-fi
+download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-lollipop-for-unlocked-xperia-devices/" orig/lollipop/index.html.tmp
+extract_section_from_web_page orig/lollipop/index.html.tmp orig/lollipop/index.html '/<div class="section overview-section faq-overview-section"/,$p' '/div>/q'
+extract_section_from_web_page orig/lollipop/index.html sonyxperiadev/build-aosp-lollipop-5.1.html '/<dt id="build-aosp-lollipop-5-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-lollipop-5.1.html
+extract_section_from_web_page orig/lollipop/index.html sonyxperiadev/build-aosp-lollipop-5.0.html '/<dt id="build-aosp-lollipop-5-0"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-lollipop-5.0.html
 aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Marshmallow build instructions
 mkdir -p orig/marshmallow
-wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-marshmallow-for-unlocked-xperia-devices/" -O orig/marshmallow/index.html.tmp
-cat orig/marshmallow/index.html.tmp | \
-    sed -n '/<div class="section overview-section faq-overview-section"/,$p' | \
-    sed '/div>/q' > orig/marshmallow/index.html
-cat orig/marshmallow/index.html | \
-    sed -n '/<dt id="build-aosp-marshmallow-experimental"/,$p' | \
-    sed '/\/dd>/q' > sonyxperiadev/build-aosp-marshmallow-6.0.1.html
-if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.1.html ]]
-then
-    git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.1.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.1.html"
-fi
-cat orig/marshmallow/index.html | \
-    sed -n '/<dt id="build-aosp-marshmallow-6-0"/,$p' | \
-    sed '/\/dd>/q' > sonyxperiadev/build-aosp-marshmallow-6.0.html
-if [[ ! -s sonyxperiadev/build-aosp-marshmallow-6.0.html ]]
-then
-    git checkout -- sonyxperiadev/build-aosp-marshmallow-6.0.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-marshmallow-6.0.html"
-fi
+download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-marshmallow-for-unlocked-xperia-devices/" orig/marshmallow/index.html.tmp
+extract_section_from_web_page orig/marshmallow/index.html.tmp orig/marshmallow/index.html '/<div class="section overview-section faq-overview-section"/,$p' '/div>/q'
+extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.1.html '/<dt id="build-aosp-marshmallow-experimental"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-marshmallow-6.0.1.html
+extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.html '/<dt id="build-aosp-marshmallow-6.0"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-marshmallow-6.0.html
 aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Nougat build instructions
 mkdir -p orig/nougat
-wget "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-nougat-for-unlocked-xperia-devices/" -O orig/nougat/index.html.tmp
-cat orig/nougat/index.html.tmp | \
-    sed -n '/<div class="section overview-section faq-overview-section"/,$p' | \
-    sed '/div>/q' > orig/nougat/index.html
+download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-nougat-for-unlocked-xperia-devices/" orig/nougat/index.html.tmp
+extract_section_from_web_page orig/nougat/index.html.tmp orig/nougat/index.html '/<div class="section overview-section faq-overview-section"/,$p' '/div>/q'
 aospNougatNumber=`cat orig/nougat/index.html | \
     grep -c "<dt id=\"build"`
 aospNougatCounter=0
-cat orig/nougat/index.html | \
-    sed -n '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' | \
-    sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.1.html
-if [[ ! -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-nougat-7.1.html
+if [[ -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
 then
-    git checkout -- sonyxperiadev/build-aosp-nougat-7.1.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.1.html"
-else
     aospNougatCounter=$((aospNougatCounter+1))
 fi
-cat orig/nougat/index.html | \
-    sed -n '/<dt id="build-aosp-nougat-7-0"/,$p' | \
-    sed '/\/dd>/q' > sonyxperiadev/build-aosp-nougat-7.0.html
-if [[ ! -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.0.html '/<dt id="build-experimental-aosp-nougat-7-0"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-nougat-7.0.html
+if [[ -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
 then
-    git checkout -- sonyxperiadev/build-aosp-nougat-7.0.html
-    echo "`date` - Fail to get sonyxperiadev/build-aosp-nougat-7.0.html"
-else
     aospNougatCounter=$((aospNougatCounter+1))
 fi
 aospVersionCounter=$((aospVersionCounter+1))
@@ -227,51 +203,29 @@ do
 done
 
 # Get latest update
-wget "http://developer.sonymobile.com/open-devices/latest-updates/" -O orig/latest.html
-cat orig/latest.html | \
-    sed -n '/<article class="article page-article"/,$p' | \
-    sed '/article>/q' > sonyxperiadev/latest-updates.html
-if [[ ! -s sonyxperiadev/latest-updates.html ]]
-then
-    git checkout -- sonyxperiadev/latest-updates.html
-    echo "`date` - Fail to get sonyxperiadev/latest-updates.html"
-fi
+download_web_page "http://developer.sonymobile.com/open-devices/latest-updates/" orig/latest.html
+extract_section_from_web_page orig/latest.html sonyxperiadev/latest-updates.html '/<article class="article page-article"/,$p' '/article>/q'
+check_null_web_page sonyxperiadev/latest-updates.html
 
 # Get list of devices and ressources
-wget "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" -O orig/list.html
-cat orig/list.html | \
-    sed -n '/<article class="article page-article"/,$p' | \
-    sed '/article>/q' > sonyxperiadev/list-of-devices-and-resources.html
-if [[ ! -s sonyxperiadev/list-of-devices-and-resources.html ]]
-then
-    git checkout -- sonyxperiadev/list-of-devices-and-resources.html
-    echo "`date` - Fail to get sonyxperiadev/list-of-devices-and-resources.html"
-fi
+download_web_page "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" orig/list.html
+extract_section_from_web_page orig/list.html sonyxperiadev/list-of-devices-and-resources.html '/<article class="article page-article"/,$p' '/article>/q'
+check_null_web_page sonyxperiadev/list-of-devices-and-resources.html
 
 # Get list of Sony software binaries
 mkdir -p orig/binary
-wget "http://developer.sonymobile.com/downloads/software-binaries/" -O orig/binary/index.html
-cat orig/binary/index.html | \
-    sed -n '/<div class="section downloads-section"/,$p' | \
-    sed '/div>/q' > sonyxperiadev/software-binaries.html
-if [[ ! -s sonyxperiadev/software-binaries.html ]]
-then
-    git checkout -- sonyxperiadev/software-binaries.html
-    echo "`date` - Fail to get sonyxperiadev/software-binaries.html"
-fi
+download_web_page "http://developer.sonymobile.com/downloads/software-binaries/" orig/binary/index.html
+extract_section_from_web_page orig/binary/index.html sonyxperiadev/software-binaries.html '/<div class="section downloads-section"/,$p' '/div>/q'
+check_null_web_page sonyxperiadev/software-binaries.html
 
 # For each Sony software binaries
 mkdir -p sonyxperiadev/binary
-cat orig/binary/index.html | \
-    sed -n '/<tbody/,$p' | \
-    sed '/\/tbody>/q' > orig/binary/body.html
+extract_section_from_web_page orig/binary/index.html orig/binary/body.html '/<tbody/,$p' '/\/tbody>/q'
 binariesNumber=`cat orig/binary/body.html | grep -c "<tr>"`
 counter=0
 while [[ ${counter} < ${binariesNumber} ]];
 do
-    cat orig/binary/body.html | \
-        sed -n '/<tr/,$p' | \
-        sed '/\/tr>/q' > orig/binary/body-${counter}.html
+    extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
 
     grep -o 'http://dl-developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html | \
         xargs -I {} wget {} -O orig/binary/eula-${counter}.html
@@ -294,9 +248,7 @@ do
         echo "${binaryFile}" >> sonyxperiadev/skip-binary.txt
     fi
 
-    cat orig/binary/body.html | \
-        sed -n '/\/tr>/,$p' | \
-        sed '1s/<\/tr>//g' > orig/binary/body.html.tmp
+    extract_section_from_web_page orig/binary/body.html orig/binary/body.html.tmp '/\/tr>/,$p' '1s/<\/tr>//g'
     cp orig/binary/body.html.tmp orig/binary/body.html
     counter=$((counter+1))
 done
