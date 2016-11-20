@@ -1,4 +1,9 @@
 #!/bin/sh
+#!/bin/bash
+# Script to commit and push
+# Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
+# Permission to copy and modify is granted under the GPLv3 license
+# Last revised 11/20/2016
 
 setup_git() {
   git config --global user.email "adrien.bioteau@gmail.com"

@@ -2,7 +2,7 @@
 # Script to extract Sony Xperia binaries
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/04/2016
+# Last revised 11/20/2016
 
 setup_git() {
   git clone $1 $WORKSPACE_DIRECTORY/$2

@@ -1,8 +1,8 @@
 #!/bin/bash
-# Script to extract AOSP build instructions for Sony Xperia
+# Script to extract AOSP build instructions
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/04/2016
+# Last revised 11/20/2016
 
 mkdir -p sonyxperiadev
 
