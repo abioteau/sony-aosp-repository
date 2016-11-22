@@ -84,7 +84,7 @@ if [[ -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.0.html '/<dt id="build-experimental-aosp-nougat-7-0"/,$p' '/\/dd>/q'
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.0.html '/<dt id="build-aosp-nougat-7-0"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.0.html
 if [[ -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
 then
