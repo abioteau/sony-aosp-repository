@@ -55,20 +55,20 @@ aospVersionCounter=$((aospVersionCounter+1))
 mkdir -p orig/lollipop
 download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-lollipop-for-unlocked-xperia-devices/" orig/lollipop/index.html.tmp
 extract_section_from_web_page orig/lollipop/index.html.tmp orig/lollipop/index.html '/<div class="section overview-section faq-overview-section"/,$p' '/div>/q'
-extract_section_from_web_page orig/lollipop/index.html sonyxperiadev/build-aosp-lollipop-5.1.html '/<dt id="build-aosp-lollipop-5-1"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-lollipop-5.1.html
 extract_section_from_web_page orig/lollipop/index.html sonyxperiadev/build-aosp-lollipop-5.0.html '/<dt id="build-aosp-lollipop-5-0"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-lollipop-5.0.html
+extract_section_from_web_page orig/lollipop/index.html sonyxperiadev/build-aosp-lollipop-5.1.html '/<dt id="build-aosp-lollipop-5-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-lollipop-5.1.html
 aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Marshmallow build instructions
 mkdir -p orig/marshmallow
 download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-marshmallow-for-unlocked-xperia-devices/" orig/marshmallow/index.html.tmp
 extract_section_from_web_page orig/marshmallow/index.html.tmp orig/marshmallow/index.html '/<div class="section overview-section faq-overview-section"/,$p' '/div>/q'
-extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.1.html '/<dt id="build-aosp-marshmallow-experimental"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-marshmallow-6.0.1.html
 extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.html '/<dt id="build-aosp-marshmallow-6.0"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-marshmallow-6.0.html
+extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.1.html '/<dt id="build-aosp-marshmallow-experimental"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-marshmallow-6.0.1.html
 aospVersionCounter=$((aospVersionCounter+1))
 
 # Get AOSP Nougat build instructions
@@ -78,15 +78,15 @@ extract_section_from_web_page orig/nougat/index.html.tmp orig/nougat/index.html 
 aospNougatNumber=`cat orig/nougat/index.html | \
     grep -c "<dt id=\"build"`
 aospNougatCounter=0
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-nougat-7.1.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
-then
-    aospNougatCounter=$((aospNougatCounter+1))
-fi
 extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.0.html '/<dt id="build-aosp-nougat-7-0"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.0.html
 if [[ -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
+then
+    aospNougatCounter=$((aospNougatCounter+1))
+fi
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-nougat-7.1.html
+if [[ -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
