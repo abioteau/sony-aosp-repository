@@ -207,6 +207,11 @@ download_web_page "http://developer.sonymobile.com/open-devices/latest-updates/"
 extract_section_from_web_page orig/latest.html sonyxperiadev/latest-updates.html '/<article class="article page-article"/,$p' '/article>/q'
 check_null_web_page sonyxperiadev/latest-updates.html
 
+# Get current platform functionality
+download_web_page "http://developer.sonymobile.com/open-devices/current-platform-functionality/" orig/current.html
+extract_section_from_web_page orig/current.html sonyxperiadev/current-platform-functionality.html '/<article class="article page-article"/,$p' '/article>/q'
+check_null_web_page sonyxperiadev/current-platform-functionality.html
+
 # Get list of devices and ressources
 download_web_page "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" orig/list.html
 extract_section_from_web_page orig/list.html sonyxperiadev/list-of-devices-and-resources.html '/<article class="article page-article"/,$p' '/article>/q'
