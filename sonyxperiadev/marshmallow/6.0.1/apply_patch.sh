@@ -2,25 +2,26 @@
 # Script to apply Sony Xperia patches
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/04/2016
+# Last revised 12/13/2016
 
 cd `dirname $0`/../../..
 ROOTDIR=`pwd`
 
-if [ $# -ne 4 ]
+if [ $# -ne 5 ]
 then
-    echo "[USAGE] ./apply_patch.sh <aosp_workspace> <aosp_mirror> <sony_mirror> <git_branch>"
+    echo "[USAGE] ./apply_patch.sh <aosp_workspace> <aosp_mirror> <repo_mirror> <sony_mirror> <git_branch>"
     exit 1
 fi
 
 AOSP_WORKSPACE=$1
 AOSP_MIRROR_URL=$2
-SONY_MIRROR_URL=$3
-GIT_BRANCH=$4
+REPO_MIRROR_URL=$3
+SONY_MIRROR_URL=$(echo $4 | sed 's/\//\\\//g')
+GIT_BRANCH=$5
 
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
-~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $AOSP_MIRROR_URL/git-repo.git -b android-6.0.1_r77
+~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-6.0.1_r77
 cp $ROOTDIR/sonyxperiadev/marshmallow/6.0.1/sony.xml .repo/manifests/sony.xml
 sed -i "s/fetch=\".*\"/fetch=\"$SONY_MIRROR_URL\"/" .repo/manifests/sony.xml
 sed -i "/^<project/ s/name=\"/name=\"sonyxperiadev\//" .repo/manifests/sony.xml
