@@ -166,25 +166,26 @@ do
     echo "# Script to apply Sony Xperia patches" >> ${outdir}/apply_patch.sh
     echo "# Copyright (C) 2016 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
     echo "# Permission to copy and modify is granted under the GPLv3 license" >> ${outdir}/apply_patch.sh
-    echo "# Last revised 11/04/2016" >> ${outdir}/apply_patch.sh
+    echo "# Last revised 12/13/2016" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \`dirname \$0\`/../../.." >> ${outdir}/apply_patch.sh
     echo "ROOTDIR=\`pwd\`" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
-    echo "if [ \$# -ne 4 ]" >> ${outdir}/apply_patch.sh
+    echo "if [ \$# -ne 5 ]" >> ${outdir}/apply_patch.sh
     echo "then" >> ${outdir}/apply_patch.sh
-    echo "    echo \"[USAGE] ./apply_patch.sh <aosp_workspace> <aosp_mirror> <sony_mirror> <git_branch>\"" >> ${outdir}/apply_patch.sh
+    echo "    echo \"[USAGE] ./apply_patch.sh <aosp_workspace> <aosp_mirror> <repo_mirror> <sony_mirror> <git_branch>\"" >> ${outdir}/apply_patch.sh
     echo "    exit 1" >> ${outdir}/apply_patch.sh
     echo "fi" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "AOSP_WORKSPACE=\$1" >> ${outdir}/apply_patch.sh
     echo "AOSP_MIRROR_URL=\$2" >> ${outdir}/apply_patch.sh
-    echo "SONY_MIRROR_URL=\$3" >> ${outdir}/apply_patch.sh
-    echo "GIT_BRANCH=\$4" >> ${outdir}/apply_patch.sh
+    echo "REPO_MIRROR_URL=\$3" >> ${outdir}/apply_patch.sh
+    echo "SONY_MIRROR_URL=\$(echo \$4 | sed 's/\//\\\\\//g')" >> ${outdir}/apply_patch.sh
+    echo "GIT_BRANCH=\$5" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "mkdir -p \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
     echo "cd \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
-    echo "~/bin/repo init -u \$AOSP_MIRROR_URL/platform/manifest.git --repo-url \$AOSP_MIRROR_URL/git-repo.git -b "`cat ${outdir}/AOSP_TAG` >> ${outdir}/apply_patch.sh
+    echo "~/bin/repo init -u \$AOSP_MIRROR_URL/platform/manifest.git --repo-url \$REPO_MIRROR_URL/git-repo.git -b "`cat ${outdir}/AOSP_TAG` >> ${outdir}/apply_patch.sh
     echo "cp \$ROOTDIR/${outdir}/sony.xml .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
     echo "sed -i \"s/fetch=\\\".*\\\"/fetch=\\\"\$SONY_MIRROR_URL\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
     echo "sed -i \"/^<project/ s/name=\\\"/name=\\\"sonyxperiadev\//\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
