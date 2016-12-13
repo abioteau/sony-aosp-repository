@@ -34,8 +34,18 @@ fi
 WORKSPACE_DIRECTORY=$1
 BINARY_FILE=$2
 COMMIT_MESSAGE=$3
-GIT_BRANCH=$4
-ORIGIN_GIT_BRANCH=$5
+if [[ $4 == *"mr"* ]]
+then
+    GIT_BRANCH=$4
+else
+    GIT_BRANCH=$4"-mr0"
+fi
+if [[ $5 == *"mr"* ]]
+then
+    ORIGIN_GIT_BRANCH=$5
+else
+    ORIGIN_GIT_BRANCH=$5"-mr0"
+fi
 
 TAG_NAME=`echo $BINARY_FILE | \
     sed 's/SW_binaries_for_//g' | \
