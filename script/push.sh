@@ -3,7 +3,7 @@
 # Script to commit and push
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/20/2016
+# Last revised 12/13/2016
 
 setup_git() {
   git config --global user.email "adrien.bioteau@gmail.com"
@@ -20,7 +20,7 @@ commit_sonyxperiadev_files() {
 upload_files() {
   cd $2
   git remote add origin-travis https://${GH_TOKEN}@github.com/$1 > /dev/null 2>&1
-  git push --quiet --set-upstream origin-travis `git rev-parse --abbrev-ref HEAD`
+  git push --quiet --tags --set-upstream origin-travis `git rev-parse --abbrev-ref HEAD`
   cd -
 }
 

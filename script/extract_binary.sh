@@ -2,7 +2,7 @@
 # Script to extract Sony Xperia binaries
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/20/2016
+# Last revised 12/13/2016
 
 setup_git() {
   git clone $1 $WORKSPACE_DIRECTORY/$2
@@ -19,6 +19,7 @@ commit_files() {
   git checkout -b $GIT_BRANCH
   git add .
   git commit -m "sony aosp blobs : $COMMIT_MESSAGE"
+  git tag $TAG_NAME
   cd -
 }
 
@@ -35,6 +36,10 @@ BINARY_FILE=$2
 COMMIT_MESSAGE=$3
 GIT_BRANCH=$4
 ORIGIN_GIT_BRANCH=$5
+
+TAG_NAME=`echo $BINARY_FILE | \
+    sed 's/SW_binaries_for_//g' | \
+    sed 's/.zip//g'`
 
 setup_git https://www.github.com/abioteau/vendor_nxp.git vendor/nxp
 setup_git https://www.github.com/abioteau/vendor_sony.git vendor/sony
