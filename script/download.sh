@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/20/2016
+# Last revised 12/20/2016
 
 mkdir -p sonyxperiadev
 
@@ -251,6 +251,10 @@ do
             tr '[:upper:]' '[:lower:]' | \
             tr '_' '-'`
         ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${branchName}"
+        if [ $? -ne 0 ]
+        then
+            exit 1
+        fi
         echo "${binaryFile}" >> sonyxperiadev/skip-binary.txt
     fi
 

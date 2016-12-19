@@ -2,7 +2,7 @@
 # Script to extract Sony Xperia binaries
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 12/13/2016
+# Last revised 12/20/2016
 
 setup_git() {
     git clone $1 $WORKSPACE_DIRECTORY/$2
@@ -23,7 +23,9 @@ commit_files() {
     cd -
 }
 
-BASEDIR=`pwd`
+clean_dir() {
+    rm -rf $WORKSPACE_DIRECTORY/$1
+}
 
 if [ $# -ne 5 ]
 then
@@ -51,6 +53,8 @@ TAG_NAME=`echo $BINARY_FILE | \
     sed 's/SW_binaries_for_//g' | \
     sed 's/.zip//g'`
 
+clean_dir vendor
+
 setup_git https://www.github.com/abioteau/vendor_nxp.git vendor/nxp
 setup_git https://www.github.com/abioteau/vendor_sony.git vendor/sony
 setup_git https://www.github.com/abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt
@@ -61,4 +65,4 @@ commit_files vendor/nxp
 commit_files vendor/sony
 commit_files vendor/qcom/prebuilt
 
-cd $BASEDIR
+exit `find $WORKSPACE_DIRECTORY/vendor -regextype posix-extended -regex "$WORKSPACE_DIRECTORY/vendor/qcom/prebuilt/.*|$WORKSPACE_DIRECTORY/vendor/sony/.*|$WORKSPACE_DIRECTORY/vendor/nxp/.*" -prune -o -type f -print | wc -l`
