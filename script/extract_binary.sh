@@ -5,22 +5,22 @@
 # Last revised 12/13/2016
 
 setup_git() {
-  git clone $1 $WORKSPACE_DIRECTORY/$2
-  cd $WORKSPACE_DIRECTORY/$2
-  git config --local user.email "adrien.bioteau@gmail.com"
-  git config --local user.name "Adrien Bioteau"
-  git checkout $ORIGIN_GIT_BRANCH
-  git rm -rf *
-  cd -
+    git clone $1 $WORKSPACE_DIRECTORY/$2
+    cd $WORKSPACE_DIRECTORY/$2
+    git config --local user.email "adrien.bioteau@gmail.com"
+    git config --local user.name "Adrien Bioteau"
+    git checkout $ORIGIN_GIT_BRANCH
+    git rm -rf *
+    cd -
 }
 
 commit_files() {
-  cd $WORKSPACE_DIRECTORY/$1
-  git checkout -b $GIT_BRANCH
-  git add .
-  git commit -m "sony aosp blobs : $COMMIT_MESSAGE"
-  git tag $TAG_NAME
-  cd -
+    cd $WORKSPACE_DIRECTORY/$1
+    git checkout -b $GIT_BRANCH
+    git add .
+    git commit -m "sony aosp blobs : $COMMIT_MESSAGE"
+    git tag $TAG_NAME
+    cd -
 }
 
 BASEDIR=`pwd`

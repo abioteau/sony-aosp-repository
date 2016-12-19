@@ -6,22 +6,22 @@
 # Last revised 12/13/2016
 
 setup_git() {
-  git config --global user.email "adrien.bioteau@gmail.com"
-  git config --global user.name "Adrien Bioteau"
+    git config --global user.email "adrien.bioteau@gmail.com"
+    git config --global user.name "Adrien Bioteau"
 }
 
 commit_sonyxperiadev_files() {
-  git checkout master
-  git add sonyxperiadev
-  git status
-  git commit --message "Sony Xperia AOSP build instructions `date +%m/%d/%Y`"
+    git checkout master
+    git add sonyxperiadev
+    git status
+    git commit --message "Sony Xperia AOSP build instructions `date +%m/%d/%Y`"
 }
 
 upload_files() {
-  cd $2
-  git remote add origin-travis https://${GH_TOKEN}@github.com/$1 > /dev/null 2>&1
-  git push --quiet --tags --set-upstream origin-travis `git rev-parse --abbrev-ref HEAD`
-  cd -
+    cd $2
+    git remote add origin-travis https://${GH_TOKEN}@github.com/$1 > /dev/null 2>&1
+    git push --quiet --tags --set-upstream origin-travis `git rev-parse --abbrev-ref HEAD`
+    cd -
 }
 
 setup_git
