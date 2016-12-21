@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 12/20/2016
+# Last revised 12/21/2016
 
 mkdir -p sonyxperiadev
 
@@ -32,8 +32,68 @@ check_null_web_page() {
     fi
 }
 
-# Get list of AOSP build instructions
+# Get latest update
 mkdir -p orig
+download_web_page "http://developer.sonymobile.com/open-devices/latest-updates/" orig/latest.html
+extract_section_from_web_page orig/latest.html sonyxperiadev/latest-updates.html '/<article class="article page-article"/,$p' '/article>/q'
+check_null_web_page sonyxperiadev/latest-updates.html
+
+# Get current platform functionality
+download_web_page "http://developer.sonymobile.com/open-devices/current-platform-functionality/" orig/current.html
+extract_section_from_web_page orig/current.html sonyxperiadev/current-platform-functionality.html '/<article class="article page-article"/,$p' '/article>/q'
+check_null_web_page sonyxperiadev/current-platform-functionality.html
+
+# Get list of devices and ressources
+download_web_page "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" orig/list.html
+extract_section_from_web_page orig/list.html sonyxperiadev/list-of-devices-and-resources.html '/<article class="article page-article"/,$p' '/article>/q'
+check_null_web_page sonyxperiadev/list-of-devices-and-resources.html
+
+# Get list of Sony software binaries
+mkdir -p orig/binary
+download_web_page "http://developer.sonymobile.com/downloads/software-binaries/" orig/binary/index.html
+extract_section_from_web_page orig/binary/index.html sonyxperiadev/software-binaries.html '/<div class="section downloads-section"/,$p' '/div>/q'
+check_null_web_page sonyxperiadev/software-binaries.html
+
+# For each Sony software binaries
+mkdir -p sonyxperiadev/binary
+extract_section_from_web_page orig/binary/index.html orig/binary/body.html '/<tbody/,$p' '/\/tbody>/q'
+binariesNumber=`cat orig/binary/body.html | grep -c "<tr>"`
+counter=0
+while [[ ${counter} < ${binariesNumber} ]];
+do
+    extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
+
+    grep -o 'http://dl-developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html | \
+        xargs -I {} wget {} -O orig/binary/eula-${counter}.html
+    binaryFile=`grep -o "restricted/[^\']*" orig/binary/eula-${counter}.html | \
+        sed 's/\?param=//g' | \
+        sed 's/restricted\///g'`
+    skipBinaryFile=`grep -c -o "${binaryFile}" sonyxperiadev/skip-binary.txt`
+    if [[ ${skipBinaryFile} == 0 ]]
+    then
+        wget -c --no-cookies --header "Cookie: dw_accepted=true" "http://dl-developer.sonymobile.com/eula/restricted/${binaryFile}" -O sonyxperiadev/binary/"${binaryFile}"
+        commitMessage=`echo "released \`date +%Y-%m-%d\` => ${binaryFile}" | \
+            sed 's/SW_binaries_for_//g' | \
+            sed 's/.zip//g'`
+        branchName=`echo "${binaryFile}" | \
+            sed 's/SW_binaries_for_Xperia_AOSP_//g' | \
+            sed 's/_v.*//g' | \
+            tr '[:upper:]' '[:lower:]' | \
+            tr '_' '-'`
+        ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${branchName}"
+        if [ $? -ne 0 ]
+        then
+            exit 1
+        fi
+        echo "${binaryFile}" >> sonyxperiadev/skip-binary.txt
+    fi
+
+    extract_section_from_web_page orig/binary/body.html orig/binary/body.html.tmp '/\/tr>/,$p' '1s/<\/tr>//g'
+    cp orig/binary/body.html.tmp orig/binary/body.html
+    counter=$((counter+1))
+done
+
+# Get list of AOSP build instructions
 download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/" orig/index.html
 extract_section_from_web_page orig/index.html sonyxperiadev/aosp-build-instructions.html '/<div class="section overview-section main-overview-section"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
 check_null_web_page sonyxperiadev/aosp-build-instructions.html
@@ -201,66 +261,6 @@ do
     echo "cd \$ROOTDIR" >> ${outdir}/apply_patch.sh
     chmod +x ${outdir}/apply_patch.sh
     /usr/bin/dos2unix ${outdir}/apply_patch.sh
-done
-
-# Get latest update
-download_web_page "http://developer.sonymobile.com/open-devices/latest-updates/" orig/latest.html
-extract_section_from_web_page orig/latest.html sonyxperiadev/latest-updates.html '/<article class="article page-article"/,$p' '/article>/q'
-check_null_web_page sonyxperiadev/latest-updates.html
-
-# Get current platform functionality
-download_web_page "http://developer.sonymobile.com/open-devices/current-platform-functionality/" orig/current.html
-extract_section_from_web_page orig/current.html sonyxperiadev/current-platform-functionality.html '/<article class="article page-article"/,$p' '/article>/q'
-check_null_web_page sonyxperiadev/current-platform-functionality.html
-
-# Get list of devices and ressources
-download_web_page "http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/" orig/list.html
-extract_section_from_web_page orig/list.html sonyxperiadev/list-of-devices-and-resources.html '/<article class="article page-article"/,$p' '/article>/q'
-check_null_web_page sonyxperiadev/list-of-devices-and-resources.html
-
-# Get list of Sony software binaries
-mkdir -p orig/binary
-download_web_page "http://developer.sonymobile.com/downloads/software-binaries/" orig/binary/index.html
-extract_section_from_web_page orig/binary/index.html sonyxperiadev/software-binaries.html '/<div class="section downloads-section"/,$p' '/div>/q'
-check_null_web_page sonyxperiadev/software-binaries.html
-
-# For each Sony software binaries
-mkdir -p sonyxperiadev/binary
-extract_section_from_web_page orig/binary/index.html orig/binary/body.html '/<tbody/,$p' '/\/tbody>/q'
-binariesNumber=`cat orig/binary/body.html | grep -c "<tr>"`
-counter=0
-while [[ ${counter} < ${binariesNumber} ]];
-do
-    extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
-
-    grep -o 'http://dl-developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html | \
-        xargs -I {} wget {} -O orig/binary/eula-${counter}.html
-    binaryFile=`grep -o "restricted/[^\']*" orig/binary/eula-${counter}.html | \
-        sed 's/\?param=//g' | \
-        sed 's/restricted\///g'`
-    skipBinaryFile=`grep -c -o "${binaryFile}" sonyxperiadev/skip-binary.txt`
-    if [[ ${skipBinaryFile} == 0 ]]
-    then
-        wget -c --no-cookies --header "Cookie: dw_accepted=true" "http://dl-developer.sonymobile.com/eula/restricted/${binaryFile}" -O sonyxperiadev/binary/"${binaryFile}"
-        commitMessage=`echo "released \`date +%Y-%m-%d\` => ${binaryFile}" | \
-            sed 's/SW_binaries_for_//g' | \
-            sed 's/.zip//g'`
-        branchName=`echo "${binaryFile}" | \
-            sed 's/SW_binaries_for_Xperia_AOSP_//g' | \
-            sed 's/_v.*//g' | \
-            tr '[:upper:]' '[:lower:]' | \
-            tr '_' '-'`
-        ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${branchName}"
-        if [ $? -ne 0 ]
-        then
-            exit 1
-        fi
-        echo "${binaryFile}" >> sonyxperiadev/skip-binary.txt
-    fi
-
-    extract_section_from_web_page orig/binary/body.html orig/binary/body.html.tmp '/\/tr>/,$p' '1s/<\/tr>//g'
-    cp orig/binary/body.html.tmp orig/binary/body.html
-    counter=$((counter+1))
 done
 
 rm -rf orig
