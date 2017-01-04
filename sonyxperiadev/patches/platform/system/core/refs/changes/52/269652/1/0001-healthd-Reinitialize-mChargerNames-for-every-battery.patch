@@ -167,5 +167,5 @@ index 54d45e6..24d7ce0 100644
      logthis = !healthd_board_battery_update(&props);
  
 -- 
-1.9.1
+1.8.5.6
 

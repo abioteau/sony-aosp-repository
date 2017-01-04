@@ -84,7 +84,6 @@ nano .repo/local_manifests/sony.xml</pre>
 &lt;project path=&quot;device/sony/common-kernel&quot; name=&quot;vendor-sony-kernel&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;aosp/LA.UM.5.5.r1&quot; /&gt;--&gt;
 &lt;project path=&quot;kernel/sony/msm&quot; name=&quot;kernel&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;aosp/LA.UM.5.5.r1&quot; /&gt;
 &lt;project path=&quot;vendor/qcom/opensource/dataservices&quot; name=&quot;vendor-qcom-opensource-dataservices&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
-&lt;project path=&quot;vendor/qcom/opensource/location&quot; name=&quot;vendor-qcom-opensource-location&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
 &lt;project path=&quot;vendor/sony-oss/thermanager&quot; name=&quot;thermanager&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
 &lt;project path=&quot;vendor/sony-oss/macaddrsetup&quot; name=&quot;macaddrsetup&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
 &lt;project path=&quot;vendor/sony-oss/timekeep&quot; name=&quot;timekeep&quot; groups=&quot;device&quot; remote=&quot;sony&quot; revision=&quot;master&quot; /&gt;
@@ -115,7 +114,6 @@ git cherry-pick d3e8dd1bf56afc2277960472a46907d419e4b3da
 git cherry-pick 1c028ca33dc059a9d8f18daafcd77b5950268f41
 git cherry-pick cb49c305e3c78179b19d6f174ae73309544292b8
 cd ../../hardware/qcom/audio
-git revert --no-edit 66796eef5ebf71befa37b74f6507efae80d51ea0
 git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/91/294291/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../../system/core
 git fetch https://android.googlesource.com/platform/system/core refs/changes/52/269652/1 &amp;&amp; git cherry-pick FETCH_HEAD
