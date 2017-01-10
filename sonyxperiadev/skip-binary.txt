@@ -9,3 +9,4 @@ SW_binaries_for_Xperia_Z_Xperia_Tablet_Z_v3.1.zip
 SW_binaries_for_Xperia_S_v1.tar.zip
 SW_binaries_for_Xperia_AOSP_M_MR1_v05.zip
 SW_binaries_for_Xperia_AOSP_M_MR1_v06.zip
+SW_binaries_for_Xperia_AOSP_N_MR1_DEV_v02.zip
