@@ -2,7 +2,7 @@
 # Script to extract Sony Xperia binaries
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 12/20/2016
+# Last revised 01/17/2017
 
 setup_git() {
     git clone $1 $WORKSPACE_DIRECTORY/$2
@@ -38,13 +38,13 @@ BINARY_FILE=$2
 COMMIT_MESSAGE=$3
 if [[ $4 == *"mr"* ]]
 then
-    GIT_BRANCH=$4
+    GIT_BRANCH=`echo $4 | sed 's/\([a-z]-mr[0-9]\)-.*/\1/g'`
 else
     GIT_BRANCH=$4"-mr0"
 fi
 if [[ $5 == *"mr"* ]]
 then
-    ORIGIN_GIT_BRANCH=$5
+    ORIGIN_GIT_BRANCH=`echo $5 | sed 's/\([a-z]-mr[0-9]\)-.*/\1/g'`
 else
     ORIGIN_GIT_BRANCH=$5"-mr0"
 fi
