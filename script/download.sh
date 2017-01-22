@@ -40,7 +40,7 @@ check_null_web_page sonyxperiadev/latest-updates.html
 
 # Get current platform functionality
 download_web_page "http://developer.sonymobile.com/open-devices/current-platform-functionality/" orig/current.html
-extract_section_from_web_page orig/current.html sonyxperiadev/current-platform-functionality.html '/<article class="article page-article"/,$p' '/article>/q'
+extract_section_from_web_page orig/current.html sonyxperiadev/current-platform-functionality.html '/<article class="article page-article"/,$p' '/article>/q' 's/<!-- \#tablepress\(.*\)-->//g'
 check_null_web_page sonyxperiadev/current-platform-functionality.html
 
 # Get list of devices and ressources
