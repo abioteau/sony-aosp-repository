@@ -59,7 +59,7 @@ mkdir -p sonyxperiadev/binary
 extract_section_from_web_page orig/binary/index.html orig/binary/body.html '/<tbody/,$p' '/\/tbody>/q'
 binariesNumber=`cat orig/binary/body.html | grep -c "<tr>"`
 counter=0
-while [[ ${counter} < ${binariesNumber} ]];
+while [[ ${counter} -lt ${binariesNumber} ]];
 do
     extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
 
