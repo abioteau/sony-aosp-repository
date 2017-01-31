@@ -3,7 +3,7 @@
 # Script to commit and push
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 12/19/2016
+# Last revised 01/31/2017
 
 setup_git() {
     git config --global user.email "adrien.bioteau@gmail.com"
@@ -30,6 +30,7 @@ upload_files() {
 setup_git
 commit_sonyxperiadev_files
 upload_files abioteau/sony-aosp-repository.git .
+upload_files abioteau/vendor_broadcom.git vendor/broadcom
 upload_files abioteau/vendor_nxp.git vendor/nxp
 upload_files abioteau/vendor_sony.git vendor/sony
 upload_files abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt

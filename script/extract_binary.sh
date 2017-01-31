@@ -2,7 +2,7 @@
 # Script to extract Sony Xperia binaries
 # Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 01/17/2017
+# Last revised 01/31/2017
 
 setup_git() {
     git clone $1 $WORKSPACE_DIRECTORY/$2
@@ -55,14 +55,16 @@ TAG_NAME=`echo $BINARY_FILE | \
 
 clean_dir vendor
 
+setup_git https://www.github.com/abioteau/vendor_broadcom.git vendor/broadcom
 setup_git https://www.github.com/abioteau/vendor_nxp.git vendor/nxp
 setup_git https://www.github.com/abioteau/vendor_sony.git vendor/sony
 setup_git https://www.github.com/abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt
 
 unzip -X -b -d $WORKSPACE_DIRECTORY sonyxperiadev/binary/$BINARY_FILE
 
+commit_files vendor/broadcom
 commit_files vendor/nxp
 commit_files vendor/sony
 commit_files vendor/qcom/prebuilt
 
-exit `find $WORKSPACE_DIRECTORY/vendor -regextype posix-extended -regex "$WORKSPACE_DIRECTORY/vendor/qcom/prebuilt/.*|$WORKSPACE_DIRECTORY/vendor/sony/.*|$WORKSPACE_DIRECTORY/vendor/nxp/.*" -prune -o -type f -print | wc -l`
+exit `find $WORKSPACE_DIRECTORY/vendor -regextype posix-extended -regex "$WORKSPACE_DIRECTORY/vendor/broadcom/.*|$WORKSPACE_DIRECTORY/vendor/nxp/.*|$WORKSPACE_DIRECTORY/vendor/sony/.*|$WORKSPACE_DIRECTORY/vendor/qcom/prebuilt/.*" -prune -o -type f -print | wc -l`
