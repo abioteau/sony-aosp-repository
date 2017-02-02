@@ -60,6 +60,7 @@ git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/61/213261/1/*.patch`
 cd ../../../system/core && git checkout -b $GIT_BRANCH
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/52/269652/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/58/327458/1/*.patch`
 cd ../../packages/apps/Nfc && git checkout -b $GIT_BRANCH
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../Music && git checkout -b $GIT_BRANCH

@@ -19,7 +19,7 @@ Change-Id: I2ec9f9a420ca61814d43c316b418ce94de3691bc
  1 file changed, 78 insertions(+), 47 deletions(-)
 
 diff --git a/healthd/BatteryMonitor.cpp b/healthd/BatteryMonitor.cpp
-index 54d45e6..24d7ce0 100644
+index 54d45e616..24d7ce0ae 100644
 --- a/healthd/BatteryMonitor.cpp
 +++ b/healthd/BatteryMonitor.cpp
 @@ -174,10 +174,8 @@ BatteryMonitor::PowerSupplyType BatteryMonitor::readPowerSupplyType(const String
@@ -167,5 +167,5 @@ index 54d45e6..24d7ce0 100644
      logthis = !healthd_board_battery_update(&props);
  
 -- 
-1.8.5.6
+2.11.0
 

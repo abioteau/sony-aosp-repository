@@ -37,6 +37,7 @@ cd ../../hardware/qcom/audio && git checkout -b $GIT_BRANCH
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/91/294291/1/*.patch`
 cd ../../../system/core && git checkout -b $GIT_BRANCH
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/52/269652/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/99/327399/1/*.patch`
 cd ../../packages/apps/Music && git checkout -b $GIT_BRANCH
 git cherry-pick 6036ce6127022880a3d9c99bd15db4c968f3e6a3
 cd ../../../

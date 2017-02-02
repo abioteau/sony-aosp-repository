@@ -59,6 +59,7 @@ git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/broadcom/libbt/refs/
 cd ../../../system/core && git checkout -b $GIT_BRANCH
 git cherry-pick 9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/92/269692/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/38/327438/1/*.patch`
 cd ../../packages/apps/Nfc && git checkout -b $GIT_BRANCH
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../../../../../

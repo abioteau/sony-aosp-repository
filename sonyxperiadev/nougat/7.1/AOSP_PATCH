@@ -7,6 +7,7 @@ cd ../../hardware/qcom/audio
 git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/91/294291/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../../system/core
 git fetch https://android.googlesource.com/platform/system/core refs/changes/52/269652/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch https://android.googlesource.com/platform/system/core refs/changes/99/327399/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../packages/apps/Music
 git cherry-pick 6036ce6127022880a3d9c99bd15db4c968f3e6a3
 cd ../../../

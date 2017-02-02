@@ -120,5 +120,5 @@ index 3076d1b..6799d72 100644
                  sizeof("msm8909-skua-snd-card"))) {
          strlcpy(mixer_xml_path, MIXER_XML_PATH_SKUA,
 -- 
-1.9.1
+2.11.0
 

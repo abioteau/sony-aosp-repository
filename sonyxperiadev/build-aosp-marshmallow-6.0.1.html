@@ -151,6 +151,7 @@ git fetch https://android.googlesource.com/platform/hardware/broadcom/libbt refs
 cd ../../../system/core
 git cherry-pick 9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9
 git fetch https://android.googlesource.com/platform/system/core refs/changes/92/269692/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch https://android.googlesource.com/platform/system/core refs/changes/38/327438/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../packages/apps/Nfc
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../../../../../
