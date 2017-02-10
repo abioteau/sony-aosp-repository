@@ -63,7 +63,7 @@ while [[ ${counter} -lt ${binariesNumber} ]];
 do
     extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
 
-    grep -o 'http://dl-developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html | \
+    grep -o 'https://dl.developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html | \
         xargs -I {} wget {} -O orig/binary/eula-${counter}.html
     binaryFile=`grep -o "restricted/[^\']*" orig/binary/eula-${counter}.html | \
         sed 's/\?param=//g' | \
@@ -71,7 +71,7 @@ do
     skipBinaryFile=`grep -c -o "${binaryFile}" sonyxperiadev/skip-binary.txt`
     if [[ ${skipBinaryFile} == 0 ]]
     then
-        wget -c --no-cookies --header "Cookie: dw_accepted=true" "http://dl-developer.sonymobile.com/eula/restricted/${binaryFile}" -O sonyxperiadev/binary/"${binaryFile}"
+        wget -c --no-cookies --header "Cookie: dw_accepted=true" "https://dl.developer.sonymobile.com/eula/restricted/${binaryFile}" -O sonyxperiadev/binary/"${binaryFile}"
         commitMessage=`echo "released \`date +%Y-%m-%d\` => ${binaryFile}" | \
             sed 's/SW_binaries_for_//g' | \
             sed 's/.zip//g'`
