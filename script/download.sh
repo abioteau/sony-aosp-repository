@@ -144,9 +144,15 @@ if [[ -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1.html '/<dt id="build-aosp-nougat-7-1"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.1.html
 if [[ -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
+then
+    aospNougatCounter=$((aospNougatCounter+1))
+fi
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-experimental-aosp-nougat-7.1.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-experimental-aosp-nougat-7.1.html
+if [[ -s sonyxperiadev/build-experimental-aosp-nougat-7.1.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
@@ -182,23 +188,34 @@ do
         /usr/bin/dos2unix ${outdir}/AOSP_TAG
 
         # Extract Sony repository manifest
-        cat ${file} | \
-            sed 's/<br \/>//g' | \
-            sed 's/&lt;/\</g' | \
-            sed 's/&quot;/\"/g' | \
-            sed 's/&gt;/\>/g' | \
-            sed 's/.*<?xml version/<?xml version/g' | \
-            sed 's/\/manifest>.*/\/manifest>/g' | \
-            sed -n '/<?xml version/,$p' | \
-            sed '/\/manifest>/q' > ${outdir}/sony.xml
-        /usr/bin/dos2unix ${outdir}/sony.xml
+        grep -o "git checkout [a-zA-Z0-9\/\_\-]*" ${file} | \
+            sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH
+        /usr/bin/dos2unix ${outdir}/LOCAL_MANIFESTS_BRANCH
+
+        if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
+        then
+            git rm -f ${outdir}/sony.xml
+        else
+            cat ${file} | \
+                sed 's/<br \/>//g' | \
+                sed 's/&lt;/\</g' | \
+                sed 's/&quot;/\"/g' | \
+                sed 's/&gt;/\>/g' | \
+                sed 's/.*<?xml version/<?xml version/g' | \
+                sed 's/\/manifest>.*/\/manifest>/g' | \
+                sed -n '/<?xml version/,$p' | \
+                sed '/\/manifest>/q' > ${outdir}/sony.xml
+            /usr/bin/dos2unix ${outdir}/sony.xml
+
+            git rm -f ${outdir}/LOCAL_MANIFESTS_BRANCH
+        fi
 
         # Extract list of AOSP patches
         cat ${file} | \
             sed 's/<br \/>//g' | \
             sed 's/.*cd /cd /g' | \
             sed 's/\/li>.*/\/li>/g' | \
-            sed -n '/cd [build|hardware|external|system|packages]/,$p' | \
+            sed -n '/cd [bhesp][uaxya][irtsc]/,$p' | \
             sed '/\/li\>/q' | \
             sed 's/<\/pre>//g' | \
             sed 's/<\/li>//g' | \
@@ -246,10 +263,19 @@ do
     echo "mkdir -p \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
     echo "cd \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo init -u \$AOSP_MIRROR_URL/platform/manifest.git --repo-url \$REPO_MIRROR_URL/git-repo.git -b "`cat ${outdir}/AOSP_TAG` >> ${outdir}/apply_patch.sh
-    echo "cp \$ROOTDIR/${outdir}/sony.xml .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
-    echo "sed -i \"s/fetch=\\\".*\\\"/fetch=\\\"\$SONY_MIRROR_URL\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
-    echo "sed -i \"/^<project/ s/name=\\\"/name=\\\"sonyxperiadev\//\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
-    echo "sed -i \"/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\\\"sony.xml\\\"\/>\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
+    if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
+    then
+        echo "cd .repo" >> ${outdir}/apply_patch.sh
+        echo "git clone \$SONY_MIRROR_URL/sonyxperiadev/local_manifests" >> ${outdir}/apply_patch.sh
+        echo "cd local_manifests" >> ${outdir}/apply_patch.sh
+        echo "git checkout "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
+        echo "cd ../.." >> ${outdir}/apply_patch.sh
+    else
+        echo "cp \$ROOTDIR/${outdir}/sony.xml .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
+        echo "sed -i \"s/fetch=\\\".*\\\"/fetch=\\\"\$SONY_MIRROR_URL\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
+        echo "sed -i \"/^<project/ s/name=\\\"/name=\\\"sonyxperiadev\//\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
+        echo "sed -i \"/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\\\"sony.xml\\\"\/>\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
+    fi
     echo "~/bin/repo sync" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     cat ${outdir}/AOSP_PATCH | sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_]*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' >> orig/${versionName}-${versionNumber}-apply_patch.sh
