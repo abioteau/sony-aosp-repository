@@ -22,10 +22,11 @@ GIT_BRANCH=$5
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
 ~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-6.0.1_r78
-cp $ROOTDIR/sonyxperiadev/marshmallow/6.0.1/sony.xml .repo/manifests/sony.xml
-sed -i "s/fetch=\".*\"/fetch=\"$SONY_MIRROR_URL\"/" .repo/manifests/sony.xml
-sed -i "/^<project/ s/name=\"/name=\"sonyxperiadev\//" .repo/manifests/sony.xml
-sed -i "/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\"sony.xml\"\/>\n\1/" .repo/manifests/default.xml
+cd .repo
+git clone $SONY_MIRROR_URL/sonyxperiadev/local_manifests
+cd local_manifests
+git checkout m-mr1
+cd ../..
 ~/bin/repo sync
 
 cd external/libnfc-nci && git checkout -b $GIT_BRANCH

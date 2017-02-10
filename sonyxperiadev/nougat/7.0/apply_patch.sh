@@ -22,10 +22,11 @@ GIT_BRANCH=$5
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
 ~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-7.0.0_r29
-cp $ROOTDIR/sonyxperiadev/nougat/7.0/sony.xml .repo/manifests/sony.xml
-sed -i "s/fetch=\".*\"/fetch=\"$SONY_MIRROR_URL\"/" .repo/manifests/sony.xml
-sed -i "/^<project/ s/name=\"/name=\"sonyxperiadev\//" .repo/manifests/sony.xml
-sed -i "/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\"sony.xml\"\/>\n\1/" .repo/manifests/default.xml
+cd .repo
+git clone $SONY_MIRROR_URL/sonyxperiadev/local_manifests
+cd local_manifests
+git checkout n-mr0
+cd ../..
 ~/bin/repo sync
 
 cd external/toybox && git checkout -b $GIT_BRANCH
@@ -34,9 +35,15 @@ git cherry-pick d3e8dd1bf56afc2277960472a46907d419e4b3da
 git cherry-pick 1c028ca33dc059a9d8f18daafcd77b5950268f41
 git cherry-pick cb49c305e3c78179b19d6f174ae73309544292b8
 cd ../../hardware/qcom/audio && git checkout -b $GIT_BRANCH
-git revert --no-edit 1c9849ca9873ec815caf52935aa772b22658219e
-git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/79/267279/1/*.patch`
-git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/80/267280/1/*.patch`
+git cherry-pick 1d2e4743ffcbd27ed2e96c1c8ac1e186a717fa45
+git cherry-pick a8d7c9257c3c9514f5c35d3dbd987703e12c82cd
+git cherry-pick 6b4b127cad4dce4db30c5119d8fd6bbc0af3924c
+git cherry-pick 9ebf582bd7f0b701f969081646d27c4a77347402
+git cherry-pick 536daa591913c5eaf3fea47c90a5cf4bc24ce321
+git cherry-pick 152b09a14f3b2c17063468b3f5b5ddda195802ec
+git cherry-pick 6ebefdd83d29132f6ca5a5d6b45cac71871dd037
+git cherry-pick 56631b51985194269339dbf53316f414b3d21050
+git cherry-pick 2d809e0d104497ca6b7a1e1be4efdf7856070aa5
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/35/274235/6/*.patch`
 cd ../bt && git checkout -b $GIT_BRANCH
 git revert --no-edit c7dc913784965e4ce705c2045f0a8b43fcd1db1c
