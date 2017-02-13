@@ -150,9 +150,9 @@ if [[ -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-experimental-aosp-nougat-7.1.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-experimental-aosp-nougat-7.1.html
-if [[ -s sonyxperiadev/build-experimental-aosp-nougat-7.1.html ]]
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-experimental.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-experimental.html
+if [[ -s sonyxperiadev/build-aosp-nougat-7.1-experimental.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
@@ -170,13 +170,12 @@ buildInstructionsFile=`find sonyxperiadev/build-aosp-*.html`
 for file in ${buildInstructionsFile};
 do
     versionName=`echo ${file} | \
-                    sed 's/sonyxperiadev\/build-aosp-//g' | \
-                    sed 's/[0-9.]//g' | \
-                    sed 's/.html//g'`
+                    sed 's/sonyxperiadev\/build-aosp-\([a-z]*\)-.*/\1/g'`
     versionNumber=`echo ${file} | \
-                    sed 's/sonyxperiadev\/build-aosp-[a-z]*-//g' | \
-                    sed 's/.html//g'`
-    outdir=sonyxperiadev/${versionName}/${versionNumber}
+                    sed 's/sonyxperiadev\/build-aosp-[a-z]*-\([0-9.]*\).*\.html/\1/g'`
+    versionTag=`echo ${file} | \
+                    sed 's/sonyxperiadev\/build-aosp-[a-z]*-[0-9.]*\(.*\)\.html/\1/g'`
+    outdir=sonyxperiadev/${versionName}/${versionNumber}${versionTag}
 
     mkdir -p ${outdir}
 
@@ -225,16 +224,16 @@ do
         if [[ -n $(git status -s ${outdir}/AOSP_PATCH) ]]
         then
             # Get AOSP patches
-            echo "#!/bin/bash" > orig/${versionName}-${versionNumber}-patch.sh
-            echo "" >> orig/${versionName}-${versionNumber}-patch.sh
-            echo "BASEDIR=`pwd`" >> orig/${versionName}-${versionNumber}-patch.sh
-            echo "" >> orig/${versionName}-${versionNumber}-patch.sh
+            echo "#!/bin/bash" > orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+            echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+            echo "BASEDIR=`pwd`" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+            echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
             grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-            sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}-patch.sh
+            sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
             grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-            sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}-patch.sh
-            chmod +x orig/${versionName}-${versionNumber}-patch.sh
-            ./orig/${versionName}-${versionNumber}-patch.sh
+            sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+            chmod +x orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+            ./orig/${versionName}-${versionNumber}${versionTag}-patch.sh
         fi
     fi
 
@@ -278,8 +277,8 @@ do
     fi
     echo "~/bin/repo sync" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
-    cat ${outdir}/AOSP_PATCH | sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_]*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' >> orig/${versionName}-${versionNumber}-apply_patch.sh
-    cat orig/${versionName}-${versionNumber}-apply_patch.sh | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& git checkout -b \$GIT_BRANCH/g' >> ${outdir}/apply_patch.sh
+    cat ${outdir}/AOSP_PATCH | sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_]*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' >> orig/${versionName}-${versionNumber}${versionTag}-apply_patch.sh
+    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch.sh | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& git checkout -b \$GIT_BRANCH/g' >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo status" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo forall -p -c git log --oneline "`cat ${outdir}/AOSP_TAG`"..\$GIT_BRANCH" >> ${outdir}/apply_patch.sh
