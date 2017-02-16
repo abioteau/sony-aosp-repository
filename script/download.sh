@@ -63,15 +63,26 @@ while [[ ${counter} -lt ${binariesNumber} ]];
 do
     extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
 
-    grep -o 'https://dl.developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html | \
-        xargs -I {} wget {} -O orig/binary/eula-${counter}.html
-    binaryFile=`grep -o "restricted/[^\']*" orig/binary/eula-${counter}.html | \
-        sed 's/\?param=//g' | \
+    grep -o 'http://developer.sonymobile.com/downloads/.*/software-binaries-for[^"]*' orig/binary/body-${counter}.html | \
+        xargs -I {} wget {} -O orig/binary/soft-binaries-${counter}.html
+
+    eulaUrl=`grep -o 'https://dl.developer.sonymobile.com/eula[^"]*' orig/binary/soft-binaries-${counter}.html`
+    sourceUrl=`echo ${eulaUrl} | grep -o 'https[^?]*'`
+    nonce=`echo ${eulaUrl} | grep -o 'nonce=[^"]*' | \
+        sed 's/nonce=//g'`
+    callback=`echo ${eulaUrl} | grep -o 'callback=[^&]*' | \
+        sed 's/callback=//g' | \
+        sed 's/%3A/:/g' | \
+        sed 's/%2F/\//g'`
+
+    wget ${eulaUrl} -O orig/binary/eula-${counter}.html
+    downloadUrl=`grep -o "https://dl.developer.sonymobile.com/eula[^\']*" orig/binary/eula-${counter}.html`
+    binaryFile=`echo ${downloadUrl} | grep -o "restricted/[^\']*" | \
         sed 's/restricted\///g'`
     skipBinaryFile=`grep -c -o "${binaryFile}" sonyxperiadev/skip-binary.txt`
     if [[ ${skipBinaryFile} == 0 ]]
     then
-        wget -c --no-cookies --header "Cookie: dw_accepted=true" "https://dl.developer.sonymobile.com/eula/restricted/${binaryFile}" -O sonyxperiadev/binary/"${binaryFile}"
+        wget -c "${callback}?nonce=${nonce}&source=${sourceUrl}&url=${downloadUrl}" -O sonyxperiadev/binary/"${binaryFile}"
         commitMessage=`echo "released \`date +%Y-%m-%d\` => ${binaryFile}" | \
             sed 's/SW_binaries_for_//g' | \
             sed 's/.zip//g'`
