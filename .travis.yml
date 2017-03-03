@@ -2,7 +2,7 @@ language: generic
 dist: trusty
 
 before_install:
-    sudo apt-get install dos2unix
+    sudo apt-get install tidy dos2unix
 
 script:
     ./script/download.sh && ./script/push.sh
