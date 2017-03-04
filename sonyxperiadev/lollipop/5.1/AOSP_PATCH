@@ -17,3 +17,4 @@ git fetch https://android.googlesource.com/platform/hardware/libhardware refs/ch
 cd ../broadcom/libbt/
 git fetch https://android.googlesource.com/platform/hardware/broadcom/libbt refs/changes/13/154813/1 &amp;&amp; git cherry-pick FETCH_HEAD
 
+

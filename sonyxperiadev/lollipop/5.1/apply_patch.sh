@@ -48,6 +48,7 @@ cd ../broadcom/libbt && git checkout -b $GIT_BRANCH
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/broadcom/libbt/refs/changes/13/154813/1/*.patch`
 
 
+
 ~/bin/repo status
 ~/bin/repo forall -p -c git log --oneline android-5.1.1_r30..$GIT_BRANCH
 

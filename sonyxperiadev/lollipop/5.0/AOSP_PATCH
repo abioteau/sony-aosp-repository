@@ -10,3 +10,4 @@ git fetch https://android.googlesource.com/platform/external/libnfc-nci refs/cha
 cd ../../hardware/libhardware/
 git fetch https://android.googlesource.com/platform/hardware/libhardware refs/changes/21/103221/2 &amp;&amp; git cherry-pick FETCH_HEAD
 
+

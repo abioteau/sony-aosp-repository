@@ -1,0 +1,128 @@
+From 1b5ab5c2526bc587431ee01d2cdda8eca31470b5 Mon Sep 17 00:00:00 2001
+From: Simon Shields <keepcalm444@gmail.com>
+Date: Thu, 6 Oct 2016 20:25:32 +1100
+Subject: [PATCH] camera/media: Support for legacy camera HALv1
+
+Pre 7.0 camera HALv1 can not share its video buffers
+across different processes, which requires us to
+disable this security feature.
+
+This change allows devices to re-integrate cameraserver
+and mediaserver which is the first step to support older
+prebuilt camera HALs. A follow-up change will add back
+support for legacy buffer handling.
+
+To enable:
+TARGET_HAS_LEGACY_CAMERA_HAL1 := true
+media.stagefright.legacyencoder=true
+media.stagefright.less-secure=true
+
+Change-Id: I4fcc8907ea235b7e83af26122b4da97ca5117816
+---
+ camera/cameraserver/Android.mk                     | 4 ++++
+ media/mediaserver/Android.mk                       | 4 ++++
+ media/mediaserver/main_mediaserver.cpp             | 6 ++++++
+ services/camera/libcameraservice/Android.mk        | 4 ++++
+ services/camera/libcameraservice/CameraService.cpp | 6 ++++++
+ 5 files changed, 24 insertions(+)
+
+diff --git a/camera/cameraserver/Android.mk b/camera/cameraserver/Android.mk
+index 7e36c5e74..aca7a190c 100644
+--- a/camera/cameraserver/Android.mk
++++ b/camera/cameraserver/Android.mk
+@@ -14,6 +14,9 @@
+ 
+ LOCAL_PATH:= $(call my-dir)
+ 
++ifeq ($(TARGET_HAS_LEGACY_CAMERA_HAL1),true)
++$(warning Target has integrated cameraserver into mediaserver. This is weakening security measures introduced in 7.0)
++else
+ include $(CLEAR_VARS)
+ 
+ LOCAL_SRC_FILES:= \
+@@ -34,3 +37,4 @@ LOCAL_CFLAGS += -Wall -Wextra -Werror -Wno-unused-parameter
+ LOCAL_INIT_RC := cameraserver.rc
+ 
+ include $(BUILD_EXECUTABLE)
++endif
+diff --git a/media/mediaserver/Android.mk b/media/mediaserver/Android.mk
+index 1738df80d..5eae8cf82 100644
+--- a/media/mediaserver/Android.mk
++++ b/media/mediaserver/Android.mk
+@@ -42,4 +42,8 @@ LOCAL_INIT_RC := mediaserver.rc
+ 
+ LOCAL_CFLAGS := -Werror -Wall
+ 
++ifeq ($(TARGET_HAS_LEGACY_CAMERA_HAL1),true)
++LOCAL_CFLAGS += -DNO_CAMERA_SERVER
++endif
++
+ include $(BUILD_EXECUTABLE)
+diff --git a/media/mediaserver/main_mediaserver.cpp b/media/mediaserver/main_mediaserver.cpp
+index ecddc4827..0abe6ac95 100644
+--- a/media/mediaserver/main_mediaserver.cpp
++++ b/media/mediaserver/main_mediaserver.cpp
+@@ -25,6 +25,9 @@
+ #include "RegisterExtensions.h"
+ 
+ // from LOCAL_C_INCLUDES
++#ifdef NO_CAMERA_SERVER
++#include "CameraService.h"
++#endif
+ #include "IcuUtils.h"
+ #include "MediaPlayerService.h"
+ #include "ResourceManagerService.h"
+@@ -41,6 +44,9 @@ int main(int argc __unused, char **argv __unused)
+     InitializeIcuOrDie();
+     MediaPlayerService::instantiate();
+     ResourceManagerService::instantiate();
++#ifdef NO_CAMERA_SERVER
++    CameraService::instantiate();
++#endif
+     registerExtensions();
+     ProcessState::self()->startThreadPool();
+     IPCThreadState::self()->joinThreadPool();
+diff --git a/services/camera/libcameraservice/Android.mk b/services/camera/libcameraservice/Android.mk
+index ebe65e4e9..693b7d95f 100644
+--- a/services/camera/libcameraservice/Android.mk
++++ b/services/camera/libcameraservice/Android.mk
+@@ -79,6 +79,10 @@ LOCAL_EXPORT_C_INCLUDE_DIRS := \
+ 
+ LOCAL_CFLAGS += -Wall -Wextra -Werror
+ 
++ifeq ($(TARGET_HAS_LEGACY_CAMERA_HAL1),true)
++LOCAL_CFLAGS += -DNO_CAMERA_SERVER
++endif
++
+ LOCAL_MODULE:= libcameraservice
+ 
+ include $(BUILD_SHARED_LIBRARY)
+diff --git a/services/camera/libcameraservice/CameraService.cpp b/services/camera/libcameraservice/CameraService.cpp
+index ff73c2846..be4c2a265 100644
+--- a/services/camera/libcameraservice/CameraService.cpp
++++ b/services/camera/libcameraservice/CameraService.cpp
+@@ -831,7 +831,11 @@ String8 CameraService::toString(std::set<userid_t> intSet) {
+ Status CameraService::initializeShimMetadata(int cameraId) {
+     int uid = getCallingUid();
+ 
++#ifdef NO_CAMERA_SERVER
++    String16 internalPackageName("media");
++#else
+     String16 internalPackageName("cameraserver");
++#endif
+     String8 id = String8::format("%d", cameraId);
+     Status ret = Status::ok();
+     sp<Client> tmp = nullptr;
+@@ -912,7 +916,9 @@ Status CameraService::getLegacyParametersLazy(int cameraId,
+ static bool isTrustedCallingUid(uid_t uid) {
+     switch (uid) {
+         case AID_MEDIA:         // mediaserver
++#ifndef NO_CAMERA_SERVER
+         case AID_CAMERASERVER: // cameraserver
++#endif
+             return true;
+         default:
+             return false;
+-- 
+2.11.0
+

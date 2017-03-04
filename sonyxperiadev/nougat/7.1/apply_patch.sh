@@ -38,6 +38,7 @@ cd ../../hardware/qcom/audio && git checkout -b $GIT_BRANCH
 git revert --no-edit 66796eef5ebf71befa37b74f6507efae80d51ea0
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/91/294291/1/*.patch`
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/05/333605/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/35/274235/9/*.patch`
 cd ../bt && git checkout -b $GIT_BRANCH
 git revert --no-edit c7dc913784965e4ce705c2045f0a8b43fcd1db1c
 cd ../display && git checkout -b $GIT_BRANCH
@@ -68,7 +69,11 @@ cd ../../packages/apps/Nfc && git checkout -b $GIT_BRANCH
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../Music && git checkout -b $GIT_BRANCH
 git cherry-pick 6036ce6127022880a3d9c99bd15db4c968f3e6a3
-cd ../../../
+cd ../../../frameworks/av && git checkout -b $GIT_BRANCH
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/69/343069/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/70/343070/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/71/343071/1/*.patch`
+cd ../../
 
 
 

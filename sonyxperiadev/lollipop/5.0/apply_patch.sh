@@ -41,6 +41,7 @@ cd ../../hardware/libhardware && git checkout -b $GIT_BRANCH
 git am `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/libhardware/refs/changes/21/103221/2/*.patch`
 
 
+
 ~/bin/repo status
 ~/bin/repo forall -p -c git log --oneline android-5.0.2_r3..$GIT_BRANCH
 

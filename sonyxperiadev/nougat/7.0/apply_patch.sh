@@ -72,7 +72,11 @@ cd ../../packages/apps/Nfc && git checkout -b $GIT_BRANCH
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../Music && git checkout -b $GIT_BRANCH
 git cherry-pick 6036ce6127022880a3d9c99bd15db4c968f3e6a3
-cd ../../../
+cd ../../../frameworks/av && git checkout -b $GIT_BRANCH
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/71/316171/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/72/316172/1/*.patch`
+git am `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/73/316173/1/*.patch`
+cd ../..
 
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-<remote  name="sony" fetch="git://github.com/sonyxperiadev/" />
+<remote name="sony" fetch="git://github.com/sonyxperiadev/" />
 <remove-project name="platform/hardware/qcom/keymaster" />
 <remove-project name="platform/hardware/qcom/media" />
 <remove-project name="platform/hardware/qcom/msm8960" />

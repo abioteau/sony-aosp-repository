@@ -65,6 +65,7 @@ cd ../../../../../
  
 
 
+
 ~/bin/repo status
 ~/bin/repo forall -p -c git log --oneline android-6.0.0_r26..$GIT_BRANCH
 

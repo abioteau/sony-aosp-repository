@@ -37,5 +37,5 @@ index 18b8bf4..2ed36f3 100644
    AUDIO_PLATFORM = msm8974
  ifneq ($(filter msm8226,$(TARGET_BOARD_PLATFORM)),)
 -- 
-1.9.1
+2.11.0
 

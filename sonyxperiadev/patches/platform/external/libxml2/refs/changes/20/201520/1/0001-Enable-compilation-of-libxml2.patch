@@ -11,7 +11,7 @@ Change-Id: Ib065b072ee523252c81e069b4ed8e5dfd1968674
  1 file changed, 11 insertions(+)
 
 diff --git a/Android.mk b/Android.mk
-index 883f898..68828f8 100644
+index 883f898c..68828f88 100644
 --- a/Android.mk
 +++ b/Android.mk
 @@ -86,6 +86,17 @@ LOCAL_MODULE:= libxml2
@@ -33,5 +33,5 @@ index 883f898..68828f8 100644
  # For the host
  # ========================================================
 -- 
-1.9.1
+2.11.0
 

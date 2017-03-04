@@ -7,6 +7,7 @@ cd ../../hardware/qcom/audio
 git revert --no-edit 66796eef5ebf71befa37b74f6507efae80d51ea0
 git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/91/294291/1 &amp;&amp; git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/05/333605/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch https://android.googlesource.com/platform/hardware/qcom/audio refs/changes/35/274235/9 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../bt
 git revert --no-edit c7dc913784965e4ce705c2045f0a8b43fcd1db1c
 cd ../display
@@ -37,6 +38,10 @@ cd ../../packages/apps/Nfc
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
 cd ../Music
 git cherry-pick 6036ce6127022880a3d9c99bd15db4c968f3e6a3
-cd ../../../
+cd ../../../frameworks/av
+git fetch https://android.googlesource.com/platform/frameworks/av refs/changes/69/343069/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch https://android.googlesource.com/platform/frameworks/av refs/changes/70/343070/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch https://android.googlesource.com/platform/frameworks/av refs/changes/71/343071/1 &amp;&amp; git cherry-pick FETCH_HEAD
+cd ../../
 
 
