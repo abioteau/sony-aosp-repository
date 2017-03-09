@@ -21,7 +21,7 @@ GIT_BRANCH=$5
 
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
-~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-6.0.1_r78
+~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-6.0.1_r79
 cd .repo
 git clone $SONY_MIRROR_URL/sonyxperiadev/local_manifests
 cd local_manifests
@@ -68,6 +68,6 @@ cd ../../../../../
 
 
 ~/bin/repo status
-~/bin/repo forall -p -c git log --oneline android-6.0.1_r78..$GIT_BRANCH
+~/bin/repo forall -p -c git log --oneline android-6.0.1_r79..$GIT_BRANCH
 
 cd $ROOTDIR
