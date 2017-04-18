@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script to extract Sony Xperia binaries
-# Copyright (C) 2016 Adrien Bioteau - All Rights Reserved
+# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
 # Last revised 01/31/2017
 
