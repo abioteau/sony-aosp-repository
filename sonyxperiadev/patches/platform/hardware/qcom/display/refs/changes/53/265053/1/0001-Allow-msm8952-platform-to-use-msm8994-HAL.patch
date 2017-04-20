@@ -12,7 +12,7 @@ Signed-off-by: Adam Farden <adam@farden.cz>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Android.mk b/Android.mk
-index 25fec73..c48f1c2 100644
+index 25fec738..c48f1c26 100644
 --- a/Android.mk
 +++ b/Android.mk
 @@ -8,7 +8,7 @@ else

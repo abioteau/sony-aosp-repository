@@ -60,6 +60,14 @@ git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platfo
 git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/61/213261/1/*.patch`
 cd ../../broadcom/libbt && git checkout -b $GIT_BRANCH
 git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/broadcom/libbt/refs/changes/17/114817/2/*.patch`
+cd ../wlan && git checkout -b $GIT_BRANCH
+git cherry-pick b8f6f3ab4c0a5cb5cf3ca6cdb314cbb7281dffee
+git cherry-pick c838e2c41df5431a44177f7b0394b2e2f58755f7
+git cherry-pick 28fa9f01ebf42ba7177296429f3b6e4c29e415dd
+git cherry-pick d1a5044518435d67b9d7c4ade446e6ab541722cb
+git cherry-pick 3f84d1c4cc647c9906fdde85ecd7751b28c562a3
+git cherry-pick ccb471625cb21d93aeabe9959d78c0dfa98d0203
+git cherry-pick c8703419550b99eba5bc4aff3eb853ddfb6db7c6
 cd ../../../system/core && git checkout -b $GIT_BRANCH
 git cherry-pick 9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9
 git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/92/269692/1/*.patch`

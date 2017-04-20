@@ -14,3 +14,4 @@ SW_binaries_for_Xperia_AOSP_M_MR1_v07.zip
 SW_binaries_for_Xperia_AOSP_M_MR1_v08.zip
 SW_binaries_for_Xperia_AOSP_N_MR1_DEV_v03.zip
 SW_binaries_for_Xperia_AOSP_M_MR1_v09.zip
+SW_binaries_for_Xperia_AOSP_M_MR1_v10.zip

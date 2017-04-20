@@ -16,7 +16,7 @@ Change-Id: I0257d117706b5ffb3268b83fb59bf079ad02fe31
  5 files changed, 19 insertions(+), 3 deletions(-)
 
 diff --git a/msm8994/libhwcomposer/hwc_mdpcomp.cpp b/msm8994/libhwcomposer/hwc_mdpcomp.cpp
-index abb6f59..958a67e 100644
+index abb6f591..958a67e7 100644
 --- a/msm8994/libhwcomposer/hwc_mdpcomp.cpp
 +++ b/msm8994/libhwcomposer/hwc_mdpcomp.cpp
 @@ -180,7 +180,8 @@ bool MDPComp::init(hwc_context_t *ctx) {
@@ -30,7 +30,7 @@ index abb6f59..958a67e 100644
      }
  
 diff --git a/msm8994/liboverlay/overlay.cpp b/msm8994/liboverlay/overlay.cpp
-index da24382..8d4d1fb 100644
+index da243823..8d4d1fbd 100644
 --- a/msm8994/liboverlay/overlay.cpp
 +++ b/msm8994/liboverlay/overlay.cpp
 @@ -151,6 +151,8 @@ utils::eDest Overlay::getPipe(const PipeSpecs& pipeSpecs) {
@@ -56,7 +56,7 @@ index da24382..8d4d1fb 100644
      //If DMA pipes need to be used in block mode for downscale, there could be
      //cases where consecutive rounds need separate modes, which cannot be
 diff --git a/msm8994/liboverlay/overlay.h b/msm8994/liboverlay/overlay.h
-index affb4db..a0c1aaf 100644
+index affb4db7..a0c1aafd 100644
 --- a/msm8994/liboverlay/overlay.h
 +++ b/msm8994/liboverlay/overlay.h
 @@ -178,6 +178,7 @@ private:
@@ -68,7 +68,7 @@ index affb4db..a0c1aaf 100644
  
      /* Returns the handle to libscale.so's programScale function */
 diff --git a/msm8994/libqdutils/mdp_version.cpp b/msm8994/libqdutils/mdp_version.cpp
-index e326386..43c631b 100644
+index e326386c..43c631b2 100644
 --- a/msm8994/libqdutils/mdp_version.cpp
 +++ b/msm8994/libqdutils/mdp_version.cpp
 @@ -78,10 +78,10 @@ namespace qdutils {
@@ -97,7 +97,7 @@ index e326386..43c631b 100644
      return (mMdpRev >= MDSS_MDP_HW_REV_112 and
              mMdpRev < MDSS_MDP_HW_REV_113);
 diff --git a/msm8994/libqdutils/mdp_version.h b/msm8994/libqdutils/mdp_version.h
-index 294dab9..2c822a4 100644
+index 294dab99..2c822a4d 100644
 --- a/msm8994/libqdutils/mdp_version.h
 +++ b/msm8994/libqdutils/mdp_version.h
 @@ -152,6 +152,7 @@ public:

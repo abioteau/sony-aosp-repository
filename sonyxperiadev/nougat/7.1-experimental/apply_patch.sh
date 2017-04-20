@@ -22,7 +22,7 @@ GIT_BRANCH=$5
 
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
-~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-7.1.1_r25
+~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-7.1.2_r2
 cd .repo
 git clone $SONY_MIRROR_URL/sonyxperiadev/local_manifests.git
 cd local_manifests
@@ -37,8 +37,12 @@ git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platfo
 git cherry-pick d3e8dd1bf56afc2277960472a46907d419e4b3da
 git cherry-pick 1c028ca33dc059a9d8f18daafcd77b5950268f41
 git cherry-pick cb49c305e3c78179b19d6f174ae73309544292b8
+cd ../libnfc-nci && git checkout -b $GIT_BRANCH
+git fetch https://android.googlesource.com/platform/external/libnfc-nci refs/changes/52/371052/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../hardware/qcom/audio && git checkout -b $GIT_BRANCH
 git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/91/294291/1/*.patch`
+git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/35/274235/9/*.patch`
+git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/86/333386/1/*.patch`
 cd ../../../system/core && git checkout -b $GIT_BRANCH
 git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/52/269652/1/*.patch`
 git am --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/99/327399/1/*.patch`

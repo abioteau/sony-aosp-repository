@@ -14,7 +14,7 @@ Change-Id: I38d066b82ae800e52f88a01e0cf7bb04d74c448d
  2 files changed, 19 insertions(+)
 
 diff --git a/msm8974/libgralloc/gralloc_priv.h b/msm8974/libgralloc/gralloc_priv.h
-index 94d4334..ef1273e 100644
+index 94d4334e..ef1273e3 100644
 --- a/msm8974/libgralloc/gralloc_priv.h
 +++ b/msm8974/libgralloc/gralloc_priv.h
 @@ -75,6 +75,7 @@ enum {
@@ -26,7 +26,7 @@ index 94d4334..ef1273e 100644
  
  #define GRALLOC_HEAP_MASK   (GRALLOC_USAGE_PRIVATE_UI_CONTIG_HEAP |\
 diff --git a/msm8974/libgralloc/mapper.cpp b/msm8974/libgralloc/mapper.cpp
-index 4f43d40..a4cfb7e 100644
+index 4f43d401..a4cfb7e7 100644
 --- a/msm8974/libgralloc/mapper.cpp
 +++ b/msm8974/libgralloc/mapper.cpp
 @@ -403,6 +403,24 @@ int gralloc_perform(struct gralloc_module_t const* module,

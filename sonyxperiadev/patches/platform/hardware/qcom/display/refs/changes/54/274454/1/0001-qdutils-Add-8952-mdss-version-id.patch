@@ -17,7 +17,7 @@ Change-Id: Idf60187435e7ac8c5918aaca0a5e00e443b22e71
  6 files changed, 33 insertions(+), 5 deletions(-)
 
 diff --git a/msm8994/libhwcomposer/hwc.cpp b/msm8994/libhwcomposer/hwc.cpp
-index 67da2e5..74a5d17 100644
+index 67da2e52..74a5d174 100644
 --- a/msm8994/libhwcomposer/hwc.cpp
 +++ b/msm8994/libhwcomposer/hwc.cpp
 @@ -597,7 +597,8 @@ static int hwc_query(struct hwc_composer_device_1* dev,
@@ -31,7 +31,7 @@ index 67da2e5..74a5d17 100644
          }
          value[0] = supported;
 diff --git a/msm8994/libhwcomposer/hwc_mdpcomp.cpp b/msm8994/libhwcomposer/hwc_mdpcomp.cpp
-index 4c7c7ad..abb6f59 100644
+index 4c7c7ade..abb6f591 100644
 --- a/msm8994/libhwcomposer/hwc_mdpcomp.cpp
 +++ b/msm8994/libhwcomposer/hwc_mdpcomp.cpp
 @@ -176,10 +176,11 @@ bool MDPComp::init(hwc_context_t *ctx) {
@@ -59,7 +59,7 @@ index 4c7c7ad..abb6f59 100644
              isSecondaryConnected(ctx)) {
          //1 Padding round to shift pipes across mixers
 diff --git a/msm8994/liboverlay/overlay.cpp b/msm8994/liboverlay/overlay.cpp
-index a34e599..da24382 100644
+index a34e5990..da243823 100644
 --- a/msm8994/liboverlay/overlay.cpp
 +++ b/msm8994/liboverlay/overlay.cpp
 @@ -149,6 +149,8 @@ utils::eDest Overlay::getPipe(const PipeSpecs& pipeSpecs) {
@@ -85,7 +85,7 @@ index a34e599..da24382 100644
      //If DMA pipes need to be used in block mode for downscale, there could be
      //cases where consecutive rounds need separate modes, which cannot be
 diff --git a/msm8994/liboverlay/overlay.h b/msm8994/liboverlay/overlay.h
-index 45b5e57..affb4db 100644
+index 45b5e57a..affb4db7 100644
 --- a/msm8994/liboverlay/overlay.h
 +++ b/msm8994/liboverlay/overlay.h
 @@ -177,6 +177,7 @@ private:
@@ -107,7 +107,7 @@ index 45b5e57..affb4db 100644
      }
      return true;
 diff --git a/msm8994/libqdutils/mdp_version.cpp b/msm8994/libqdutils/mdp_version.cpp
-index 5949dc9..e326386 100644
+index 5949dc96..e326386c 100644
 --- a/msm8994/libqdutils/mdp_version.cpp
 +++ b/msm8994/libqdutils/mdp_version.cpp
 @@ -77,6 +77,15 @@ namespace qdutils {
@@ -138,7 +138,7 @@ index 5949dc9..e326386 100644
  }; //namespace qdutils
  
 diff --git a/msm8994/libqdutils/mdp_version.h b/msm8994/libqdutils/mdp_version.h
-index 3b10010..294dab9 100644
+index 3b100106..294dab99 100644
 --- a/msm8994/libqdutils/mdp_version.h
 +++ b/msm8994/libqdutils/mdp_version.h
 @@ -151,6 +151,7 @@ public:
