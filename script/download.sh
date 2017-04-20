@@ -67,7 +67,7 @@ do
     extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
 
     eulaUrl=`grep -o 'https://dl.developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html`
-    sourceUrl=`echo ${eulaUrl} | grep -o 'https[^?]*'`
+    sourceUrl=`echo ${eulaUrl} | grep -o 'https://[^?]*'`
     nonce=`echo ${eulaUrl} | grep -o 'nonce=[^"]*' | \
         sed 's/nonce=//g'`
     callback=`echo ${eulaUrl} | grep -o 'callback=[^&]*' | \
