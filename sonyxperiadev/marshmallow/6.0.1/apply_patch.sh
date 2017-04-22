@@ -60,14 +60,6 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/61/213261/1/*.patch`
 cd ../../broadcom/libbt && git checkout -b $GIT_BRANCH
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/broadcom/libbt/refs/changes/17/114817/2/*.patch`
-cd ../wlan && git checkout -b $GIT_BRANCH
-git format-patch -o /tmp/b8f6f3ab4c0a5cb5cf3ca6cdb314cbb7281dffee -1 b8f6f3ab4c0a5cb5cf3ca6cdb314cbb7281dffee && git am -3 --committer-date-is-author-date /tmp/b8f6f3ab4c0a5cb5cf3ca6cdb314cbb7281dffee/0001-*.patch && rm -rf /tmp/b8f6f3ab4c0a5cb5cf3ca6cdb314cbb7281dffee
-git format-patch -o /tmp/c838e2c41df5431a44177f7b0394b2e2f58755f7 -1 c838e2c41df5431a44177f7b0394b2e2f58755f7 && git am -3 --committer-date-is-author-date /tmp/c838e2c41df5431a44177f7b0394b2e2f58755f7/0001-*.patch && rm -rf /tmp/c838e2c41df5431a44177f7b0394b2e2f58755f7
-git format-patch -o /tmp/28fa9f01ebf42ba7177296429f3b6e4c29e415dd -1 28fa9f01ebf42ba7177296429f3b6e4c29e415dd && git am -3 --committer-date-is-author-date /tmp/28fa9f01ebf42ba7177296429f3b6e4c29e415dd/0001-*.patch && rm -rf /tmp/28fa9f01ebf42ba7177296429f3b6e4c29e415dd
-git format-patch -o /tmp/d1a5044518435d67b9d7c4ade446e6ab541722cb -1 d1a5044518435d67b9d7c4ade446e6ab541722cb && git am -3 --committer-date-is-author-date /tmp/d1a5044518435d67b9d7c4ade446e6ab541722cb/0001-*.patch && rm -rf /tmp/d1a5044518435d67b9d7c4ade446e6ab541722cb
-git format-patch -o /tmp/3f84d1c4cc647c9906fdde85ecd7751b28c562a3 -1 3f84d1c4cc647c9906fdde85ecd7751b28c562a3 && git am -3 --committer-date-is-author-date /tmp/3f84d1c4cc647c9906fdde85ecd7751b28c562a3/0001-*.patch && rm -rf /tmp/3f84d1c4cc647c9906fdde85ecd7751b28c562a3
-git format-patch -o /tmp/ccb471625cb21d93aeabe9959d78c0dfa98d0203 -1 ccb471625cb21d93aeabe9959d78c0dfa98d0203 && git am -3 --committer-date-is-author-date /tmp/ccb471625cb21d93aeabe9959d78c0dfa98d0203/0001-*.patch && rm -rf /tmp/ccb471625cb21d93aeabe9959d78c0dfa98d0203
-git format-patch -o /tmp/c8703419550b99eba5bc4aff3eb853ddfb6db7c6 -1 c8703419550b99eba5bc4aff3eb853ddfb6db7c6 && git am -3 --committer-date-is-author-date /tmp/c8703419550b99eba5bc4aff3eb853ddfb6db7c6/0001-*.patch && rm -rf /tmp/c8703419550b99eba5bc4aff3eb853ddfb6db7c6
 cd ../../../system/core && git checkout -b $GIT_BRANCH
 git format-patch -o /tmp/9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9 -1 9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9 && git am -3 --committer-date-is-author-date /tmp/9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9/0001-*.patch && rm -rf /tmp/9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/92/269692/1/*.patch`
