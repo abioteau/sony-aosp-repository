@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 04/18/2017
+# Last revised 05/15/2017
 
 mkdir -p sonyxperiadev
 
@@ -257,11 +257,11 @@ do
     echo "# Script to apply Sony Xperia patches" >> ${outdir}/apply_patch.sh
     echo "# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
     echo "# Permission to copy and modify is granted under the GPLv3 license" >> ${outdir}/apply_patch.sh
-    echo "# Last revised 04/18/2017" >> ${outdir}/apply_patch.sh
+    echo "# Last revised 05/15/2017" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \`dirname \$0\`/../../.." >> ${outdir}/apply_patch.sh
     echo "ROOTDIR=\`pwd\`" >> ${outdir}/apply_patch.sh
-    echo "NB_CORES=`grep -c ^processor /proc/cpuinfo`" >> ${outdir}/apply_patch.sh
+    echo "NB_CORES=\`grep -c ^processor /proc/cpuinfo\`" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "if [ \$# -ne 5 ]" >> ${outdir}/apply_patch.sh
     echo "then" >> ${outdir}/apply_patch.sh
