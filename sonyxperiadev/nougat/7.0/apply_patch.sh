@@ -2,11 +2,11 @@
 # Script to apply Sony Xperia patches
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 04/18/2017
+# Last revised 05/15/2017
 
 cd `dirname $0`/../../..
 ROOTDIR=`pwd`
-NB_CORES=2
+NB_CORES=`grep -c ^processor /proc/cpuinfo`
 
 if [ $# -ne 5 ]
 then
