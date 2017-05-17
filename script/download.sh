@@ -278,20 +278,29 @@ do
     echo "mkdir -p \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
     echo "cd \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo init -u \$AOSP_MIRROR_URL/platform/manifest.git --repo-url \$REPO_MIRROR_URL/git-repo.git -b "`cat ${outdir}/AOSP_TAG` >> ${outdir}/apply_patch.sh
+    echo "" >> ${outdir}/apply_patch.sh
     if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
     then
-        echo "cd .repo" >> ${outdir}/apply_patch.sh
-        echo "git clone \$GITHUB_MIRROR_URL/sonyxperiadev/local_manifests.git" >> ${outdir}/apply_patch.sh
-        echo "cd local_manifests" >> ${outdir}/apply_patch.sh
-        echo "git checkout -f "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
-        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
-        echo "cd ../.." >> ${outdir}/apply_patch.sh
+        echo "sed -i \"/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
+        for repo in "sonyxperiadev/local_manifests" "abioteau/vendor_manifests"
+        do
+            repodir=`basename -s .git $repo`
+            echo "git clone \$GITHUB_MIRROR_URL/$repo" >> ${outdir}/apply_patch.sh
+            echo "cd $repodir" >> ${outdir}/apply_patch.sh
+            echo "git checkout -f "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
+            echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
+            echo "find *.xml | xargs -I {} sed -i \"/^<\/manifest/ s/\(.*\)/  <include name=\\\"{}\\\"\/>\n\1/\" ../.repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
+            echo "cp *.xml ../.repo/manifests/." >> ${outdir}/apply_patch.sh
+            echo "cd .." >> ${outdir}/apply_patch.sh
+            echo "rm -rf $repodir" >> ${outdir}/apply_patch.sh
+        done
     else
         echo "cp \$ROOTDIR/${outdir}/sony.xml .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"/^<project/ s/name=\\\"/name=\\\"sonyxperiadev\//\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\\\"sony.xml\\\"\/>\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
     fi
+    echo "" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo sync -j \$NB_CORES" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo manifest -o manifest.xml -r" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
