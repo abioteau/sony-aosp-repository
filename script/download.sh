@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 05/15/2017
+# Last revised 05/17/2017
 
 mkdir -p sonyxperiadev
 
@@ -257,7 +257,7 @@ do
     echo "# Script to apply Sony Xperia patches" >> ${outdir}/apply_patch.sh
     echo "# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
     echo "# Permission to copy and modify is granted under the GPLv3 license" >> ${outdir}/apply_patch.sh
-    echo "# Last revised 05/15/2017" >> ${outdir}/apply_patch.sh
+    echo "# Last revised 05/17/2017" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \`dirname \$0\`/../../.." >> ${outdir}/apply_patch.sh
     echo "ROOTDIR=\`pwd\`" >> ${outdir}/apply_patch.sh
@@ -265,14 +265,14 @@ do
     echo "" >> ${outdir}/apply_patch.sh
     echo "if [ \$# -ne 5 ]" >> ${outdir}/apply_patch.sh
     echo "then" >> ${outdir}/apply_patch.sh
-    echo "    echo \"[USAGE] ./apply_patch.sh <aosp_workspace> <aosp_mirror> <repo_mirror> <sony_mirror> <git_branch>\"" >> ${outdir}/apply_patch.sh
+    echo "    echo \"[USAGE] ./apply_patch.sh <aosp_workspace> <aosp_mirror> <repo_mirror> <github_mirror> <git_branch>\"" >> ${outdir}/apply_patch.sh
     echo "    exit 1" >> ${outdir}/apply_patch.sh
     echo "fi" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "AOSP_WORKSPACE=\$1" >> ${outdir}/apply_patch.sh
     echo "AOSP_MIRROR_URL=\$2" >> ${outdir}/apply_patch.sh
     echo "REPO_MIRROR_URL=\$3" >> ${outdir}/apply_patch.sh
-    echo "SONY_MIRROR_URL=\$4" >> ${outdir}/apply_patch.sh
+    echo "GITHUB_MIRROR_URL=\$4" >> ${outdir}/apply_patch.sh
     echo "GIT_BRANCH=\$5" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "mkdir -p \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
@@ -281,21 +281,21 @@ do
     if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
     then
         echo "cd .repo" >> ${outdir}/apply_patch.sh
-        echo "git clone \$SONY_MIRROR_URL/sonyxperiadev/local_manifests.git" >> ${outdir}/apply_patch.sh
+        echo "git clone \$GITHUB_MIRROR_URL/sonyxperiadev/local_manifests.git" >> ${outdir}/apply_patch.sh
         echo "cd local_manifests" >> ${outdir}/apply_patch.sh
         echo "git checkout -f "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
-        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$SONY_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
+        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
         echo "cd ../.." >> ${outdir}/apply_patch.sh
     else
         echo "cp \$ROOTDIR/${outdir}/sony.xml .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
-        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$SONY_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
+        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"/^<project/ s/name=\\\"/name=\\\"sonyxperiadev\//\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\\\"sony.xml\\\"\/>\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
     fi
     echo "~/bin/repo sync -j \$NB_CORES" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo manifest -o manifest.xml -r" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
-    cat ${outdir}/AOSP_PATCH | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& git checkout -b \$GIT_BRANCH/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh
+    cat ${outdir}/AOSP_PATCH | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& repo start \$GIT_BRANCH ./g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh
     cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh | sed 's/git cherry-pick \([a-f0-9].*\)/git format-patch -o \/tmp\/\1 -1 \1 \&\& git am -3 --committer-date-is-author-date \/tmp\/\1\/0001-*.patch \&\& rm -rf \/tmp\/\1/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh
     cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh | sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh
     cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh | sed 's/git revert --no-edit \([a-f0-9].*\)/git revert --no-edit --no-commit \1 \&\& export GIT_COMMITTER_DATE=\"`date +\"2017-01-01 08:00:00 \+0200\"`\" \&\& git commit -m \"`cat .git\/MERGE_MSG`\" --author \"`git log -1 \1 | grep \"Author: \" | sed -e \"s\/Author: \/\/\"`\" --date \"`git log -1 \1 | grep \"Date:   \" | sed -e \"s\/Date:   \/\/\"`\" \&\& unset GIT_COMMITTER_DATE/g' >> ${outdir}/apply_patch.sh
