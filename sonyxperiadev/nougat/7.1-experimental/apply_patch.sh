@@ -27,7 +27,7 @@ cd $AOSP_WORKSPACE
 sed -i "/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/" .repo/manifests/default.xml
 git clone $GITHUB_MIRROR_URL/sonyxperiadev/local_manifests
 cd local_manifests
-git checkout -f n-mr1_3
+git checkout -f n-mr1_3.18
 sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
 find *.xml | xargs -I {} sed -i "/^<\/manifest/ s/\(.*\)/  <include name=\"{}\"\/>\n\1/" ../.repo/manifests/default.xml
 cp *.xml ../.repo/manifests/.
@@ -35,7 +35,7 @@ cd ..
 rm -rf local_manifests
 git clone $GITHUB_MIRROR_URL/abioteau/vendor_manifests
 cd vendor_manifests
-git checkout -f n-mr1_3
+git checkout -f n-mr1_3.18
 sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
 find *.xml | xargs -I {} sed -i "/^<\/manifest/ s/\(.*\)/  <include name=\"{}\"\/>\n\1/" ../.repo/manifests/default.xml
 cp *.xml ../.repo/manifests/.

@@ -198,7 +198,7 @@ do
         /usr/bin/dos2unix ${outdir}/AOSP_TAG
 
         # Extract Sony repository manifest
-        grep -o "git checkout [a-zA-Z0-9\/\_\-]*" ${file} | \
+        grep -o "git checkout [a-zA-Z0-9.\/\_\-]*" ${file} | \
             sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH
         /usr/bin/dos2unix ${outdir}/LOCAL_MANIFESTS_BRANCH
 
