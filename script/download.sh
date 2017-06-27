@@ -89,8 +89,7 @@ do
         branchName=`echo "${binaryFile}" | \
             sed 's/SW_binaries_for_Xperia_AOSP_//g' | \
             sed 's/_v.*//g' | \
-            tr '[:upper:]' '[:lower:]' | \
-            tr '_' '-'`
+            tr '[:upper:]' '[:lower:]'`
         ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${branchName}"
         if [ $? -ne 0 ]
         then

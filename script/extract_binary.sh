@@ -38,13 +38,13 @@ BINARY_FILE=$2
 COMMIT_MESSAGE=$3
 if [[ $4 == *"mr"* ]]
 then
-    GIT_BRANCH=`echo $4 | sed 's/\([a-z]-mr[0-9]\)-.*/\1/g'`
+    GIT_BRANCH=`echo $4 | sed 's/\([a-z]\)_\(mr[0-9]\)\(.*\)/\1-\2\3/g'`
 else
     GIT_BRANCH=$4"-mr0"
 fi
 if [[ $5 == *"mr"* ]]
 then
-    ORIGIN_GIT_BRANCH=`echo $5 | sed 's/\([a-z]-mr[0-9]\)-.*/\1/g'`
+    ORIGIN_GIT_BRANCH=`echo $5 | sed 's/\([a-z]\)_\(mr[0-9]\)\(.*\)/\1-\2\3/g'`
 else
     ORIGIN_GIT_BRANCH=$5"-mr0"
 fi
