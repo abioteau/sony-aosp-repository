@@ -55,16 +55,12 @@ TAG_NAME=`echo $BINARY_FILE | \
 
 clean_dir vendor
 
-setup_git https://www.github.com/abioteau/vendor_broadcom.git vendor/broadcom
-setup_git https://www.github.com/abioteau/vendor_nxp.git vendor/nxp
 setup_git https://www.github.com/abioteau/vendor_sony.git vendor/sony
 setup_git https://www.github.com/abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt
 
 unzip -X -b -d $WORKSPACE_DIRECTORY sonyxperiadev/binary/$BINARY_FILE
 
-commit_files vendor/broadcom
-commit_files vendor/nxp
 commit_files vendor/sony
 commit_files vendor/qcom/prebuilt
 
-exit `find $WORKSPACE_DIRECTORY/vendor -regextype posix-extended -regex "$WORKSPACE_DIRECTORY/vendor/broadcom/.*|$WORKSPACE_DIRECTORY/vendor/nxp/.*|$WORKSPACE_DIRECTORY/vendor/sony/.*|$WORKSPACE_DIRECTORY/vendor/qcom/prebuilt/.*" -prune -o -type f -print | wc -l`
+exit `find $WORKSPACE_DIRECTORY/vendor -regextype posix-extended -regex "$WORKSPACE_DIRECTORY/vendor/sony/.*|$WORKSPACE_DIRECTORY/vendor/qcom/prebuilt/.*" -prune -o -type f -print | wc -l`
