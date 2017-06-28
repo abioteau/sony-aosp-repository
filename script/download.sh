@@ -156,21 +156,21 @@ if [[ -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1.html '/<dt id="build-aosp-nougat-7-1"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-nougat-7.1.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.1.html ]]
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html '/<dt id="build-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html
+if [[ -s sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-experimental.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-experimental.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.1-experimental.html ]]
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html
+if [[ -s sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4-experimental.html '/<dt id="build-aosp-nougat-7-1-kernel-4-4-experimental"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4-experimental.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4-experimental.html ]]
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html '/<dt id="build-aosp-nougat-7-1-kernel-4-4-experimental"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html
+if [[ -s sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html ]]
 then
     aospNougatCounter=$((aospNougatCounter+1))
 fi
