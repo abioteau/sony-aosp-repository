@@ -59,14 +59,16 @@ check_null_web_page sonyxperiadev/software-binaries.html
 
 # For each Sony software binaries
 mkdir -p sonyxperiadev/binary
-extract_section_from_web_page orig/binary/index.html orig/binary/body.html '/<tbody/,$p' '/\/tbody>/q'
-binariesNumber=`cat orig/binary/body.html | grep -c "<tr>"`
+extract_section_from_web_page orig/binary/index.html orig/binary/body.html '/<div id="main" role="main"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
+binariesNumber=`cat orig/binary/body.html | grep -c "<h2"`
 counter=0
 while [[ ${counter} -lt ${binariesNumber} ]];
 do
-    extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<tr/,$p' '/\/tr>/q'
+    extract_section_from_web_page orig/binary/body.html orig/binary/body-${counter}.html '/<h2/,$p' '/\/h2>/q'
 
-    eulaUrl=`grep -o 'https://dl.developer.sonymobile.com/eula[^"]*' orig/binary/body-${counter}.html`
+    grep -o 'https://developer.sonymobile.com/downloads/.*/software-binaries-for[^"]*' orig/binary/body-${counter}.html | \
+        xargs -I {} wget {} -O orig/binary/soft-binaries-${counter}.html
+    eulaUrl=`grep -o 'https://dl.developer.sonymobile.com/eula[^"]*' orig/binary/soft-binaries-${counter}.html`
     sourceUrl=`echo ${eulaUrl} | grep -o 'https://[^?]*'`
     nonce=`echo ${eulaUrl} | grep -o 'nonce=[^"]*' | \
         sed 's/nonce=//g'`
@@ -98,7 +100,7 @@ do
         echo "${binaryFile}" >> sonyxperiadev/skip-binary.txt
     fi
 
-    extract_section_from_web_page orig/binary/body.html orig/binary/body.html.tmp '/\/tr>/,$p' '1s/<\/tr>//g'
+    extract_section_from_web_page orig/binary/body.html orig/binary/body.html.tmp '/\/h2>/,$p' '1s/.*<\/h2>//g'
     cp orig/binary/body.html.tmp orig/binary/body.html
     counter=$((counter+1))
 done
