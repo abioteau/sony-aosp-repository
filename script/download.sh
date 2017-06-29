@@ -251,9 +251,9 @@ do
             echo "BASEDIR=`pwd`" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
             echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
             grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-            sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+            sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
             grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-            sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+            sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
             chmod +x orig/${versionName}-${versionNumber}${versionTag}-patch.sh
             ./orig/${versionName}-${versionNumber}${versionTag}-patch.sh
         fi
@@ -313,7 +313,7 @@ do
     echo "" >> ${outdir}/apply_patch.sh
     cat ${outdir}/AOSP_PATCH | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& repo start \$GIT_BRANCH ./g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh
     cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh | sed 's/git cherry-pick \([a-f0-9].*\)/git format-patch -o \/tmp\/\1 -1 \1 \&\& git am -3 --committer-date-is-author-date \/tmp\/\1\/0001-*.patch \&\& rm -rf \/tmp\/\1/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh
-    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh | sed 's/git fetch https\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh
+    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh | sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh
     cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh | sed 's/git revert --no-edit \([a-f0-9].*\)/git revert --no-edit --no-commit \1 \&\& export GIT_COMMITTER_DATE=\"`date +\"2017-01-01 08:00:00 \+0200\"`\" \&\& git commit -m \"`cat .git\/MERGE_MSG`\" --author \"`git log -1 \1 | grep \"Author: \" | sed -e \"s\/Author: \/\/\"`\" --date \"`git log -1 \1 | grep \"Date:   \" | sed -e \"s\/Date:   \/\/\"`\" \&\& unset GIT_COMMITTER_DATE/g' >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \$ROOTDIR" >> ${outdir}/apply_patch.sh
