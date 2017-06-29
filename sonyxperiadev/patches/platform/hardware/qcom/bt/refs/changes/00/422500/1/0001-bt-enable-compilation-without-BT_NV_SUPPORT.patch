@@ -1,0 +1,47 @@
+From 686c51e1c56f876e67ac5603649f9d9369f79432 Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Sat, 24 Jun 2017 15:58:44 +0200
+Subject: [PATCH] bt: enable compilation without BT_NV_SUPPORT
+
+Proprietary header bt_nv.h is missing and compilation will fail
+This patch adds the TARGET_USES_AOSP option which fixes the build
+and allowes BT to function properly
+
+Test: libbt-vendor compiles and BT is ok
+Change-Id: I7dcd4b74e5b1e7be29c6687e49a32e0b243936cc
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ msm8998/libbt-vendor/Android.mk | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/msm8998/libbt-vendor/Android.mk b/msm8998/libbt-vendor/Android.mk
+index f69700f..26a9f22 100644
+--- a/msm8998/libbt-vendor/Android.mk
++++ b/msm8998/libbt-vendor/Android.mk
+@@ -63,8 +63,12 @@ endif #WIFI_BT_STATUS_SYNC
+ 
+ LOCAL_SHARED_LIBRARIES := \
+         libcutils \
+-        liblog \
++        liblog
++
++ifneq ($(TARGET_USES_AOSP),true)
++LOCAL_SHARED_LIBRARIES += \
+         libbtnv
++endif
+ 
+ LOCAL_MODULE := libbt-vendor
+ LOCAL_MODULE_TAGS := optional
+@@ -78,7 +82,9 @@ else
+ LOCAL_MODULE_PATH := $(TARGET_OUT_VENDOR_SHARED_LIBRARIES)
+ endif
+ 
++ifneq ($(TARGET_USES_AOSP),true)
+ LOCAL_CFLAGS += -DBT_NV_SUPPORT
++endif
+ 
+ ifneq ($(BOARD_ANT_WIRELESS_DEVICE),)
+ LOCAL_CFLAGS += -DENABLE_ANT
+-- 
+2.11.0
+

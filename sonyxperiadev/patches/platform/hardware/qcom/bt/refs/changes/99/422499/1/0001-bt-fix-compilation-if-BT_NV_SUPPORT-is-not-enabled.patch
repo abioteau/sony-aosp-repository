@@ -1,0 +1,37 @@
+From 06e2a02a94c9bd19fcf872d941d6c98ff99514c7 Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Sat, 24 Jun 2017 15:07:04 +0200
+Subject: [PATCH] bt: fix compilation if BT_NV_SUPPORT is not enabled
+
+In case BT_NV_SUPPORT is not enabled in Android.mk compilation
+will fail
+
+Test: libbt-vendor compiles fine
+Change-Id: I43dd77b15d34fe23ecbff543747b23df07d2d7e9
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ msm8998/libbt-vendor/src/bt_vendor_qcom.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/msm8998/libbt-vendor/src/bt_vendor_qcom.c b/msm8998/libbt-vendor/src/bt_vendor_qcom.c
+index 2d4d689..cc09631 100644
+--- a/msm8998/libbt-vendor/src/bt_vendor_qcom.c
++++ b/msm8998/libbt-vendor/src/bt_vendor_qcom.c
+@@ -957,12 +957,14 @@ userial_open:
+                                      ignore_boot_prop = TRUE;
+                                 }
+ #endif //READ_BT_ADDR_FROM_PROP
++#ifdef BT_NV_SUPPORT
+                                     /* Always read BD address from NV file */
+                                 if(ignore_boot_prop && !bt_vendor_nv_read(1, q->bdaddr))
+                                 {
+                                    /* Since the BD address is configured in boot time We should not be here */
+                                    ALOGI("Failed to read BD address. Use the one from bluedroid stack/ftm");
+                                 }
++#endif
+                                 if(rome_soc_init(fd, (char*)q->bdaddr)<0) {
+                                     retval = -1;
+                                 } else {
+-- 
+2.11.0
+

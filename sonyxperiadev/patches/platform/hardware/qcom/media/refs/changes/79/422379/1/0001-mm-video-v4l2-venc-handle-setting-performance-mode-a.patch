@@ -1,0 +1,101 @@
+From 1907880d48b47ba6dde8d8e9ccfb5165f288b8d9 Mon Sep 17 00:00:00 2001
+From: Praveen Chavan <pchavan@codeaurora.org>
+Date: Mon, 7 Nov 2016 17:37:51 -0800
+Subject: [PATCH] mm-video-v4l2: venc: handle setting performance-mode at
+ run-time
+
+Enable setting perf-mode via set_config.
+
+Add an event flag in HAL1 meta-buffer to signal events. This will
+be used to notify perf-mode to camera in case of EIS.
+
+CRs-Fixed: 1083833
+Test: we can set performance-mode
+Change-Id: Icc8907e9c6e489f5b27ba10ce2b292fefa8d8488
+---
+ msm8998/mm-core/inc/OMX_QCOMExtns.h                           |  7 +++++--
+ msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp     | 11 ++++++++++-
+ .../mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp |  3 +++
+ 3 files changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/msm8998/mm-core/inc/OMX_QCOMExtns.h b/msm8998/mm-core/inc/OMX_QCOMExtns.h
+index 5d81f1b..195c6ba 100644
+--- a/msm8998/mm-core/inc/OMX_QCOMExtns.h
++++ b/msm8998/mm-core/inc/OMX_QCOMExtns.h
+@@ -1,5 +1,5 @@
+ /*--------------------------------------------------------------------------
+-Copyright (c) 2009-2016, The Linux Foundation. All rights reserved.
++Copyright (c) 2009-2017, The Linux Foundation. All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+@@ -2034,6 +2034,8 @@ typedef struct QOMX_VIDEO_CLIENT_EXTRADATA {
+ 
+ #if defined(__cplusplus) && defined(USE_CAMERA_METABUFFER_UTILS)
+ 
++#define CAM_META_BUFFER_EVENT_PERF 0x01
++
+ /**
+  * Camera1 meta-buffer payload create/access/modify utility
+  */
+@@ -2046,7 +2048,8 @@ struct MetaBufferUtil {
+         INT_TIMESTAMP   = 4,
+         INT_COLORFORMAT = 5,
+         INT_BUFINDEX    = 6,
+-        INT_TOTAL       = INT_BUFINDEX,
++        INT_BUFEVENT    = 7,
++        INT_TOTAL       = INT_BUFEVENT,
+     };
+ 
+     static int getNumFdsForBatch(int batchSize) {
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
+index d5ac1d9..cd8dadf 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
++++ b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
+@@ -1,5 +1,5 @@
+ /*--------------------------------------------------------------------------
+-Copyright (c) 2010-2016, The Linux Foundation. All rights reserved.
++Copyright (c) 2010-2017, The Linux Foundation. All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+@@ -2216,6 +2216,15 @@ OMX_ERRORTYPE  omx_venc::set_config(OMX_IN OMX_HANDLETYPE      hComp,
+                 DEBUG_PRINT_ERROR("Setting/modifying Temporal layers at run-time is not supported !");
+                 return OMX_ErrorUnsupportedSetting;
+             }
++        case OMX_QcomIndexConfigPerfLevel:
++            {
++                VALIDATE_OMX_PARAM_DATA(configData, OMX_QCOM_VIDEO_CONFIG_PERF_LEVEL);
++                if (!handle->venc_set_config(configData,
++                        (OMX_INDEXTYPE)OMX_QcomIndexConfigPerfLevel)) {
++                    DEBUG_PRINT_ERROR("Failed to set perf level");
++                    return OMX_ErrorUnsupportedSetting;
++                }
++            }
+         default:
+             DEBUG_PRINT_ERROR("ERROR: unsupported index %d", (int) configIndex);
+             break;
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp b/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
+index 73e7cf7..e9d5634 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
++++ b/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
+@@ -6396,6 +6396,7 @@ bool venc_dev::venc_set_perf_level(QOMX_VIDEO_PERF_LEVEL ePerfLevel)
+         control.value = V4L2_CID_MPEG_VIDC_PERF_LEVEL_TURBO;
+         break;
+     default:
++        control.value = V4L2_CID_MPEG_VIDC_PERF_LEVEL_NOMINAL;
+         status = false;
+         break;
+     }
+@@ -6410,6 +6411,8 @@ bool venc_dev::venc_set_perf_level(QOMX_VIDEO_PERF_LEVEL ePerfLevel)
+         }
+ 
+         DEBUG_PRINT_LOW("Success IOCTL set control for id=%d, value=%d", control.id, control.value);
++        DEBUG_PRINT_INFO("Requested perf level : %s",
++                ePerfLevel == OMX_QCOM_PerfLevelTurbo ? "turbo" : "nominal");
+     }
+     return status;
+ }
+-- 
+2.11.0
+
