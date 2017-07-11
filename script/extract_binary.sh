@@ -58,7 +58,7 @@ clean_dir vendor
 setup_git https://www.github.com/abioteau/vendor_sony.git vendor/sony
 setup_git https://www.github.com/abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt
 
-unzip -X -b -d $WORKSPACE_DIRECTORY sonyxperiadev/binary/$BINARY_FILE
+unzip -X -b -d $WORKSPACE_DIRECTORY orig/binary/$BINARY_FILE
 
 commit_files vendor/sony
 commit_files vendor/qcom/prebuilt

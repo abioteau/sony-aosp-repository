@@ -51,14 +51,9 @@ download_web_page "http://developer.sonymobile.com/open-devices/list-of-devices-
 extract_section_from_web_page orig/list.html sonyxperiadev/list-of-devices-and-resources.html '/<div id="main" role="main"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
 check_null_web_page sonyxperiadev/list-of-devices-and-resources.html
 
-# Get list of Sony software binaries
+# For each Sony software binaries
 mkdir -p orig/binary
 download_web_page "http://developer.sonymobile.com/downloads/software-binaries/" orig/binary/index.html
-extract_section_from_web_page orig/binary/index.html sonyxperiadev/software-binaries.html '/<div id="main" role="main"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
-check_null_web_page sonyxperiadev/software-binaries.html
-
-# For each Sony software binaries
-mkdir -p sonyxperiadev/binary
 extract_section_from_web_page orig/binary/index.html orig/binary/body.html '/<tbody/,$p' '/\/tbody>/q'
 binariesNumber=`cat orig/binary/body.html | grep -c "<tr>"`
 counter=0
@@ -82,7 +77,7 @@ do
     skipBinaryFile=`grep -c -o "${binaryFile}" sonyxperiadev/skip-binary.txt`
     if [[ ${skipBinaryFile} == 0 ]]
     then
-        wget -c "${callback}?nonce=${nonce}&source=${sourceUrl}&url=${downloadUrl}" -O sonyxperiadev/binary/"${binaryFile}"
+        wget -c "${callback}?nonce=${nonce}&source=${sourceUrl}&url=${downloadUrl}" -O orig/binary/"${binaryFile}"
         commitMessage=`echo "released \`date +%Y-%m-%d\` => ${binaryFile}" | \
             sed 's/SW_binaries_for_//g' | \
             sed 's/.zip//g'`
