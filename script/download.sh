@@ -281,7 +281,7 @@ do
     echo "" >> ${outdir}/apply_patch.sh
     if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
     then
-        echo "sed -i \"/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
+        echo "sed -i -e \"/^  <!-- Sony AOSP addons -->/d; /^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
         for repo in "sonyxperiadev/local_manifests" "abioteau/vendor_manifests"
         do
             repodir=`basename -s .git $repo`
@@ -289,7 +289,7 @@ do
             echo "cd $repodir" >> ${outdir}/apply_patch.sh
             echo "git checkout -f "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
             echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
-            echo "find *.xml | xargs -I {} sed -i \"/^<\/manifest/ s/\(.*\)/  <include name=\\\"{}\\\"\/>\n\1/\" ../.repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
+            echo "find *.xml | xargs -I {} sed -i -e \"/^  <include name=\\\"{}\\\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\\\"{}\\\"\/>\n\1/\" ../.repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
             echo "cp *.xml ../.repo/manifests/." >> ${outdir}/apply_patch.sh
             echo "cd .." >> ${outdir}/apply_patch.sh
             echo "rm -rf $repodir" >> ${outdir}/apply_patch.sh
