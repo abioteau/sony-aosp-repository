@@ -22,3 +22,5 @@ SW_binaries_for_Xperia_AOSP_M_MR1_3.10_v11_legacy.zip
 SW_binaries_for_Xperia_AOSP_N_MR1_4.4_v01_loire.zip
 SW_binaries_for_Xperia_AOSP_N_MR1_4.4_v01_yoshino.zip
 SW_binaries_for_Xperia_AOSP_N_MR1_4.4_v01_tone.zip
+SW_binaries_for_Xperia_AOSP_M_MR1_3.10_v12_loire.zip
+SW_binaries_for_Xperia_AOSP_N_MR1_3.10_v12_loire.zip
