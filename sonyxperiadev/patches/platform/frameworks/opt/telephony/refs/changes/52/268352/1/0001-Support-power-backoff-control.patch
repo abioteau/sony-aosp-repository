@@ -1,0 +1,172 @@
+From 33f0735ae41183b1cca93ff180124793f3f4dc6a Mon Sep 17 00:00:00 2001
+From: Wei Huang <wei.x.huang@sonymobile.com>
+Date: Tue, 22 Mar 2016 17:13:29 +0800
+Subject: [PATCH] Support power backoff control
+
+Notify modem of Tx power backoff, so that modem can control Tx power.
+
+Bug: 28730214
+
+AF: Original patch was updated for N, this is the backport for M
+
+Change-Id: Iec9bc03ca91b18522d07459d903c5e79303b061e
+---
+ .../com/android/internal/telephony/CommandsInterface.java |  9 +++++++++
+ src/java/com/android/internal/telephony/Phone.java        |  9 +++++++++
+ src/java/com/android/internal/telephony/PhoneBase.java    |  6 ++++++
+ src/java/com/android/internal/telephony/PhoneProxy.java   |  5 +++++
+ src/java/com/android/internal/telephony/RIL.java          | 15 +++++++++++++++
+ .../telephony/imsphone/ImsPhoneCommandInterface.java      |  4 ++++
+ .../internal/telephony/sip/SipCommandInterface.java       |  3 +++
+ .../internal/telephony/test/SimulatedCommands.java        |  5 +++++
+ 8 files changed, 56 insertions(+)
+
+diff --git a/src/java/com/android/internal/telephony/CommandsInterface.java b/src/java/com/android/internal/telephony/CommandsInterface.java
+index fd8081bc4..375a5636b 100644
+--- a/src/java/com/android/internal/telephony/CommandsInterface.java
++++ b/src/java/com/android/internal/telephony/CommandsInterface.java
+@@ -2018,4 +2018,13 @@ public interface CommandsInterface {
+      * @param result Callback message contains the modem activity information
+      */
+     public void getModemActivityInfo(Message result);
++
++    /**
++     * Sets the transmit power with parameter to modem.
++     *
++     * @param parameter the parameter to be sent to modem, its form should be defined by OEM.
++     *
++     * @param result Callback message contains the information of SUCCESS/FAILURE
++     */
++    void setTransmitPower(String parameter, Message result);
+ }
+diff --git a/src/java/com/android/internal/telephony/Phone.java b/src/java/com/android/internal/telephony/Phone.java
+index da25e892a..d4e8284c8 100644
+--- a/src/java/com/android/internal/telephony/Phone.java
++++ b/src/java/com/android/internal/telephony/Phone.java
+@@ -2098,4 +2098,13 @@ public interface Phone {
+      * Returns the modem activity information
+      */
+     public void getModemActivityInfo(Message response);
++
++    /**
++     * Sets the transmit power with parameter to modem.
++     *
++     * @param parameter the parameter to be sent to modem, its form should be defined by OEM.
++     *
++     * @param result Callback message contains the information of SUCCESS/FAILURE
++     */
++    void setTransmitPower(String parameter, Message result);
+ }
+diff --git a/src/java/com/android/internal/telephony/PhoneBase.java b/src/java/com/android/internal/telephony/PhoneBase.java
+index 9064926e4..eb176ff0a 100644
+--- a/src/java/com/android/internal/telephony/PhoneBase.java
++++ b/src/java/com/android/internal/telephony/PhoneBase.java
+@@ -2605,6 +2605,12 @@ public abstract class PhoneBase extends Handler implements Phone {
+         return false;
+     }
+ 
++    // Inherited documentation suffices.
++    @Override
++    public void setTransmitPower(String parameter, Message result) {
++        mCi.setTransmitPower(parameter, result);
++    }
++
+     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+         pw.println("PhoneBase: subId=" + getSubId());
+         pw.println(" mPhoneId=" + mPhoneId);
+diff --git a/src/java/com/android/internal/telephony/PhoneProxy.java b/src/java/com/android/internal/telephony/PhoneProxy.java
+index 87d035797..a1e5e1b2e 100644
+--- a/src/java/com/android/internal/telephony/PhoneProxy.java
++++ b/src/java/com/android/internal/telephony/PhoneProxy.java
+@@ -1639,6 +1639,11 @@ public class PhoneProxy extends Handler implements Phone {
+         return mActivePhone.isWifiCallingEnabled();
+     }
+ 
++    @Override
++    public void setTransmitPower(String parameter, Message result) {
++        mActivePhone.setTransmitPower(parameter, result);
++    }
++
+     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+         try {
+             ((PhoneBase)mActivePhone).dump(fd, pw, args);
+diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
+index 4ada1aae0..71c2b96ea 100644
+--- a/src/java/com/android/internal/telephony/RIL.java
++++ b/src/java/com/android/internal/telephony/RIL.java
+@@ -2599,6 +2599,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+             case RIL_REQUEST_STOP_LCE: ret = responseLceStatus(p); break;
+             case RIL_REQUEST_PULL_LCEDATA: ret = responseLceData(p); break;
+             case RIL_REQUEST_GET_ACTIVITY_INFO: ret = responseActivityData(p); break;
++            case RIL_REQUEST_SET_TRANSMIT_POWER: ret =  responseVoid(p); break;
+             default:
+                 throw new RuntimeException("Unrecognized solicited response: " + rr.mRequest);
+             //break;
+@@ -4190,6 +4191,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+             case RIL_REQUEST_STOP_LCE: return "RIL_REQUEST_STOP_LCE";
+             case RIL_REQUEST_PULL_LCEDATA: return "RIL_REQUEST_PULL_LCEDATA";
+             case RIL_REQUEST_GET_ACTIVITY_INFO: return "RIL_REQUEST_GET_ACTIVITY_INFO";
++            case RIL_REQUEST_SET_TRANSMIT_POWER: return "RIL_REQUEST_SET_TRANSMIT_POWER";
+             default: return "<unknown request>";
+         }
+     }
+@@ -4840,4 +4842,17 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+         }
+         send(rr);
+     }
++
++    @Override
++    public void setTransmitPower(String parameter, Message result) {
++        RILRequest rr
++                = RILRequest.obtain(RIL_REQUEST_SET_TRANSMIT_POWER, result);
++
++        rr.mParcel.writeString(parameter);
++
++        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest)
++                + " : " + parameter);
++
++        send(rr);
++    }
+ }
+diff --git a/src/java/com/android/internal/telephony/imsphone/ImsPhoneCommandInterface.java b/src/java/com/android/internal/telephony/imsphone/ImsPhoneCommandInterface.java
+index 717299396..e96de2b8a 100644
+--- a/src/java/com/android/internal/telephony/imsphone/ImsPhoneCommandInterface.java
++++ b/src/java/com/android/internal/telephony/imsphone/ImsPhoneCommandInterface.java
+@@ -624,4 +624,8 @@ class ImsPhoneCommandInterface extends BaseCommands implements CommandsInterface
+     @Override
+     public void getModemActivityInfo(Message result) {
+     }
++
++    @Override
++    public void setTransmitPower(String parameter, Message result) {
++    }
+ }
+diff --git a/src/java/com/android/internal/telephony/sip/SipCommandInterface.java b/src/java/com/android/internal/telephony/sip/SipCommandInterface.java
+index 8fd036d6e..c83b2745d 100644
+--- a/src/java/com/android/internal/telephony/sip/SipCommandInterface.java
++++ b/src/java/com/android/internal/telephony/sip/SipCommandInterface.java
+@@ -627,4 +627,7 @@ class SipCommandInterface extends BaseCommands implements CommandsInterface {
+     public void getModemActivityInfo(Message result) {
+     }
+ 
++    @Override
++    public void setTransmitPower(String parameter, Message result) {
++    }
+ }
+diff --git a/src/java/com/android/internal/telephony/test/SimulatedCommands.java b/src/java/com/android/internal/telephony/test/SimulatedCommands.java
+index e0c2b7931..0a41ac414 100644
+--- a/src/java/com/android/internal/telephony/test/SimulatedCommands.java
++++ b/src/java/com/android/internal/telephony/test/SimulatedCommands.java
+@@ -1787,4 +1787,9 @@ public final class SimulatedCommands extends BaseCommands
+     public void getModemActivityInfo(Message result) {
+         unimplemented(result);
+     }
++
++    @Override
++    public void setTransmitPower(String parameter, Message result) {
++        unimplemented(result);
++    }
+ }
+-- 
+2.11.0
+

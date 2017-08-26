@@ -1,0 +1,68 @@
+From b5567e1d2aaef2cc7c0489039d0ffd5cc3eb6d4e Mon Sep 17 00:00:00 2001
+From: Wei Huang <wei.x.huang@sonymobile.com>
+Date: Wed, 23 Mar 2016 15:08:23 +0800
+Subject: [PATCH] Support power backoff control
+
+Adds new definition to support power backoff control:
+(1) RIL request definition
+(2) The dispatch and response function for this request
+
+Bug: 28730214
+Change-Id: Iec9bc03ca91b18522d07459d903c5e79303b061e
+---
+ include/telephony/ril.h | 16 ++++++++++++++++
+ libril/ril.cpp          |  1 +
+ libril/ril_commands.h   |  1 +
+ 3 files changed, 18 insertions(+)
+
+diff --git a/include/telephony/ril.h b/include/telephony/ril.h
+index 2e71367..e03a23b 100644
+--- a/include/telephony/ril.h
++++ b/include/telephony/ril.h
+@@ -4460,6 +4460,22 @@ typedef struct {
+  */
+ #define RIL_REQUEST_GET_ACTIVITY_INFO 135
+ 
++/**
++ * RIL_REQUEST_SET_TRANSMIT_POWER
++ *
++ * Notify modem of Tx power backoff, so that modem can control Tx power.
++ *
++ * "data" is const char *
++ * ((const char *)data)[0] is the parameter for this request
++ *
++ * "response" is NULL
++ *
++ * Valid errors:
++ *  SUCCESS
++ *  GENERIC_FAILURE
++ */
++#define RIL_REQUEST_SET_TRANSMIT_POWER 136
++
+ /***********************************************************************/
+ 
+ 
+diff --git a/libril/ril.cpp b/libril/ril.cpp
+index 30b4220..4c5912a 100644
+--- a/libril/ril.cpp
++++ b/libril/ril.cpp
+@@ -5157,6 +5157,7 @@ requestToString(int request) {
+         case RIL_UNSOL_DC_RT_INFO_CHANGED: return "UNSOL_DC_RT_INFO_CHANGED";
+         case RIL_REQUEST_SHUTDOWN: return "SHUTDOWN";
+         case RIL_UNSOL_RADIO_CAPABILITY: return "RIL_UNSOL_RADIO_CAPABILITY";
++        case RIL_REQUEST_SET_TRANSMIT_POWER: return "RIL_REQUEST_SET_TRANSMIT_POWER";
+         default: return "<unknown request>";
+     }
+ }
+diff --git a/libril/ril_commands.h b/libril/ril_commands.h
+index 163aa46..b2e9fe2 100644
+--- a/libril/ril_commands.h
++++ b/libril/ril_commands.h
+@@ -150,3 +150,4 @@
+     {RIL_REQUEST_STOP_LCE, dispatchVoid, responseLceStatus},
+     {RIL_REQUEST_PULL_LCEDATA, dispatchVoid, responseLceData},
+     {RIL_REQUEST_GET_ACTIVITY_INFO, dispatchVoid, responseActivityData},
++    {RIL_REQUEST_SET_TRANSMIT_POWER, dispatchString, responseVoid},
+-- 
+2.11.0
+

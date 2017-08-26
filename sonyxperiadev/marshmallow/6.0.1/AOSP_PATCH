@@ -32,6 +32,13 @@ git fetch https://android.googlesource.com/platform/system/core refs/changes/92/
 git fetch https://android.googlesource.com/platform/system/core refs/changes/38/327438/1 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../packages/apps/Nfc
 git revert --no-edit 988c3fff5470a1de3a880bd07fa438cc47e283c8
-cd ../../../../../
+cd ../../../
+cd frameworks/base
+git fetch https://android.googlesource.com/platform/frameworks/base refs/changes/31/229331/1 &amp;&amp; git cherry-pick FETCH_HEAD
+cd ../opt/telephony
+git fetch https://android.googlesource.com/platform/frameworks/opt/telephony refs/changes/52/268352/1 &amp;&amp; git cherry-pick FETCH_HEAD
+cd ../../../hardware/ril
+git fetch https://android.googlesource.com/platform/hardware/ril refs/changes/11/229011/1 &amp;&amp; git cherry-pick FETCH_HEAD
+cd ../../
 
 

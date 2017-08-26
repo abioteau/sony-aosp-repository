@@ -1,0 +1,28 @@
+From 7ffb77aa2dcbaa1fee46261199c53ce9a05fc0fb Mon Sep 17 00:00:00 2001
+From: Wei Huang <wei.x.huang@sonymobile.com>
+Date: Tue, 22 Mar 2016 17:10:38 +0800
+Subject: [PATCH] Support power backoff control
+
+Adds new RIL request definition to support power backoff control.
+
+Bug: 28730214
+Change-Id: Iec9bc03ca91b18522d07459d903c5e79303b061e
+---
+ telephony/java/com/android/internal/telephony/RILConstants.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/telephony/java/com/android/internal/telephony/RILConstants.java b/telephony/java/com/android/internal/telephony/RILConstants.java
+index 7088be82840..6d02ed926e9 100644
+--- a/telephony/java/com/android/internal/telephony/RILConstants.java
++++ b/telephony/java/com/android/internal/telephony/RILConstants.java
+@@ -334,6 +334,7 @@ cat include/telephony/ril.h | \
+     int RIL_REQUEST_STOP_LCE = 133;
+     int RIL_REQUEST_PULL_LCEDATA = 134;
+     int RIL_REQUEST_GET_ACTIVITY_INFO = 135;
++    int RIL_REQUEST_SET_TRANSMIT_POWER = 136;
+ 
+     int RIL_UNSOL_RESPONSE_BASE = 1000;
+     int RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED = 1000;
+-- 
+2.11.0
+

@@ -79,7 +79,14 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/38/327438/1/*.patch`
 cd ../../packages/apps/Nfc && repo start $GIT_BRANCH .
 git revert --no-edit --no-commit 988c3fff5470a1de3a880bd07fa438cc47e283c8 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit -m "`cat .git/MERGE_MSG`" --author "`git log -1 988c3fff5470a1de3a880bd07fa438cc47e283c8 | grep "Author: " | sed -e "s/Author: //"`" --date "`git log -1 988c3fff5470a1de3a880bd07fa438cc47e283c8 | grep "Date:   " | sed -e "s/Date:   //"`" && unset GIT_COMMITTER_DATE
-cd ../../../../../
+cd ../../../
+cd frameworks/base && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/31/229331/1/*.patch`
+cd ../opt/telephony && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/opt/telephony/refs/changes/52/268352/1/*.patch`
+cd ../../../hardware/ril && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/ril/refs/changes/11/229011/1/*.patch`
+cd ../../
 
 
 
