@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 05/17/2017
+# Last revised 08/29/2017
 
 mkdir -p sonyxperiadev
 
@@ -257,7 +257,36 @@ do
     echo "# Script to apply Sony Xperia patches" >> ${outdir}/apply_patch.sh
     echo "# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
     echo "# Permission to copy and modify is granted under the GPLv3 license" >> ${outdir}/apply_patch.sh
-    echo "# Last revised 05/17/2017" >> ${outdir}/apply_patch.sh
+    echo "# Last revised 08/29/2017" >> ${outdir}/apply_patch.sh
+    echo "" >> ${outdir}/apply_patch.sh
+    echo "relpath () {" >> ${outdir}/apply_patch.sh
+    echo "    [ \$# -ge 1 ] && [ \$# -le 2 ] || return 1" >> ${outdir}/apply_patch.sh
+    echo "    current=\"\${2:+\"\$1\"}\"" >> ${outdir}/apply_patch.sh
+    echo "    target=\"\${2:-\"\$1\"}\"" >> ${outdir}/apply_patch.sh
+    echo "    if [[ \"\$target\" = \"http\"* ]] || [[ \"\$current\" = \"http\"* ]]; then" >> ${outdir}/apply_patch.sh
+    echo "        echo \"\$target\"" >> ${outdir}/apply_patch.sh
+    echo "        return 0" >> ${outdir}/apply_patch.sh
+    echo "    fi" >> ${outdir}/apply_patch.sh
+    echo "    [ \"\$target\" != . ] || target=/" >> ${outdir}/apply_patch.sh
+    echo "    target=\"/\${target##/}\"" >> ${outdir}/apply_patch.sh
+    echo "    [ \"\$current\" != . ] || current=/" >> ${outdir}/apply_patch.sh
+    echo "    current=\"\${current:=\"/\"}\"" >> ${outdir}/apply_patch.sh
+    echo "    current=\"/\${current##/}\"" >> ${outdir}/apply_patch.sh
+    echo "    appendix=\"\${target##/}\"" >> ${outdir}/apply_patch.sh
+    echo "    relative=''" >> ${outdir}/apply_patch.sh
+    echo "    while appendix=\"\${target#\"\$current\"/}\"" >> ${outdir}/apply_patch.sh
+    echo "        [ \"\$current\" != '/' ] && [ \"\$appendix\" = \"\$target\" ]; do" >> ${outdir}/apply_patch.sh
+    echo "        if [ \"\$current\" = \"\$appendix\" ]; then" >> ${outdir}/apply_patch.sh
+    echo "            relative=\"\${relative:-.}\"" >> ${outdir}/apply_patch.sh
+    echo "            echo \"\${relative#/}\"" >> ${outdir}/apply_patch.sh
+    echo "            return 0" >> ${outdir}/apply_patch.sh
+    echo "        fi" >> ${outdir}/apply_patch.sh
+    echo "        current=\"\${current%/*}\"" >> ${outdir}/apply_patch.sh
+    echo "        relative=\"\$relative\${relative:+/}..\"" >> ${outdir}/apply_patch.sh
+    echo "    done" >> ${outdir}/apply_patch.sh
+    echo "    relative=\"\$relative\${relative:+\${appendix:+/}}\${appendix#/}\"" >> ${outdir}/apply_patch.sh
+    echo "    echo \"\$relative\"" >> ${outdir}/apply_patch.sh
+    echo "}" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \`dirname \$0\`/../../.." >> ${outdir}/apply_patch.sh
     echo "ROOTDIR=\`pwd\`" >> ${outdir}/apply_patch.sh
@@ -273,6 +302,7 @@ do
     echo "AOSP_MIRROR_URL=\$2" >> ${outdir}/apply_patch.sh
     echo "REPO_MIRROR_URL=\$3" >> ${outdir}/apply_patch.sh
     echo "GITHUB_MIRROR_URL=\$4" >> ${outdir}/apply_patch.sh
+    echo "GITHUB_MIRROR_REL_URL=\$(relpath \$AOSP_MIRROR_URL/platform \$GITHUB_MIRROR_URL)" >> ${outdir}/apply_patch.sh
     echo "GIT_BRANCH=\$5" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "mkdir -p \$AOSP_WORKSPACE" >> ${outdir}/apply_patch.sh
@@ -288,7 +318,7 @@ do
             echo "git clone \$GITHUB_MIRROR_URL/$repo" >> ${outdir}/apply_patch.sh
             echo "cd $repodir" >> ${outdir}/apply_patch.sh
             echo "git checkout -f "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
-            echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
+            echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_REL_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
             echo "find *.xml | xargs -I {} sed -i -e \"/^  <include name=\\\"{}\\\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\\\"{}\\\"\/>\n\1/\" ../.repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
             echo "cp *.xml ../.repo/manifests/." >> ${outdir}/apply_patch.sh
             echo "cd .." >> ${outdir}/apply_patch.sh
@@ -296,7 +326,7 @@ do
         done
     else
         echo "cp \$ROOTDIR/${outdir}/sony.xml .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
-        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
+        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_REL_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"/^<project/ s/name=\\\"/name=\\\"sonyxperiadev\//\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\\\"sony.xml\\\"\/>\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
     fi
