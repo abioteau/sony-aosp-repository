@@ -2,7 +2,36 @@
 # Script to apply Sony Xperia patches
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 05/17/2017
+# Last revised 08/29/2017
+
+relpath () {
+    [ $# -ge 1 ] && [ $# -le 2 ] || return 1
+    current="${2:+"$1"}"
+    target="${2:-"$1"}"
+    if [[ "$target" = "http"* ]] || [[ "$current" = "http"* ]]; then
+        echo "$target"
+        return 0
+    fi
+    [ "$target" != . ] || target=/
+    target="/${target##/}"
+    [ "$current" != . ] || current=/
+    current="${current:="/"}"
+    current="/${current##/}"
+    appendix="${target##/}"
+    relative=''
+    while appendix="${target#"$current"/}"
+        [ "$current" != '/' ] && [ "$appendix" = "$target" ]; do
+        if [ "$current" = "$appendix" ]; then
+            relative="${relative:-.}"
+            echo "${relative#/}"
+            return 0
+        fi
+        current="${current%/*}"
+        relative="$relative${relative:+/}.."
+    done
+    relative="$relative${relative:+${appendix:+/}}${appendix#/}"
+    echo "$relative"
+}
 
 cd `dirname $0`/../../..
 ROOTDIR=`pwd`
@@ -18,6 +47,7 @@ AOSP_WORKSPACE=$1
 AOSP_MIRROR_URL=$2
 REPO_MIRROR_URL=$3
 GITHUB_MIRROR_URL=$4
+GITHUB_MIRROR_REL_URL=$(relpath $AOSP_MIRROR_URL/platform $GITHUB_MIRROR_URL)
 GIT_BRANCH=$5
 
 mkdir -p $AOSP_WORKSPACE
@@ -28,7 +58,7 @@ sed -i -e "/^  <!-- Sony AOSP addons -->/d; /^<\/manifest/ s/\(.*\)/  <!-- Sony 
 git clone $GITHUB_MIRROR_URL/sonyxperiadev/local_manifests
 cd local_manifests
 git checkout -f m-mr1
-sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
+sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_REL_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
 find *.xml | xargs -I {} sed -i -e "/^  <include name=\"{}\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\"{}\"\/>\n\1/" ../.repo/manifests/default.xml
 cp *.xml ../.repo/manifests/.
 cd ..
@@ -36,7 +66,7 @@ rm -rf local_manifests
 git clone $GITHUB_MIRROR_URL/abioteau/vendor_manifests
 cd vendor_manifests
 git checkout -f m-mr1
-sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
+sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_REL_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
 find *.xml | xargs -I {} sed -i -e "/^  <include name=\"{}\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\"{}\"\/>\n\1/" ../.repo/manifests/default.xml
 cp *.xml ../.repo/manifests/.
 cd ..

@@ -2,7 +2,36 @@
 # Script to apply Sony Xperia patches
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 05/17/2017
+# Last revised 08/29/2017
+
+relpath () {
+    [ $# -ge 1 ] && [ $# -le 2 ] || return 1
+    current="${2:+"$1"}"
+    target="${2:-"$1"}"
+    if [[ "$target" = "http"* ]] || [[ "$current" = "http"* ]]; then
+        echo "$target"
+        return 0
+    fi
+    [ "$target" != . ] || target=/
+    target="/${target##/}"
+    [ "$current" != . ] || current=/
+    current="${current:="/"}"
+    current="/${current##/}"
+    appendix="${target##/}"
+    relative=''
+    while appendix="${target#"$current"/}"
+        [ "$current" != '/' ] && [ "$appendix" = "$target" ]; do
+        if [ "$current" = "$appendix" ]; then
+            relative="${relative:-.}"
+            echo "${relative#/}"
+            return 0
+        fi
+        current="${current%/*}"
+        relative="$relative${relative:+/}.."
+    done
+    relative="$relative${relative:+${appendix:+/}}${appendix#/}"
+    echo "$relative"
+}
 
 cd `dirname $0`/../../..
 ROOTDIR=`pwd`
@@ -18,6 +47,7 @@ AOSP_WORKSPACE=$1
 AOSP_MIRROR_URL=$2
 REPO_MIRROR_URL=$3
 GITHUB_MIRROR_URL=$4
+GITHUB_MIRROR_REL_URL=$(relpath $AOSP_MIRROR_URL/platform $GITHUB_MIRROR_URL)
 GIT_BRANCH=$5
 
 mkdir -p $AOSP_WORKSPACE
@@ -25,7 +55,7 @@ cd $AOSP_WORKSPACE
 ~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-5.1.1_r30
 
 cp $ROOTDIR/sonyxperiadev/lollipop/5.1/sony.xml .repo/manifests/sony.xml
-sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_URL | sed 's/\//\\\//g')\/\1\"/" .repo/manifests/sony.xml
+sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_REL_URL | sed 's/\//\\\//g')\/\1\"/" .repo/manifests/sony.xml
 sed -i "/^<project/ s/name=\"/name=\"sonyxperiadev\//" .repo/manifests/sony.xml
 sed -i "/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\"sony.xml\"\/>\n\1/" .repo/manifests/default.xml
 
