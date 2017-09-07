@@ -1,0 +1,37 @@
+From 58c2571f02536f7dd70d26e13adccd510a21783c Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Sat, 24 Jun 2017 10:15:38 +0200
+Subject: [PATCH] mm-video-v4l2: ifdef proprietary codecs
+
+VQZIP and PQ formats require headers that does not exist in AOSP
+
+To fix build we can define TARGET_USES_AOSP flag to indicate that
+Android shoudl be built without this functionality
+
+Test: Android compiles without proprietary headers
+
+Change-Id: I43025dedfb3c576b3b3e456e639f8bf0f99415d4
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ msm8998/mm-video-v4l2/vidc/venc/Android.mk | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/Android.mk b/msm8998/mm-video-v4l2/vidc/venc/Android.mk
+index 595daff..46f3f31 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/Android.mk
++++ b/msm8998/mm-video-v4l2/vidc/venc/Android.mk
+@@ -25,8 +25,11 @@ TARGETS_THAT_USE_FLAG_MSM8226 := msm8226 msm8916 msm8909
+ TARGETS_THAT_NEED_SW_VENC_MPEG4 := msm8909 msm8937
+ TARGETS_THAT_NEED_SW_VENC_HEVC := msm8992
+ TARGETS_THAT_SUPPORT_UBWC := msm8996 msm8998
++
++ifneq ($(TARGET_USES_AOSP),true)
+ TARGETS_THAT_SUPPORT_VQZIP := msm8996 msm8998
+ TARGETS_THAT_SUPPORT_PQ := msm8996 msm8998 sdm660 msm8953
++endif
+ TARGETS_THAT_USE_NV21 := sdm660 msm8953
+ 
+ ifeq ($(TARGET_BOARD_PLATFORM),msm8610)
+-- 
+2.11.0
+
