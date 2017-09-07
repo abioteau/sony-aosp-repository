@@ -105,9 +105,12 @@ check_null_web_page sonyxperiadev/aosp-build-instructions.html
 if [[ -s sonyxperiadev/aosp-build-instructions.html ]]
 then
     aospVersionNumber=`cat sonyxperiadev/aosp-build-instructions.html | \
-        grep -c "http://developer.sonymobile.com/open-devices/aosp-build-instructions/"`
-    aospVersionCounter=0
+        grep -c "https://developer.sonymobile.com/open-devices/aosp-build-instructions/"`
+else
+    echo "`date` - Download script need to be update in order to get AOSP build instructions"
+    exit 1
 fi
+aospVersionCounter=0
 
 # Get AOSP Kitkat build instructions
 mkdir -p orig/kitkat
@@ -140,39 +143,42 @@ aospVersionCounter=$((aospVersionCounter+1))
 mkdir -p orig/nougat
 download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-nougat-for-unlocked-xperia-devices/" orig/nougat/index.html.tmp
 extract_section_from_web_page orig/nougat/index.html.tmp orig/nougat/index.html '/<div id="main" role="main"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
-aospNougatNumber=`cat orig/nougat/index.html | \
-    grep -c "<dt id=\"build"`
-aospNougatCounter=0
 extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.0.html '/<dt id="build-aosp-nougat-7-0"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.0.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.0.html ]]
-then
-    aospNougatCounter=$((aospNougatCounter+1))
-fi
 extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html '/<dt id="build-aosp-nougat-7-1"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html ]]
-then
-    aospNougatCounter=$((aospNougatCounter+1))
-fi
 extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html ]]
-then
-    aospNougatCounter=$((aospNougatCounter+1))
-fi
 extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html '/<dt id="build-aosp-nougat-7-1-kernel-4-4-experimental"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html
-if [[ -s sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html ]]
+aospVersionCounter=$((aospVersionCounter+1))
+
+# Get AOSP Oreo build instructions
+mkdir -p orig/oreo
+download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instructions/how-to-build-aosp-oreo-for-unlocked-xperia-devices/" orig/oreo/index.html.tmp
+extract_section_from_web_page orig/oreo/index.html.tmp orig/oreo/index.html '/<div id="main" role="main"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
+check_null_web_page orig/oreo/index.html
+if [[ -s orig/oreo/index.html ]]
 then
-    aospNougatCounter=$((aospNougatCounter+1))
+    aospLatestNumber=`cat orig/oreo/index.html | \
+    grep -c "<dt id=\"build"`
+else
+    echo "`date` - Download script need to be update in order to get AOSP build instructions for latest version"
+    exit 1
+fi
+aospLatestCounter=0
+extract_section_from_web_page orig/oreo/index.html sonyxperiadev/build-aosp-oreo-8.0-kernel-4.4.html '/<dt id="build-aosp-oreo-8-0-kernel-4-4"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-oreo-8.0-kernel-4.4.html
+if [[ -s sonyxperiadev/build-aosp-oreo-8.0-kernel-4.4.html ]]
+then
+    aospLatestCounter=$((aospLatestCounter+1))
 fi
 aospVersionCounter=$((aospVersionCounter+1))
 
 # Check if there a new AOSP version
-if [[ ${aospVersionCounter} < ${aospVersionNumber} || ${aospNougatCounter} < ${aospNougatNumber} ]]
+if [[ ${aospVersionCounter} < ${aospVersionNumber} || ${aospLatestCounter} < ${aospLatestNumber} ]]
 then
-    echo "`date` - Download script need to be update in order to get new AOSP version"
+    echo "`date` - Download script need to be update in order to get AOSP build instruction for newest version"
     exit 1
 fi
 
@@ -233,8 +239,31 @@ do
             sed 's/    //g' | \
             sed 's/<\/pre>//g' | \
             sed 's/<\/li>//g' | \
+            sed 's/&amp;/\&/g' | \
             sed 's/<\/code>//g' > ${outdir}/AOSP_PATCH
         /usr/bin/dos2unix ${outdir}/AOSP_PATCH
+
+        if [[ ! -s ${outdir}/AOSP_PATCH ]]
+        then
+            if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
+            then
+                curl https://storage.googleapis.com/git-repo-downloads/repo > orig/repo
+                chmod a+x orig/repo
+
+                # Extract list of AOSP patches
+                mkdir -p orig/local_manifests
+                cd orig/local_manifests
+                ../repo init -u "https://github.com/sonyxperiadev/local_manifests" -b `cat ../../${outdir}/LOCAL_MANIFESTS_BRANCH` -m oss.xml
+                ../repo sync vendor/oss/repo_update
+                cat vendor/oss/repo_update/repo_update.sh | \
+                    sed -n '/cd [bhesp][uaxya][irtsc]/,$p' > ../../${outdir}/AOSP_PATCH
+                /usr/bin/dos2unix ../../${outdir}/AOSP_PATCH
+                cd -
+            else
+                rm -f ${outdir}/AOSP_PATCH
+                git rm -f ${outdir}/AOSP_PATCH
+            fi
+        fi
 
         if [[ -n $(git status -s ${outdir}/AOSP_PATCH) ]]
         then
@@ -336,7 +365,7 @@ do
     echo "" >> ${outdir}/apply_patch.sh
     cat ${outdir}/AOSP_PATCH | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& repo start \$GIT_BRANCH ./g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh
     cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh | sed 's/git cherry-pick \([a-f0-9].*\)/git format-patch -o \/tmp\/\1 -1 \1 \&\& git am -3 --committer-date-is-author-date \/tmp\/\1\/0001-*.patch \&\& rm -rf \/tmp\/\1/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh
-    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh | sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) &amp;&amp; git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh
+    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh | sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) \&\& git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh
     cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh | sed 's/git revert --no-edit \([a-f0-9].*\)/git revert --no-edit --no-commit \1 \&\& export GIT_COMMITTER_DATE=\"`date +\"2017-01-01 08:00:00 \+0200\"`\" \&\& git commit -m \"`cat .git\/MERGE_MSG`\" --author \"`git log -1 \1 | grep \"Author: \" | sed -e \"s\/Author: \/\/\"`\" --date \"`git log -1 \1 | grep \"Date:   \" | sed -e \"s\/Date:   \/\/\"`\" \&\& unset GIT_COMMITTER_DATE/g' >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \$ROOTDIR" >> ${outdir}/apply_patch.sh
