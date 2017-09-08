@@ -1,6 +1,6 @@
 language: generic
 dist: trusty
-group: deprecated-2017Q2
+group: deprecated-2017Q3
 
 before_install:
     sudo apt-get install tidy dos2unix
