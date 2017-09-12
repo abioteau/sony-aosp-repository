@@ -196,89 +196,86 @@ do
 
     mkdir -p ${outdir}
 
-    if [[ -n $(git status -s ${file}) ]]
+    # Extract AOSP reference tag
+    grep "repo init" ${file} | \
+        grep -o -E "android-[0-9._r]*" > ${outdir}/AOSP_TAG
+    /usr/bin/dos2unix ${outdir}/AOSP_TAG
+
+    # Extract Sony repository manifest
+    grep -o "git checkout [a-zA-Z0-9.\/\_\-]*" ${file} | \
+        sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH
+    /usr/bin/dos2unix ${outdir}/LOCAL_MANIFESTS_BRANCH
+
+    if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
     then
-        # Extract AOSP reference tag
-        grep "repo init" ${file} | \
-            grep -o -E "android-[0-9._r]*" > ${outdir}/AOSP_TAG
-        /usr/bin/dos2unix ${outdir}/AOSP_TAG
-
-        # Extract Sony repository manifest
-        grep -o "git checkout [a-zA-Z0-9.\/\_\-]*" ${file} | \
-            sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH
-        /usr/bin/dos2unix ${outdir}/LOCAL_MANIFESTS_BRANCH
-
-        if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
-        then
-            rm -f ${outdir}/sony.xml
-            git rm -f ${outdir}/sony.xml
-        else
-            cat ${file} | \
-                sed 's/<br>//g' | \
-                sed 's/&lt;/\</g' | \
-                sed 's/&quot;/\"/g' | \
-                sed 's/&gt;/\>/g' | \
-                sed 's/.*<?xml version/<?xml version/g' | \
-                sed 's/\/manifest>.*/\/manifest>/g' | \
-                sed -n '/<?xml version/,$p' | \
-                sed '/\/manifest>/q' | \
-                sed 's/    //g' > ${outdir}/sony.xml
-            /usr/bin/dos2unix ${outdir}/sony.xml
-
-            rm -f ${outdir}/LOCAL_MANIFESTS_BRANCH
-            git rm -f ${outdir}/LOCAL_MANIFESTS_BRANCH
-        fi
-
-        # Extract list of AOSP patches
+        rm -f ${outdir}/sony.xml
+        git rm -f ${outdir}/sony.xml
+    else
         cat ${file} | \
             sed 's/<br>//g' | \
-            sed 's/.*cd /cd /g' | \
-            sed 's/\/li>.*/\/li>/g' | \
-            sed -n '/cd [bhesp][uaxya][irtsc]/,$p' | \
-            sed '/\/li\>/q' | \
-            sed 's/    //g' | \
-            sed 's/<\/pre>//g' | \
-            sed 's/<\/li>//g' | \
-            sed 's/&amp;/\&/g' | \
-            sed 's/<\/code>//g' > ${outdir}/AOSP_PATCH
-        /usr/bin/dos2unix ${outdir}/AOSP_PATCH
+            sed 's/&lt;/\</g' | \
+            sed 's/&quot;/\"/g' | \
+            sed 's/&gt;/\>/g' | \
+            sed 's/.*<?xml version/<?xml version/g' | \
+            sed 's/\/manifest>.*/\/manifest>/g' | \
+            sed -n '/<?xml version/,$p' | \
+            sed '/\/manifest>/q' | \
+            sed 's/    //g' > ${outdir}/sony.xml
+        /usr/bin/dos2unix ${outdir}/sony.xml
 
-        if [[ ! -s ${outdir}/AOSP_PATCH ]]
+        rm -f ${outdir}/LOCAL_MANIFESTS_BRANCH
+        git rm -f ${outdir}/LOCAL_MANIFESTS_BRANCH
+    fi
+
+    # Extract list of AOSP patches
+    cat ${file} | \
+        sed 's/<br>//g' | \
+        sed 's/.*cd /cd /g' | \
+        sed 's/\/li>.*/\/li>/g' | \
+        sed -n '/cd [bhesp][uaxya][irtsc]/,$p' | \
+        sed '/\/li\>/q' | \
+        sed 's/    //g' | \
+        sed 's/<\/pre>//g' | \
+        sed 's/<\/li>//g' | \
+        sed 's/&amp;/\&/g' | \
+        sed 's/<\/code>//g' > ${outdir}/AOSP_PATCH
+    /usr/bin/dos2unix ${outdir}/AOSP_PATCH
+
+    if [[ ! -s ${outdir}/AOSP_PATCH ]]
+    then
+        if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
         then
-            if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
-            then
-                curl https://storage.googleapis.com/git-repo-downloads/repo > orig/repo
-                chmod a+x orig/repo
+            curl https://storage.googleapis.com/git-repo-downloads/repo > orig/repo
+            chmod a+x orig/repo
 
-                # Extract list of AOSP patches
-                mkdir -p orig/local_manifests
-                cd orig/local_manifests
-                ../repo init -u "https://github.com/sonyxperiadev/local_manifests" -b `cat ../../${outdir}/LOCAL_MANIFESTS_BRANCH` -m oss.xml
-                ../repo sync vendor/oss/repo_update
-                cat vendor/oss/repo_update/repo_update.sh | \
-                    sed -n '/cd [bhesp][uaxya][irtsc]/,$p' > ../../${outdir}/AOSP_PATCH
-                /usr/bin/dos2unix ../../${outdir}/AOSP_PATCH
-                cd -
-            else
-                rm -f ${outdir}/AOSP_PATCH
-                git rm -f ${outdir}/AOSP_PATCH
-            fi
+            # Extract list of AOSP patches
+            mkdir -p orig/local_manifests
+            cd orig/local_manifests
+            ../repo init -u "https://github.com/sonyxperiadev/local_manifests" -b `cat ../../${outdir}/LOCAL_MANIFESTS_BRANCH` -m oss.xml
+            ../repo sync vendor/oss/repo_update
+            cat vendor/oss/repo_update/repo_update.sh | \
+                sed -n '/cd [bhesp][uaxya][irtsc]/,$p' > ../../${outdir}/AOSP_PATCH
+            /usr/bin/dos2unix ../../${outdir}/AOSP_PATCH
+            cd -
+        else
+            rm -f ${outdir}/AOSP_PATCH
+            git rm -f ${outdir}/AOSP_PATCH
         fi
+    fi
 
-        if [[ -n $(git status -s ${outdir}/AOSP_PATCH) ]]
-        then
-            # Get AOSP patches
-            echo "#!/bin/bash" > orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-            echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-            echo "BASEDIR=`pwd`" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-            echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-            grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-            sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-            grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-            sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-            chmod +x orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-            ./orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-        fi
+    if [[ -n $(git status -s ${outdir}/AOSP_PATCH) ]]
+    then
+        # Get AOSP patches
+        echo "#!/bin/bash" > orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        echo "BASEDIR=`pwd`" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
+        sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
+        sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        chmod +x orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        ./orig/${versionName}-${versionNumber}${versionTag}-patch.sh
     fi
 
     # Generate script to apply AOSP patches
