@@ -33,5 +33,5 @@ index 595daff..46f3f31 100644
  
  ifeq ($(TARGET_BOARD_PLATFORM),msm8610)
 -- 
-2.11.0
+2.13.0
 
