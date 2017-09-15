@@ -52,7 +52,7 @@ GIT_BRANCH=$5
 
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
-~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-8.0.0_r3
+~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-8.0.0_r9
 
 sed -i -e "/^  <!-- Sony AOSP addons -->/d; /^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/" .repo/manifests/default.xml
 git clone $GITHUB_MIRROR_URL/sonyxperiadev/local_manifests
