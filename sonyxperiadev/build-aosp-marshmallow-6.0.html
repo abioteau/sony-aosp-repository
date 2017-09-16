@@ -44,9 +44,7 @@ OpenJDK 64-Bit Server VM (build 24.65-b04, mixed mode)
   <p><strong>Install the necessary tools to make an Android build<br></strong>To be able to build the images that you will later flash on your device, you need to install a set of software packages and libraries which give you the tools to compile source code into binary files that can run on your device.</p>
 
   <ol>
-    <li style="margin-bottom: 10px">In a terminal window, enter the following commands, all at once:</li>
-
-    <li style="margin-bottom: 10px">
+    <li style="margin-bottom: 10px">In a terminal window, enter the following commands, all at once:
       <pre class="prettyprint">
 sudo apt-get&Acirc; install bison g++-multilib git gperf libxml2-utils make zlib1g-dev:i386 zip
 </pre>
@@ -58,9 +56,7 @@ sudo apt-get&Acirc; install bison g++-multilib git gperf libxml2-utils make zlib
   <p><strong>Download Repo tool and set PATH<br></strong>In order to access and use the source code available on the Sonyxperiadev GitHub, you need to install the <a title="Repo tool" href="https://source.android.com/source/developing.html" target="_blank">Repo tool</a> that is provided by Google.</p>
 
   <ol>
-    <li style="margin-bottom: 10px">In a terminal window, enter the following commands to download and install Repo, and set the right access rules for it:</li>
-
-    <li style="margin-bottom: 10px">
+    <li style="margin-bottom: 10px">In a terminal window, enter the following commands to download and install Repo, and set the right access rules for it:
       <pre class="prettyprint">
 mkdir ~/bin
 curl http://commondatastorage.googleapis.com/git-repo-downloads/repo &gt; ~/bin/repo
@@ -158,9 +154,9 @@ nano .repo/local_manifests/sony.xml
       <p><strong>Note!</strong> These repos include a precompiled kernel. If you want to change or improve the kernel, you can recompile a new kernel. The new kernel binary should be placed in the corresponding device repository along with new kernel modules for wireless hardware. For more information, see the page&Acirc;&nbsp;<a title="How to build and flash a Linux kernel" href="/knowledge-base/open-source/open-devices/how-to-build-and-flash-a-linux-kernel/">how to rebuild kernels for flagship Xperia devices</a>.</p>
     </li>
 
-    <li style="margin-bottom: 10px">Find the software binaries for the device you want to use on <a title="List of devices and resources" href="http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">Sony&acirc;&euro;&trade;s AOSP for Xperia devices</a></li>
+    <li style="margin-bottom: 10px">Find and download the software binaries for the device you want to use on <a title="List of devices and resources" href="http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">Sony&acirc;&euro;&trade;s AOSP for Xperia devices</a></li>
 
-    <li style="margin-bottom: 10px">In the root of your Android code tree, unzip the software binaries file you downloaded in step 4.</li>
+    <li style="margin-bottom: 10px">In the root of your Android code tree, unzip the software binaries file you downloaded.</li>
 
     <li style="margin-bottom: 10px">You should now have a number of new directories in your <em>vendor</em> To make sure, enter the following command in a terminal window:
       <pre class="prettyprint">
@@ -173,7 +169,7 @@ amami aries castor eagle flamingo honami kanuti ivy karin karin_windy kitakami l
 </pre>
     </li>
 
-    <li style="margin-bottom: 10px">To download the code into the device repos created above, run the command
+    <li style="margin-bottom: 10px">To download the code into the device repos created above, run the command:
       <pre class="prettyprint">
 repo sync
 </pre>
