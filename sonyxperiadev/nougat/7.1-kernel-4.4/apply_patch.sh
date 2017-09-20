@@ -110,6 +110,14 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/12/373812/1/*.patch`
 cd ../extras && repo start $GIT_BRANCH .
 git format-patch -o /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2 -1 c71eaf37486bed9163ad528f51de29dd56b34fd2 && git am -3 --committer-date-is-author-date /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2/0001-*.patch && rm -rf /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2
+cd ../bt && repo start $GIT_BRANCH .
+git format-patch -o /tmp/4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6 -1 4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6 && git am -3 --committer-date-is-author-date /tmp/4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6/0001-*.patch && rm -rf /tmp/4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6
+git format-patch -o /tmp/69d7436c605222ba98604533d79b6861bd434e9b -1 69d7436c605222ba98604533d79b6861bd434e9b && git am -3 --committer-date-is-author-date /tmp/69d7436c605222ba98604533d79b6861bd434e9b/0001-*.patch && rm -rf /tmp/69d7436c605222ba98604533d79b6861bd434e9b
+git format-patch -o /tmp/d9eebf7a4da76764203779e35f3d288e75b7521b -1 d9eebf7a4da76764203779e35f3d288e75b7521b && git am -3 --committer-date-is-author-date /tmp/d9eebf7a4da76764203779e35f3d288e75b7521b/0001-*.patch && rm -rf /tmp/d9eebf7a4da76764203779e35f3d288e75b7521b
+git format-patch -o /tmp/de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8 -1 de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8 && git am -3 --committer-date-is-author-date /tmp/de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8/0001-*.patch && rm -rf /tmp/de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8
+git format-patch -o /tmp/7ea6db20a9a1225f58fd507b51501f8c21d28c75 -1 7ea6db20a9a1225f58fd507b51501f8c21d28c75 && git am -3 --committer-date-is-author-date /tmp/7ea6db20a9a1225f58fd507b51501f8c21d28c75/0001-*.patch && rm -rf /tmp/7ea6db20a9a1225f58fd507b51501f8c21d28c75
+git format-patch -o /tmp/ff6e31a55d3904770cd3cf6b2cd62f607e841dc2 -1 ff6e31a55d3904770cd3cf6b2cd62f607e841dc2 && git am -3 --committer-date-is-author-date /tmp/ff6e31a55d3904770cd3cf6b2cd62f607e841dc2/0001-*.patch && rm -rf /tmp/ff6e31a55d3904770cd3cf6b2cd62f607e841dc2
+git format-patch -o /tmp/8952869a7e688440f9021da0f4cdf926f86149b6 -1 8952869a7e688440f9021da0f4cdf926f86149b6 && git am -3 --committer-date-is-author-date /tmp/8952869a7e688440f9021da0f4cdf926f86149b6/0001-*.patch && rm -rf /tmp/8952869a7e688440f9021da0f4cdf926f86149b6
 cd ../../packages/apps/Music && repo start $GIT_BRANCH .
 git format-patch -o /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3 -1 6036ce6127022880a3d9c99bd15db4c968f3e6a3 && git am -3 --committer-date-is-author-date /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3/0001-*.patch && rm -rf /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3
 cd ../../../frameworks/av && repo start $GIT_BRANCH .
