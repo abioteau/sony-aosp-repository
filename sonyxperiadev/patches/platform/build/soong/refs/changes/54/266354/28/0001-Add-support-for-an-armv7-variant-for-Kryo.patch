@@ -1,0 +1,105 @@
+From ae4fc1840653fd5598f81d33ac33a00d09b94607 Mon Sep 17 00:00:00 2001
+From: Alex Naidis <alex.naidis@linux.com>
+Date: Sat, 20 Aug 2016 00:14:56 +0200
+Subject: [PATCH] Add support for an armv7 variant for Kryo
+
+* Kryo is closer to Krait than to cortex-a53, so choose Krait defaults.
+
+* Made together with Jake Weinstein (xboxfanj)
+
+Bug: 36728278
+
+Test: Built and boot sailfish set up as kryo.
+
+Change-Id: I04fa0a1dca6f97ae19202d28ee3ce8a59bf169b5
+Signed-off-by: Alex Naidis <alex.naidis@linux.com>
+---
+ android/arch.go         |  1 +
+ cc/config/arm_device.go | 17 +++++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/android/arch.go b/android/arch.go
+index 3d56b37..6f123ea 100644
+--- a/android/arch.go
++++ b/android/arch.go
+@@ -856,6 +856,7 @@ func getMegaDeviceConfig() []archConfig {
+ 		{"arm", "armv7-a-neon", "cortex-a53.a57", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "denver", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "krait", []string{"armeabi-v7a"}},
++		{"arm", "armv7-a-neon", "kryo", []string{"armeabi-v7a"}},
+ 		{"arm64", "armv8-a", "cortex-a53", []string{"arm64-v8a"}},
+ 		{"arm64", "armv8-a", "denver64", []string{"arm64-v8a"}},
+ 		{"mips", "mips32-fp", "", []string{"mips"}},
+diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
+index 1b60eae..b02c390 100644
+--- a/cc/config/arm_device.go
++++ b/cc/config/arm_device.go
+@@ -134,6 +134,14 @@ var (
+ 			// better solution comes around. See Bug 27340895
+ 			"-D__ARM_FEATURE_LPAE=1",
+ 		},
++		"kryo": []string{
++			"-mcpu=cortex-a15",
++			// Fake an ARM compiler flag as these processors support LPAE which GCC/clang
++			// don't advertise.
++			// TODO This is a hack and we need to add it for each processor that supports LPAE until some
++			// better solution comes around. See Bug 27340895
++			"-D__ARM_FEATURE_LPAE=1",
++		},
+ 	}
+ 
+ 	armClangCpuVariantCflags  = copyVariantFlags(armCpuVariantCflags)
+@@ -156,6 +164,7 @@ func init() {
+ 		"cortex_a53",
+ 		"cortex_a53_a57",
+ 		"krait",
++		"kryo",
+ 		"denver")
+ 
+ 	replaceFirst := func(slice []string, from, to string) {
+@@ -169,6 +178,9 @@ func init() {
+ 	replaceFirst(armClangCpuVariantCflags["krait"], "-mcpu=cortex-a15", "-mcpu=krait")
+ 	armClangCpuVariantCflags["krait"] = append(armClangCpuVariantCflags["krait"], "-mfpu=neon-vfpv4")
+ 
++	replaceFirst(armClangCpuVariantCflags["kryo"], "-mcpu=cortex-a15", "-mcpu=krait")
++	armClangCpuVariantCflags["kryo"] = append(armClangCpuVariantCflags["kryo"], "-mfpu=neon-vfpv4")
++
+ 	pctx.StaticVariable("armGccVersion", armGccVersion)
+ 
+ 	pctx.SourcePathVariable("ArmGccRoot",
+@@ -197,6 +209,7 @@ func init() {
+ 	pctx.StaticVariable("ArmCortexA8Cflags", strings.Join(armCpuVariantCflags["cortex-a8"], " "))
+ 	pctx.StaticVariable("ArmCortexA15Cflags", strings.Join(armCpuVariantCflags["cortex-a15"], " "))
+ 	pctx.StaticVariable("ArmKraitCflags", strings.Join(armCpuVariantCflags["krait"], " "))
++	pctx.StaticVariable("ArmKryoCflags", strings.Join(armCpuVariantCflags["kryo"], " "))
+ 
+ 	// Clang cflags
+ 	pctx.StaticVariable("ArmToolchainClangCflags", strings.Join(ClangFilterUnknownCflags(armToolchainCflags), " "))
+@@ -227,6 +240,8 @@ func init() {
+ 		strings.Join(armClangCpuVariantCflags["cortex-a15"], " "))
+ 	pctx.StaticVariable("ArmClangKraitCflags",
+ 		strings.Join(armClangCpuVariantCflags["krait"], " "))
++	pctx.StaticVariable("ArmClangKryoCflags",
++		strings.Join(armClangCpuVariantCflags["kryo"], " "))
+ }
+ 
+ var (
+@@ -244,6 +259,7 @@ var (
+ 		"cortex-a53":     "${config.ArmCortexA7Cflags}",
+ 		"cortex-a53.a57": "${config.ArmCortexA7Cflags}",
+ 		"krait":          "${config.ArmKraitCflags}",
++		"kryo":           "${config.ArmKryoCflags}",
+ 		"denver":         "${config.ArmCortexA15Cflags}",
+ 	}
+ 
+@@ -261,6 +277,7 @@ var (
+ 		"cortex-a53":     "${config.ArmClangCortexA7Cflags}",
+ 		"cortex-a53.a57": "${config.ArmClangCortexA7Cflags}",
+ 		"krait":          "${config.ArmClangKraitCflags}",
++		"kryo":           "${config.ArmClangKryoCflags}",
+ 		"denver":         "${config.ArmClangCortexA15Cflags}",
+ 	}
+ )
+-- 
+2.13.0
+

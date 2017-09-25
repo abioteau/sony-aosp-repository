@@ -1,0 +1,63 @@
+From 882941cd73a4eef295c1a82d8e0bce9f38ccd599 Mon Sep 17 00:00:00 2001
+From: Alex Naidis <alex.naidis@linux.com>
+Date: Wed, 5 Apr 2017 20:08:41 +0200
+Subject: [PATCH] Make use of specific Kryo targeting in Clang
+
+Clang supports specific CPU targeting and optimization
+for Kryo.
+
+This switches us to using the specific Kryo targeting
+when Clang is used. For other compilers, we fallback
+to cortex-a57 targeting.
+
+Bug: 36728278
+
+Test: Built and booted sailfish, ran bionic unit tests and art tests.
+Test: Disassembled libc.so before this change and after and looked at
+Test: the differences. Mostly the results were the order of instructions
+Test: changing.
+Test: Verified with the clang person (srhines) that our clang has this support
+Test: and that it appears to be mostly instruction scheduling changes.
+
+Change-Id: I4ee73d8bcc1e4f5eccb162c18937811fe199b16f
+Signed-off-by: Alex Naidis <alex.naidis@linux.com>
+---
+ cc/config/arm64_device.go | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/cc/config/arm64_device.go b/cc/config/arm64_device.go
+index 60245d0..3985613 100644
+--- a/cc/config/arm64_device.go
++++ b/cc/config/arm64_device.go
+@@ -77,8 +77,8 @@ var (
+ 			"-mcpu=cortex-a53",
+ 		},
+ 		"kryo": []string{
+-			// Use the cortex-a57 cpu since no compiler supports
+-			// Kryo as a CPU target yet.
++			// Use the cortex-a57 cpu since some compilers
++			// don't support a Kryo specific target yet.
+ 			"-mcpu=cortex-a57",
+ 		},
+ 	}
+@@ -97,6 +97,17 @@ func init() {
+ 		"kryo",
+ 		"denver64")
+ 
++	replaceFirst := func(slice []string, from, to string) {
++		if slice[0] != from {
++			panic(fmt.Errorf("Expected %q, found %q", from, to))
++		}
++
++		slice[0] = to
++	}
++
++	// Clang supports specific Kryo targeting
++	replaceFirst(arm64ClangCpuVariantCflags["kryo"], "-mcpu=cortex-a57", "-mcpu=kryo")
++
+ 	pctx.StaticVariable("arm64GccVersion", arm64GccVersion)
+ 
+ 	pctx.SourcePathVariable("Arm64GccRoot",
+-- 
+2.13.0
+

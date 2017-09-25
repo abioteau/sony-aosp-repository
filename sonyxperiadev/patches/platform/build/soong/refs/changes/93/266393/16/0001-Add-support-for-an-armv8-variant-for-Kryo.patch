@@ -1,0 +1,83 @@
+From ac01ff5447518986f778be5b5c5a7bb0bf354e9c Mon Sep 17 00:00:00 2001
+From: Alex Naidis <alex.naidis@linux.com>
+Date: Tue, 30 Aug 2016 15:56:33 +0200
+Subject: [PATCH] Add support for an armv8 variant for Kryo
+
+* Use mcpu=cortex-a57, since it is the closest to Kryo.
+* Clang doesn't support Kryo as a target yet.
+
+Bug: 36728278
+
+Test: Built and booted a sailfish using Kryo.
+
+Change-Id: Ic0c9588d86fba41896e50e3f0cf0d2b310ffee93
+Signed-off-by: Alex Naidis <alex.naidis@linux.com>
+---
+ android/arch.go           |  1 +
+ cc/config/arm64_device.go | 13 +++++++++++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/android/arch.go b/android/arch.go
+index 6f123ea..f9697bc 100644
+--- a/android/arch.go
++++ b/android/arch.go
+@@ -859,6 +859,7 @@ func getMegaDeviceConfig() []archConfig {
+ 		{"arm", "armv7-a-neon", "kryo", []string{"armeabi-v7a"}},
+ 		{"arm64", "armv8-a", "cortex-a53", []string{"arm64-v8a"}},
+ 		{"arm64", "armv8-a", "denver64", []string{"arm64-v8a"}},
++		{"arm64", "armv8-a", "kryo", []string{"arm64-v8a"}},
+ 		{"mips", "mips32-fp", "", []string{"mips"}},
+ 		{"mips", "mips32r2-fp", "", []string{"mips"}},
+ 		{"mips", "mips32r2-fp-xburst", "", []string{"mips"}},
+diff --git a/cc/config/arm64_device.go b/cc/config/arm64_device.go
+index 23186e7..60245d0 100644
+--- a/cc/config/arm64_device.go
++++ b/cc/config/arm64_device.go
+@@ -76,6 +76,11 @@ var (
+ 		"cortex-a53": []string{
+ 			"-mcpu=cortex-a53",
+ 		},
++		"kryo": []string{
++			// Use the cortex-a57 cpu since no compiler supports
++			// Kryo as a CPU target yet.
++			"-mcpu=cortex-a57",
++		},
+ 	}
+ 
+ 	arm64ClangCpuVariantCflags = copyVariantFlags(arm64CpuVariantCflags)
+@@ -89,6 +94,7 @@ func init() {
+ 	android.RegisterArchVariants(android.Arm64,
+ 		"armv8_a",
+ 		"cortex_a53",
++		"kryo",
+ 		"denver64")
+ 
+ 	pctx.StaticVariable("arm64GccVersion", arm64GccVersion)
+@@ -109,17 +115,24 @@ func init() {
+ 		strings.Join(arm64CpuVariantCflags["cortex-a53"], " "))
+ 	pctx.StaticVariable("Arm64ClangCortexA53Cflags",
+ 		strings.Join(arm64ClangCpuVariantCflags["cortex-a53"], " "))
++
++	pctx.StaticVariable("Arm64KryoCflags",
++		strings.Join(arm64CpuVariantCflags["kryo"], " "))
++	pctx.StaticVariable("Arm64ClangKryoCflags",
++		strings.Join(arm64ClangCpuVariantCflags["kryo"], " "))
+ }
+ 
+ var (
+ 	arm64CpuVariantCflagsVar = map[string]string{
+ 		"":           "",
+ 		"cortex-a53": "${config.Arm64CortexA53Cflags}",
++		"kryo":       "${config.Arm64KryoCflags}",
+ 	}
+ 
+ 	arm64ClangCpuVariantCflagsVar = map[string]string{
+ 		"":           "",
+ 		"cortex-a53": "${config.Arm64ClangCortexA53Cflags}",
++		"kryo":       "${config.Arm64ClangKryoCflags}",
+ 	}
+ )
+ 
+-- 
+2.13.0
+
