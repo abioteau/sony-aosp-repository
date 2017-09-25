@@ -232,7 +232,7 @@ do
         sed 's/<br>//g' | \
         sed 's/.*cd /cd /g' | \
         sed 's/\/li>.*/\/li>/g' | \
-        sed -n '/cd [bhesp][uaxya][irtsc]/,$p' | \
+        sed -n '/cd [bhespb][uaxyai][irtsco]/,$p' | \
         sed '/\/li\>/q' | \
         sed 's/    //g' | \
         sed 's/<\/pre>//g' | \
@@ -254,7 +254,7 @@ do
             ../repo init -u "https://github.com/sonyxperiadev/local_manifests" -b `cat ../../${outdir}/LOCAL_MANIFESTS_BRANCH` -m oss.xml
             ../repo sync vendor/oss/repo_update
             cat vendor/oss/repo_update/repo_update.sh | \
-                sed -n '/cd [bhesp][uaxya][irtsc]/,$p' > ../../${outdir}/AOSP_PATCH
+                sed -n '/cd [bhespb][uaxyai][irtsco]/,$p' > ../../${outdir}/AOSP_PATCH
             /usr/bin/dos2unix ../../${outdir}/AOSP_PATCH
             cd -
         else
