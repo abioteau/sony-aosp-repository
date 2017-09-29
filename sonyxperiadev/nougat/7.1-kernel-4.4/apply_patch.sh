@@ -75,7 +75,11 @@ rm -rf vendor_manifests
 ~/bin/repo sync -j $NB_CORES
 ~/bin/repo manifest -o manifest.xml -r
 
-cd external/toybox && repo start $GIT_BRANCH .
+cd bionic && repo start $GIT_BRANCH .
+git format-patch -o /tmp/11f79bd765e644af9315465d821a2165fa4980ad -1 11f79bd765e644af9315465d821a2165fa4980ad && git am -3 --committer-date-is-author-date /tmp/11f79bd765e644af9315465d821a2165fa4980ad/0001-*.patch && rm -rf /tmp/11f79bd765e644af9315465d821a2165fa4980ad
+git format-patch -o /tmp/bee67141477bfb66610d47e959b5051cf9cde15f -1 bee67141477bfb66610d47e959b5051cf9cde15f && git am -3 --committer-date-is-author-date /tmp/bee67141477bfb66610d47e959b5051cf9cde15f/0001-*.patch && rm -rf /tmp/bee67141477bfb66610d47e959b5051cf9cde15f
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/90/497890/1/*.patch`
+cd ../external/toybox && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/toybox/refs/changes/74/265074/1/*.patch`
 git format-patch -o /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da -1 d3e8dd1bf56afc2277960472a46907d419e4b3da && git am -3 --committer-date-is-author-date /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da/0001-*.patch && rm -rf /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da
 git format-patch -o /tmp/1c028ca33dc059a9d8f18daafcd77b5950268f41 -1 1c028ca33dc059a9d8f18daafcd77b5950268f41 && git am -3 --committer-date-is-author-date /tmp/1c028ca33dc059a9d8f18daafcd77b5950268f41/0001-*.patch && rm -rf /tmp/1c028ca33dc059a9d8f18daafcd77b5950268f41
