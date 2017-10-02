@@ -1,0 +1,34 @@
+From b09506d8029cea52c2d2547ed07d4fa5a31ec3cc Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Wed, 27 Sep 2017 09:40:59 +0200
+Subject: [PATCH] add odm partition to ld.config.legacy
+
+change is needed to be able to load libraries from /odm partition
+
+Change-Id: If32bf9dc4742aa7ae250e809f857557d54da66f4
+Test: libraries are loaded ok.
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ rootdir/etc/ld.config.legacy.txt | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/rootdir/etc/ld.config.legacy.txt b/rootdir/etc/ld.config.legacy.txt
+index c22edfec6..872c5ab9f 100644
+--- a/rootdir/etc/ld.config.legacy.txt
++++ b/rootdir/etc/ld.config.legacy.txt
+@@ -7,9 +7,10 @@
+ # All binaries gets the same configuration 'legacy'
+ dir.legacy = /system
+ dir.legacy = /vendor
++dir.legacy = /odm
+ dir.legacy = /sbin
+ 
+ [legacy]
+ namespace.default.isolated = false
+-namespace.default.search.paths = /system/${LIB}:/vendor/${LIB}
+-namespace.default.asan.search.paths = /data/asan/system/${LIB}:/system/${LIB}:/data/asan/vendor/${LIB}:/vendor/${LIB}
++namespace.default.search.paths = /odm/${LIB}:/system/${LIB}:/vendor/${LIB}
++namespace.default.asan.search.paths = /data/asan/odm/${LIB}:/odm/${LIB}:/data/asan/system/${LIB}:/system/${LIB}:/data/asan/vendor/${LIB}:/vendor/${LIB}
+-- 
+2.13.0
+
