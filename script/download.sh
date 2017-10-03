@@ -145,10 +145,8 @@ download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instr
 extract_section_from_web_page orig/nougat/index.html.tmp orig/nougat/index.html '/<div id="main" role="main"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
 extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.0.html '/<dt id="build-aosp-nougat-7-0"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.0.html
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html '/<dt id="build-aosp-nougat-7-1"/,$p' '/\/dd>/q'
+extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html '/<dt id="build-aosp-nougat-7-1-kernel-4.4-experimental"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-3.10.html
-extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html '/<dt id="build-experimental-aosp-nougat-7-1"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-3.18.html
 extract_section_from_web_page orig/nougat/index.html sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html '/<dt id="build-aosp-nougat-7-1-kernel-4-4-experimental"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-nougat-7.1-kernel-4.4.html
 aospVersionCounter=$((aospVersionCounter+1))
@@ -167,9 +165,9 @@ else
     exit 1
 fi
 aospLatestCounter=0
-extract_section_from_web_page orig/oreo/index.html sonyxperiadev/build-aosp-oreo-8.0-kernel-4.4.html '/<dt id="build-aosp-oreo-8-0-kernel-4-4"/,$p' '/\/dd>/q'
-check_null_web_page sonyxperiadev/build-aosp-oreo-8.0-kernel-4.4.html
-if [[ -s sonyxperiadev/build-aosp-oreo-8.0-kernel-4.4.html ]]
+extract_section_from_web_page orig/oreo/index.html sonyxperiadev/build-aosp-oreo-8.0.html '/<dt id="build-aosp-oreo-8-0-kernel-4-4"/,$p' '/\/dd>/q'
+check_null_web_page sonyxperiadev/build-aosp-oreo-8.0.html
+if [[ -s sonyxperiadev/build-aosp-oreo-8.0.html ]]
 then
     aospLatestCounter=$((aospLatestCounter+1))
 fi
@@ -190,9 +188,15 @@ do
                     sed 's/sonyxperiadev\/build-aosp-\([a-z]*\)-.*/\1/g'`
     versionNumber=`echo ${file} | \
                     sed 's/sonyxperiadev\/build-aosp-[a-z]*-\([0-9.]*\).*\.html/\1/g'`
-    versionTag=`echo ${file} | \
-                    sed 's/sonyxperiadev\/build-aosp-[a-z]*-[0-9.]*\(.*\)\.html/\1/g'`
-    outdir=sonyxperiadev/${versionName}/${versionNumber}${versionTag}
+    kernelTag=`echo ${file} | \
+                    sed 's/sonyxperiadev\/build-aosp-[a-z]*-[0-9.]*\(.*\)\.html/\1/g' |
+                    sed 's/-kernel-//g'`
+    if [[ -z ${kernelTag} ]]
+    then
+        outdir=sonyxperiadev/${versionName}/${versionNumber}
+    else
+        outdir=sonyxperiadev/${versionName}/${versionNumber}-kernel-${kernelTag}
+    fi
 
     mkdir -p ${outdir}
 
@@ -202,8 +206,8 @@ do
     /usr/bin/dos2unix ${outdir}/AOSP_TAG
 
     # Extract Sony repository manifest
-    grep -o "git checkout [a-zA-Z0-9.\/\_\-]*" ${file} | \
-        sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH
+    grep -o "git checkout [a-zA-Z0-9.\/\_\-]*${kernelTag}" ${file} | \
+        sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH        
     /usr/bin/dos2unix ${outdir}/LOCAL_MANIFESTS_BRANCH
 
     if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
@@ -266,16 +270,16 @@ do
     if [[ -n $(git status -s ${outdir}/AOSP_PATCH) ]]
     then
         # Get AOSP patches
-        echo "#!/bin/bash" > orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-        echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-        echo "BASEDIR=`pwd`" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-        echo "" >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        echo "#!/bin/bash" > orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
+        echo "" >> orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
+        echo "BASEDIR=`pwd`" >> orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
+        echo "" >> orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
         grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-        sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/mkdir -p \$\{BASEDIR\}\/orig\/\1 \&\& git clone https\:\/\/android.googlesource.com\/\1 \$\{BASEDIR\}\/orig\/\1/' >> orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
         grep -o "git fetch[^&]*" ${outdir}/AOSP_PATCH | \
-        sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-        chmod +x orig/${versionName}-${versionNumber}${versionTag}-patch.sh
-        ./orig/${versionName}-${versionNumber}${versionTag}-patch.sh
+        sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/\_\-]*\) \(.*\)/cd \$\{BASEDIR\}\/orig\/\1 \&\& git fetch origin \2 \&\& mkdir -p \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& git format-patch FETCH_HEAD^! -o \$\{BASEDIR\}\/sonyxperiadev\/patches\/\1\/\2 \&\& cd -/' >> orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
+        chmod +x orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
+        ./orig/${versionName}-${versionNumber}-${kernelTag}-patch.sh
     fi
 
     # Generate script to apply AOSP patches
@@ -360,10 +364,10 @@ do
     echo "~/bin/repo sync -j \$NB_CORES" >> ${outdir}/apply_patch.sh
     echo "~/bin/repo manifest -o manifest.xml -r" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
-    cat ${outdir}/AOSP_PATCH | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& repo start \$GIT_BRANCH ./g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh
-    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_1.sh | sed 's/git cherry-pick \([a-f0-9].*\)/git format-patch -o \/tmp\/\1 -1 \1 \&\& git am -3 --committer-date-is-author-date \/tmp\/\1\/0001-*.patch \&\& rm -rf \/tmp\/\1/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh
-    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_2.sh | sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) \&\& git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh
-    cat orig/${versionName}-${versionNumber}${versionTag}-apply_patch_3.sh | sed 's/git revert --no-edit \([a-f0-9].*\)/git revert --no-edit --no-commit \1 \&\& export GIT_COMMITTER_DATE=\"`date +\"2017-01-01 08:00:00 \+0200\"`\" \&\& git commit -m \"`cat .git\/MERGE_MSG`\" --author \"`git log -1 \1 | grep \"Author: \" | sed -e \"s\/Author: \/\/\"`\" --date \"`git log -1 \1 | grep \"Date:   \" | sed -e \"s\/Date:   \/\/\"`\" \&\& unset GIT_COMMITTER_DATE/g' >> ${outdir}/apply_patch.sh
+    cat ${outdir}/AOSP_PATCH | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& repo start \$GIT_BRANCH ./g' > orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_1.sh
+    cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_1.sh | sed 's/git cherry-pick \([a-f0-9].*\)/git format-patch -o \/tmp\/\1 -1 \1 \&\& git am -3 --committer-date-is-author-date \/tmp\/\1\/0001-*.patch \&\& rm -rf \/tmp\/\1/g' > orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_2.sh
+    cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_2.sh | sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) \&\& git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_3.sh
+    cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_3.sh | sed 's/git revert --no-edit \([a-f0-9].*\)/git revert --no-edit --no-commit \1 \&\& export GIT_COMMITTER_DATE=\"`date +\"2017-01-01 08:00:00 \+0200\"`\" \&\& git commit -m \"`cat .git\/MERGE_MSG`\" --author \"`git log -1 \1 | grep \"Author: \" | sed -e \"s\/Author: \/\/\"`\" --date \"`git log -1 \1 | grep \"Date:   \" | sed -e \"s\/Date:   \/\/\"`\" \&\& unset GIT_COMMITTER_DATE/g' >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \$ROOTDIR" >> ${outdir}/apply_patch.sh
     chmod +x ${outdir}/apply_patch.sh
