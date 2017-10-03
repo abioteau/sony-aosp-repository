@@ -9,7 +9,7 @@
 
 <body>
   <dl>
-    <dt id="build-aosp-nougat-7-1-kernel-4-4-experimental"><a class="question" href="#build-aosp-nougat-7-1-kernel-4-4-experimental">Build AOSP Nougat 7.1 kernel 4.4</a></dt>
+    <dt id="build-aosp-nougat-7-1-kernel-4-4-experimental"><a class="question" href="#build-aosp-nougat-7-1-kernel-4-4-experimental">Build AOSP Nougat 7.1</a></dt>
   </dl>
 
   <p>This guide assumes you run Ubuntu (we used Ubuntu 14.04 LTS), but it should work in a similar way on any Linux-based system. To use&Acirc;&nbsp;these instructions, you should be familiar with Android development. Follow the steps below to build Android Nougat on an unlocked Xperia device. The instructions will guide you through each step from how to prepare your environment and install all necessary tools to downloading and configuring the code, before you can finally build AOSP images and flash them on your device.</p>
@@ -92,19 +92,31 @@ source ~/.bashrc
       <pre class="prettyprint">
 mkdir ~/android
 cd ~/android
-repo init -u https://android.googlesource.com/platform/manifest&Acirc; -b android-7.1.2_r29
+repo init -u https://android.googlesource.com/platform/manifest&Acirc; -b android-7.1.1_r55
 </pre>
 
       <p><strong>Note!</strong> The downloaded data is around 20 GB, and for a successful build you need 100 GB free hard disk space. Depending on your Internet connection, it can take quite a long time to download the source code. When the download has finished you have the basic AOSP source code on your computer.</p>
     </li>
 
-    <li style="margin-bottom: 10px">Clone the local_manifests from GitHub using the following commands:
+    <li style="margin-bottom: 10px">Check on <a href="https://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">List of devices and resources</a> the supported kernel versions for your device.</li>
+
+    <li style="margin-bottom: 10px">Depending on the kernel version clone the local_manifests from GitHub using the following commands:<br>
+      Kernel 4.4
       <pre class="prettyprint">
 
 cd .repo
 git clone https://github.com/sonyxperiadev/local_manifests
 cd local_manifests
 git checkout n-mr1_4.4
+</pre>
+
+      <p>Kernel 3.10</p>
+      <pre class="prettyprint">
+
+cd .repo
+git clone https://github.com/sonyxperiadev/local_manifests
+cd local_manifests
+git checkout n-mr1_3.10
 cd ../..
 </pre>
 
@@ -161,6 +173,30 @@ fastboot &acirc;&euro;&ldquo;S 256M flash userdata out/target/product/&lt;device
     </li>
 
     <li style="margin-bottom: 10px">Now when you disconnect your device from the computer and start it, it will be running AOSP.</li>
+  </ol>
+
+  <p><strong>Flash vendor image to your device</strong></p>
+
+  <ol>
+    <li style="margin-bottom: 10px">Download the vendor image corresponding your device from <a href="https://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">List of devices and resources</a>.</li>
+
+    <li style="margin-bottom: 10px">Unpack the vendor zip file to obtain the vendor image.
+      <pre class="prettyprint">
+unzip SW_binaries_for_Xperia_AOSP_N_MR1_&lt;kernel version&gt;_&lt;release version&gt;_&lt;platform&gt;.zip
+</pre>
+
+      <p><strong>Note:</strong> Kernel version must match the version used when code was initialized. Release version should be equivalent to the latest downloaded image version, and platform should match your device.</p>
+    </li>
+
+    <li style="margin-bottom: 10px">On your device: Connect the device to your computer in Fastboot mode, by pressing volume up while inserting the USB cable. When the device is in Fastboot mode, the LED on the device will be illuminated in blue.</li>
+
+    <li style="margin-bottom: 10px">On your computer: Flash the vendor image by entering the following commands in a terminal window:
+      <pre class="prettyprint">
+fastboot flash oem SW_binaries_for_Xperia_AOSP_N_MR1_&lt;kernel version&gt;_&lt;release version&gt;_&lt;platform&gt;.img
+</pre>
+
+      <p><strong>Note:</strong> Kernel version must match the version used when code was initialized. Release version should be equivalent to the latest downloaded image version, and platform should match your device.</p>
+    </li>
   </ol>
 
   <p>We hope this tutorial will help you get started building your own version of Android for Xperia devices. Feel free to contribute your work back to our repositories on our <a title="GitHub" href="https://github.com/sonyxperiadev" target="_blank">Sonyxperiadev GitHub</a> account. We will review and merge your code as soon as possible.</p>

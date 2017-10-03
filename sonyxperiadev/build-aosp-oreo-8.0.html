@@ -92,7 +92,7 @@ source ~/.bashrc
       <pre class="prettyprint">
 mkdir ~/android
 cd ~/android
-repo init -u https://android.googlesource.com/platform/manifest -b android-8.0.0_r9
+repo init -u https://android.googlesource.com/platform/manifest -b android-8.0.0_r15
 </pre>
 
       <p><strong>Note!</strong> The downloaded data is around 20 GB, and for a successful build you need 100 GB free hard disk space. Depending on your Internet connection, it can take quite a long time to download the source code. When the download has finished you have the basic AOSP source code on your computer.</p>
@@ -108,17 +108,17 @@ git checkout master
 cd ../..
 </pre>
 
-      <p><strong>Note!</strong> These repos include a precompiled kernel. If you want to change or improve the kernel, you can recompile a new kernel. The new kernel binary should be placed in the corresponding device repository along with new kernel modules for wireless hardware. For more information, see the page&Acirc;&nbsp;<a title="How to build and flash a Linux kernel" href="/knowledge-base/open-source/open-devices/how-to-build-and-flash-a-linux-kernel/">how to rebuild kernels for flagship Xperia devices</a>.</p>
+      <p><strong>Note!</strong> These repos include a precompiled kernel. If you want to change or improve the kernel, you can recompile a new kernel. The new kernel binary should be placed in the corresponding device repository along with new kernel modules for wireless hardware. For more information, see the page&Acirc;&nbsp;<a title="How to build and flash a Linux kernel" href="https://developer.sonymobile.com/open-devices/how-to-build-and-flash-a-linux-kernel/how-to-build-and-flash-a-linux-kernel-for-aosp-supported-devices/">how to rebuild kernels for flagship Xperia devices</a>.</p>
     </li>
-
-    <li style="margin-bottom: 10px">Find and download the software binaries for the device you want to use on <a title="List of devices and resources" href="http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">Sony&acirc;&euro;&trade;s AOSP for Xperia devices</a></li>
-
-    <li style="margin-bottom: 10px">In the root of your Android code tree, unzip the software binaries file you downloaded.</li>
 
     <li style="margin-bottom: 10px">To download the code into the device repos created above, run the command:
       <pre class="prettyprint">
 repo sync
-Cherry-pick the upstream patches
+</pre>
+    </li>
+
+    <li style="margin-bottom: 10px">Cherry-pick the upstream patches
+      <pre class="prettyprint">
 ./repo_update.sh
 </pre>
     </li>
@@ -161,6 +161,30 @@ fastboot &acirc;&euro;&ldquo;S 256M flash userdata out/target/product/&lt;device
     </li>
 
     <li style="margin-bottom: 10px">Now when you disconnect your device from the computer and start it, it will be running AOSP.</li>
+  </ol>
+
+  <p><strong>Flash vendor image to your device</strong></p>
+
+  <ol>
+    <li style="margin-bottom: 10px">Download the vendor image corresponding your device from <a href="https://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">List of devices and resources</a>.</li>
+
+    <li style="margin-bottom: 10px">Unpack the vendor zip file to obtain the vendor image.
+      <pre class="prettyprint">
+unzip SW_binaries_for_Xperia_AOSP_O_MR0_4.4_&lt;release version&gt;_&lt;platform&gt;.zip
+</pre>
+
+      <p><strong>Note:</strong> Release version should be equivalent to the latest downloaded image version, and platform should match your device.</p>
+    </li>
+
+    <li style="margin-bottom: 10px">On your device: Connect the device to your computer in Fastboot mode, by pressing volume up while inserting the USB cable. When the device is in Fastboot mode, the LED on the device will be illuminated in blue.</li>
+
+    <li style="margin-bottom: 10px">On your computer: Flash the vendor image by entering the following commands in a terminal window:
+      <pre class="prettyprint">
+fastboot flash oem SW_binaries_for_Xperia_AOSP_O_MR0_4.4_&lt;release version&gt;_&lt;platform&gt;.img
+</pre>
+
+      <p><strong>Note:</strong> Release version should be equivalent to the latest downloaded image version, and platform should match your device.</p>
+    </li>
   </ol>
 
   <p>We hope this tutorial will help you get started building your own version of Android for Xperia devices. Feel free to contribute your work back to our repositories on our <a title="GitHub" href="https://github.com/sonyxperiadev" target="_blank">Sonyxperiadev GitHub</a> account. We will review and merge your code as soon as possible.</p>
