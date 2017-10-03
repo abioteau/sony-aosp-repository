@@ -76,8 +76,8 @@ rm -rf vendor_manifests
 ~/bin/repo manifest -o manifest.xml -r
 
 cd bionic && repo start $GIT_BRANCH .
-git format-patch -o /tmp/11f79bd765e644af9315465d821a2165fa4980ad -1 11f79bd765e644af9315465d821a2165fa4980ad && git am -3 --committer-date-is-author-date /tmp/11f79bd765e644af9315465d821a2165fa4980ad/0001-*.patch && rm -rf /tmp/11f79bd765e644af9315465d821a2165fa4980ad
-git format-patch -o /tmp/bee67141477bfb66610d47e959b5051cf9cde15f -1 bee67141477bfb66610d47e959b5051cf9cde15f && git am -3 --committer-date-is-author-date /tmp/bee67141477bfb66610d47e959b5051cf9cde15f/0001-*.patch && rm -rf /tmp/bee67141477bfb66610d47e959b5051cf9cde15f
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/50/234150/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/53/236953/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/90/497890/1/*.patch`
 cd ../external/toybox && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/toybox/refs/changes/74/265074/1/*.patch`
@@ -87,9 +87,15 @@ git format-patch -o /tmp/cb49c305e3c78179b19d6f174ae73309544292b8 -1 cb49c305e3c
 cd ../libnfc-nci && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/libnfc-nci/refs/changes/52/371052/1/*.patch`
 cd ../../hardware/qcom/bt && repo start $GIT_BRANCH .
+git format-patch -o /tmp/9340e065671f2defd5be2a4aac616a15b2c584c6 -1 9340e065671f2defd5be2a4aac616a15b2c584c6 && git am -3 --committer-date-is-author-date /tmp/9340e065671f2defd5be2a4aac616a15b2c584c6/0001-*.patch && rm -rf /tmp/9340e065671f2defd5be2a4aac616a15b2c584c6
+git format-patch -o /tmp/6572a3ba8186fc719c0f81de8820fb8d3009d0a0 -1 6572a3ba8186fc719c0f81de8820fb8d3009d0a0 && git am -3 --committer-date-is-author-date /tmp/6572a3ba8186fc719c0f81de8820fb8d3009d0a0/0001-*.patch && rm -rf /tmp/6572a3ba8186fc719c0f81de8820fb8d3009d0a0
+git format-patch -o /tmp/661a4bab919e4761e2b782474badb19f14ce3388 -1 661a4bab919e4761e2b782474badb19f14ce3388 && git am -3 --committer-date-is-author-date /tmp/661a4bab919e4761e2b782474badb19f14ce3388/0001-*.patch && rm -rf /tmp/661a4bab919e4761e2b782474badb19f14ce3388
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bt/refs/changes/99/422499/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bt/refs/changes/00/422500/1/*.patch`
 cd ../audio && repo start $GIT_BRANCH .
+git format-patch -o /tmp/0cfc50a503fb058011b7fef517488f6df4c419e5 -1 0cfc50a503fb058011b7fef517488f6df4c419e5 && git am -3 --committer-date-is-author-date /tmp/0cfc50a503fb058011b7fef517488f6df4c419e5/0001-*.patch && rm -rf /tmp/0cfc50a503fb058011b7fef517488f6df4c419e5
+git format-patch -o /tmp/8a8deaa00035aa29968201eadbc9fe32eb5ad675 -1 8a8deaa00035aa29968201eadbc9fe32eb5ad675 && git am -3 --committer-date-is-author-date /tmp/8a8deaa00035aa29968201eadbc9fe32eb5ad675/0001-*.patch && rm -rf /tmp/8a8deaa00035aa29968201eadbc9fe32eb5ad675
+git format-patch -o /tmp/65dba39450a26f659fc6a14c1cbb2003681972ba -1 65dba39450a26f659fc6a14c1cbb2003681972ba && git am -3 --committer-date-is-author-date /tmp/65dba39450a26f659fc6a14c1cbb2003681972ba/0001-*.patch && rm -rf /tmp/65dba39450a26f659fc6a14c1cbb2003681972ba
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/91/294291/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/35/274235/9/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/86/333386/1/*.patch`
@@ -98,30 +104,38 @@ git revert --no-edit --no-commit 51b4299f42c61d3a919c8e86c38a85f40902226b && exp
 git revert --no-edit --no-commit b7d1a389b00370fc9d2a7db1268ce26271ead7e2 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit -m "`cat .git/MERGE_MSG`" --author "`git log -1 b7d1a389b00370fc9d2a7db1268ce26271ead7e2 | grep "Author: " | sed -e "s/Author: //"`" --date "`git log -1 b7d1a389b00370fc9d2a7db1268ce26271ead7e2 | grep "Date:   " | sed -e "s/Date:   //"`" && unset GIT_COMMITTER_DATE
 git revert --no-edit --no-commit f026d04dde743a0524235ae57e2ce8ac5364d44b && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit -m "`cat .git/MERGE_MSG`" --author "`git log -1 f026d04dde743a0524235ae57e2ce8ac5364d44b | grep "Author: " | sed -e "s/Author: //"`" --date "`git log -1 f026d04dde743a0524235ae57e2ce8ac5364d44b | grep "Date:   " | sed -e "s/Date:   //"`" && unset GIT_COMMITTER_DATE
 git revert --no-edit --no-commit 3261eb2236252f9f2510c008fad451411a780b3b && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit -m "`cat .git/MERGE_MSG`" --author "`git log -1 3261eb2236252f9f2510c008fad451411a780b3b | grep "Author: " | sed -e "s/Author: //"`" --date "`git log -1 3261eb2236252f9f2510c008fad451411a780b3b | grep "Date:   " | sed -e "s/Date:   //"`" && unset GIT_COMMITTER_DATE
+git format-patch -o /tmp/05b2a3cf90e4b2d82e713e5cb13b165215ee42e6 -1 05b2a3cf90e4b2d82e713e5cb13b165215ee42e6 && git am -3 --committer-date-is-author-date /tmp/05b2a3cf90e4b2d82e713e5cb13b165215ee42e6/0001-*.patch && rm -rf /tmp/05b2a3cf90e4b2d82e713e5cb13b165215ee42e6
+git format-patch -o /tmp/eb58d55cd4aa3010d6e9e5d8f19d36869b369805 -1 eb58d55cd4aa3010d6e9e5d8f19d36869b369805 && git am -3 --committer-date-is-author-date /tmp/eb58d55cd4aa3010d6e9e5d8f19d36869b369805/0001-*.patch && rm -rf /tmp/eb58d55cd4aa3010d6e9e5d8f19d36869b369805
+git format-patch -o /tmp/72adb432f6bdb99433ebb261d8e55395d10783de -1 72adb432f6bdb99433ebb261d8e55395d10783de && git am -3 --committer-date-is-author-date /tmp/72adb432f6bdb99433ebb261d8e55395d10783de/0001-*.patch && rm -rf /tmp/72adb432f6bdb99433ebb261d8e55395d10783de
+git format-patch -o /tmp/a558e9f988d654c776a1aa093fef1e2b4fc96ede -1 a558e9f988d654c776a1aa093fef1e2b4fc96ede && git am -3 --committer-date-is-author-date /tmp/a558e9f988d654c776a1aa093fef1e2b4fc96ede/0001-*.patch && rm -rf /tmp/a558e9f988d654c776a1aa093fef1e2b4fc96ede
+git format-patch -o /tmp/d62c8a289ff6b4838e543e82b655dc436f387574 -1 d62c8a289ff6b4838e543e82b655dc436f387574 && git am -3 --committer-date-is-author-date /tmp/d62c8a289ff6b4838e543e82b655dc436f387574/0001-*.patch && rm -rf /tmp/d62c8a289ff6b4838e543e82b655dc436f387574
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/54/274454/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/55/274455/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/35/437235/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/36/437236/1/*.patch`
 cd ../media && repo start $GIT_BRANCH .
+git format-patch -o /tmp/69b56682975340fc17ce9eac3cefd2d6c5bfdd84 -1 69b56682975340fc17ce9eac3cefd2d6c5bfdd84 && git am -3 --committer-date-is-author-date /tmp/69b56682975340fc17ce9eac3cefd2d6c5bfdd84/0001-*.patch && rm -rf /tmp/69b56682975340fc17ce9eac3cefd2d6c5bfdd84
+git format-patch -o /tmp/fa202b9b18f17f7835fd602db5fff530e61112b4 -1 fa202b9b18f17f7835fd602db5fff530e61112b4 && git am -3 --committer-date-is-author-date /tmp/fa202b9b18f17f7835fd602db5fff530e61112b4/0001-*.patch && rm -rf /tmp/fa202b9b18f17f7835fd602db5fff530e61112b4
+git format-patch -o /tmp/b50ee0d49e33884a5f998649944fff0a8e27cda6 -1 b50ee0d49e33884a5f998649944fff0a8e27cda6 && git am -3 --committer-date-is-author-date /tmp/b50ee0d49e33884a5f998649944fff0a8e27cda6/0001-*.patch && rm -rf /tmp/b50ee0d49e33884a5f998649944fff0a8e27cda6
+git format-patch -o /tmp/0cfe6f8bff87bcbdeef6fcfdbb91d67d42f33927 -1 0cfe6f8bff87bcbdeef6fcfdbb91d67d42f33927 && git am -3 --committer-date-is-author-date /tmp/0cfe6f8bff87bcbdeef6fcfdbb91d67d42f33927/0001-*.patch && rm -rf /tmp/0cfe6f8bff87bcbdeef6fcfdbb91d67d42f33927
+git format-patch -o /tmp/af7f1cd76eaafee0d9838e6c40af9c494e884e36 -1 af7f1cd76eaafee0d9838e6c40af9c494e884e36 && git am -3 --committer-date-is-author-date /tmp/af7f1cd76eaafee0d9838e6c40af9c494e884e36/0001-*.patch && rm -rf /tmp/af7f1cd76eaafee0d9838e6c40af9c494e884e36
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/media/refs/changes/39/422439/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/media/refs/changes/79/422379/1/*.patch`
+cd ../gps && repo start $GIT_BRANCH .
+git format-patch -o /tmp/02f13da8e1d303f5b7ccbe21633e6d0cb6331868 -1 02f13da8e1d303f5b7ccbe21633e6d0cb6331868 && git am -3 --committer-date-is-author-date /tmp/02f13da8e1d303f5b7ccbe21633e6d0cb6331868/0001-*.patch && rm -rf /tmp/02f13da8e1d303f5b7ccbe21633e6d0cb6331868
+git format-patch -o /tmp/4eda8e1eabead3a9115bdd9cedd7e336ed431dbe -1 4eda8e1eabead3a9115bdd9cedd7e336ed431dbe && git am -3 --committer-date-is-author-date /tmp/4eda8e1eabead3a9115bdd9cedd7e336ed431dbe/0001-*.patch && rm -rf /tmp/4eda8e1eabead3a9115bdd9cedd7e336ed431dbe
 cd ../keymaster && repo start $GIT_BRANCH .
 git revert --no-edit --no-commit 583ecf5ed2a4be0d05229b8c6726680c3836be8b && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit -m "`cat .git/MERGE_MSG`" --author "`git log -1 583ecf5ed2a4be0d05229b8c6726680c3836be8b | grep "Author: " | sed -e "s/Author: //"`" --date "`git log -1 583ecf5ed2a4be0d05229b8c6726680c3836be8b | grep "Date:   " | sed -e "s/Date:   //"`" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/70/212570/5/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/80/212580/2/*.patch`
 cd ../../../system/core && repo start $GIT_BRANCH .
+git format-patch -o /tmp/0ee524de689e27379eaa3d0af0152183b844b0e8 -1 0ee524de689e27379eaa3d0af0152183b844b0e8 && git am -3 --committer-date-is-author-date /tmp/0ee524de689e27379eaa3d0af0152183b844b0e8/0001-*.patch && rm -rf /tmp/0ee524de689e27379eaa3d0af0152183b844b0e8
+git format-patch -o /tmp/565ba02b89b64deb8bf7232ac2c2a38b01f63523 -1 565ba02b89b64deb8bf7232ac2c2a38b01f63523 && git am -3 --committer-date-is-author-date /tmp/565ba02b89b64deb8bf7232ac2c2a38b01f63523/0001-*.patch && rm -rf /tmp/565ba02b89b64deb8bf7232ac2c2a38b01f63523
+git format-patch -o /tmp/3f0250c3cc84b2480ef70d51343204eecbe84532 -1 3f0250c3cc84b2480ef70d51343204eecbe84532 && git am -3 --committer-date-is-author-date /tmp/3f0250c3cc84b2480ef70d51343204eecbe84532/0001-*.patch && rm -rf /tmp/3f0250c3cc84b2480ef70d51343204eecbe84532
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/52/269652/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/12/373812/1/*.patch`
 cd ../extras && repo start $GIT_BRANCH .
 git format-patch -o /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2 -1 c71eaf37486bed9163ad528f51de29dd56b34fd2 && git am -3 --committer-date-is-author-date /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2/0001-*.patch && rm -rf /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2
-cd ../bt && repo start $GIT_BRANCH .
-git format-patch -o /tmp/4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6 -1 4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6 && git am -3 --committer-date-is-author-date /tmp/4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6/0001-*.patch && rm -rf /tmp/4e0f8cd65b4fbfd22612d1467b1c4df03829cfd6
-git format-patch -o /tmp/69d7436c605222ba98604533d79b6861bd434e9b -1 69d7436c605222ba98604533d79b6861bd434e9b && git am -3 --committer-date-is-author-date /tmp/69d7436c605222ba98604533d79b6861bd434e9b/0001-*.patch && rm -rf /tmp/69d7436c605222ba98604533d79b6861bd434e9b
-git format-patch -o /tmp/d9eebf7a4da76764203779e35f3d288e75b7521b -1 d9eebf7a4da76764203779e35f3d288e75b7521b && git am -3 --committer-date-is-author-date /tmp/d9eebf7a4da76764203779e35f3d288e75b7521b/0001-*.patch && rm -rf /tmp/d9eebf7a4da76764203779e35f3d288e75b7521b
-git format-patch -o /tmp/de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8 -1 de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8 && git am -3 --committer-date-is-author-date /tmp/de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8/0001-*.patch && rm -rf /tmp/de9e5d56c8d0e8f5033dd9c3d3b1d7f013709fe8
-git format-patch -o /tmp/7ea6db20a9a1225f58fd507b51501f8c21d28c75 -1 7ea6db20a9a1225f58fd507b51501f8c21d28c75 && git am -3 --committer-date-is-author-date /tmp/7ea6db20a9a1225f58fd507b51501f8c21d28c75/0001-*.patch && rm -rf /tmp/7ea6db20a9a1225f58fd507b51501f8c21d28c75
-git format-patch -o /tmp/ff6e31a55d3904770cd3cf6b2cd62f607e841dc2 -1 ff6e31a55d3904770cd3cf6b2cd62f607e841dc2 && git am -3 --committer-date-is-author-date /tmp/ff6e31a55d3904770cd3cf6b2cd62f607e841dc2/0001-*.patch && rm -rf /tmp/ff6e31a55d3904770cd3cf6b2cd62f607e841dc2
-git format-patch -o /tmp/8952869a7e688440f9021da0f4cdf926f86149b6 -1 8952869a7e688440f9021da0f4cdf926f86149b6 && git am -3 --committer-date-is-author-date /tmp/8952869a7e688440f9021da0f4cdf926f86149b6/0001-*.patch && rm -rf /tmp/8952869a7e688440f9021da0f4cdf926f86149b6
 cd ../../packages/apps/Music && repo start $GIT_BRANCH .
 git format-patch -o /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3 -1 6036ce6127022880a3d9c99bd15db4c968f3e6a3 && git am -3 --committer-date-is-author-date /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3/0001-*.patch && rm -rf /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3
 cd ../../../frameworks/av && repo start $GIT_BRANCH .

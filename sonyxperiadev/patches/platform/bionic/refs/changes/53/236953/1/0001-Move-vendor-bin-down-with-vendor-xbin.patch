@@ -1,0 +1,28 @@
+From 8cabd86c43d7da4727ba6250471b9beaafdbb424 Mon Sep 17 00:00:00 2001
+From: Elliott Hughes <enh@google.com>
+Date: Wed, 8 Jun 2016 10:17:26 -0700
+Subject: [PATCH] Move /vendor/bin down with /vendor/xbin.
+
+The intention is that /vendor/*bin _extends_ rather than overrides.
+
+Change-Id: Iad7db78f653345d79aa6f87abe0a3c2a797f71a3
+---
+ libc/include/paths.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libc/include/paths.h b/libc/include/paths.h
+index 1392cf0ae..ffb1737cc 100644
+--- a/libc/include/paths.h
++++ b/libc/include/paths.h
+@@ -34,7 +34,7 @@
+ 
+ #define	_PATH_BSHELL	"/system/bin/sh"
+ #define	_PATH_CONSOLE	"/dev/console"
+-#define	_PATH_DEFPATH	"/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin:/vendor/xbin"
++#define	_PATH_DEFPATH	"/sbin:/system/sbin:/system/bin:/system/xbin:/vendor/bin:/vendor/xbin"
+ #define	_PATH_DEV	"/dev/"
+ #define	_PATH_DEVNULL	"/dev/null"
+ #define	_PATH_KLOG	"/proc/kmsg"
+-- 
+2.13.0
+
