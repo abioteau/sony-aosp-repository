@@ -78,17 +78,7 @@ do
     if [[ ${skipBinaryFile} == 0 ]]
     then
         wget -c "${callback}?nonce=${nonce}&source=${sourceUrl}&url=${downloadUrl}" -O orig/binary/"${binaryFile}"
-        commitMessage=`echo "released \`date +%Y-%m-%d\` => ${binaryFile}" | \
-            sed 's/SW_binaries_for_//g' | \
-            sed 's/.zip//g'`
-        branchName=`echo "${binaryFile}" | \
-            sed 's/SW_binaries_for_Xperia_AOSP_//g' | \
-            sed 's/_v.*//g' | \
-            tr '[:upper:]' '[:lower:]'`
-        tagName=`echo "${binaryFile}" | \
-            sed 's/SW_binaries_for_//g' | \
-            sed 's/.zip//g'`
-        ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${tagName}"
+        ./script/extract_binary.sh . "${binaryFile}"
         if [ $? -ne 0 ]
         then
             exit 1

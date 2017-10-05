@@ -10,7 +10,7 @@ setup_git() {
     git config --local user.email "adrien.bioteau@gmail.com"
     git config --local user.name "Adrien Bioteau"
     git checkout origin/$GIT_BRANCH
-    git rm -rf *
+    git rm -rf $PLATFORM_NAME*
     cd -
 }
 
@@ -19,7 +19,7 @@ commit_files() {
     git checkout -b $GIT_BRANCH
     git add .
     git commit -m "sony aosp blobs : $COMMIT_MESSAGE"
-    git tag $TAG_NAME
+    git tag $GIT_TAG
     cd -
 }
 
@@ -27,22 +27,35 @@ clean_dir() {
     rm -rf $WORKSPACE_DIRECTORY/$1
 }
 
-if [ $# -ne 5 ]
+if [ $# -ne 2 ]
 then
-    echo "[USAGE] ./extract_binary.sh <workspace_directory> <binary_file> <commit_message> <git_branch> <git_tag>"
+    echo "[USAGE] ./extract_binary.sh <workspace_directory> <binary_file>"
     exit 1
 fi
 
 WORKSPACE_DIRECTORY=$1
 BINARY_FILE=$2
-COMMIT_MESSAGE=$3
-if [[ $4 == *"mr"* ]]
+
+GIT_BRANCH=`echo "$BINARY_FILE" | \
+    sed 's/SW_binaries_for_Xperia_AOSP_//g' | \
+    sed 's/_v.*//g' | \
+    tr '[:upper:]' '[:lower:]'`
+if [[ $GIT_BRANCH == *"mr"* ]]
 then
-    GIT_BRANCH=`echo $4 | sed 's/\([a-z]\)_\(mr[0-9]\)\(.*\)/\1-\2\3/g'`
+    GIT_BRANCH=`echo $GIT_BRANCH | sed 's/\([a-z]\)_\(mr[0-9]\)\(.*\)/\1-\2\3/g'`
 else
-    GIT_BRANCH=$4"-mr0"
+    GIT_BRANCH=$GIT_BRANCH"-mr0"
 fi
-TAG_NAME=$5
+
+GIT_TAG=`echo "$BINARY_FILE" | \
+    sed 's/SW_binaries_for_\(.*\).zip/\1/g'`
+
+COMMIT_MESSAGE=`echo "released \`date +%Y-%m-%d\` => $GIT_TAG"`
+
+PLATFORM_NAME=`echo "$BINARY_FILE" | \
+    sed 's/SW_binaries_for_Xperia_AOSP_.*v[0-9]*\(.*\).zip/\1/g' | \
+    sed 's/_//g' | \
+    tr '[:upper:]' '[:lower:]'`
 
 clean_dir vendor
 
