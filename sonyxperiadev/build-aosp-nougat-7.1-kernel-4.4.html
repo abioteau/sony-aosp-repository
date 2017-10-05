@@ -123,17 +123,53 @@ cd ../..
       <p><strong>Note!</strong> These repos include a precompiled kernel. If you want to change or improve the kernel, you can recompile a new kernel. The new kernel binary should be placed in the corresponding device repository along with new kernel modules for wireless hardware. For more information, see the page&Acirc;&nbsp;<a title="How to build and flash a Linux kernel" href="/knowledge-base/open-source/open-devices/how-to-build-and-flash-a-linux-kernel/">how to rebuild kernels for flagship Xperia devices</a>.</p>
     </li>
 
-    <li style="margin-bottom: 10px">Find and download the software binaries for the device you want to use on <a title="List of devices and resources" href="http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">Sony&acirc;&euro;&trade;s AOSP for Xperia devices</a></li>
-
-    <li style="margin-bottom: 10px">In the root of your Android code tree, unzip the software binaries file you downloaded.</li>
-
     <li style="margin-bottom: 10px">To download the code into the device repos created above, run the command:
       <pre class="prettyprint">
 repo sync
 Cherry-pick the upstream patches
 ./repo_update.sh
 </pre>
+
+      <p>Next two steps are only for the following devices:</p>
+
+      <ul>
+        <li>Xperia Tablet Z</li>
+
+        <li>Xperia ZL</li>
+
+        <li>Xperia Z</li>
+
+        <li>Xperia Z Ultra</li>
+
+        <li>Xperia Z1 Compact</li>
+
+        <li>Xperia Z2 Tablet</li>
+
+        <li>Xperia Z2</li>
+
+        <li>Xperia Z3 Tablet Compact</li>
+
+        <li>Xperia Z3 Compact</li>
+
+        <li>Xperia Z3</li>
+
+        <li>Xperia Z4 Tablet WiFi</li>
+
+        <li>Xperia Z4 Tablet</li>
+
+        <li>Xperia Z3+</li>
+
+        <li>Xperia Z5 Compact</li>
+
+        <li>Xperia Z5</li>
+
+        <li>Xperia Z5 Premium</li>
+      </ul>
     </li>
+
+    <li style="margin-bottom: 10px">Find and download the software binaries for the device you want to use on <a title="List of devices and resources" href="http://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">Sony&acirc;&euro;&trade;s AOSP for Xperia devices</a></li>
+
+    <li style="margin-bottom: 10px">In the root of your Android code tree, unzip the software binaries file you downloaded.</li>
   </ol>
 
   <p><strong>Build AOSP images that can be flashed<br></strong>Now you are ready to build AOSP images that can be flashed to a device. To do this, you have to point out your specific device and then start building the images.</p>
@@ -175,7 +211,26 @@ fastboot &acirc;&euro;&ldquo;S 256M flash userdata out/target/product/&lt;device
     <li style="margin-bottom: 10px">Now when you disconnect your device from the computer and start it, it will be running AOSP.</li>
   </ol>
 
-  <p><strong>Flash vendor image to your device</strong></p>
+  <p><strong>Flash vendor image to your device</strong><br>
+  Vendor image is supported by the following devices:</p>
+
+  <ul>
+    <li>Xperia X</li>
+
+    <li>Xperia X Compact</li>
+
+    <li>Xperia X Performance</li>
+
+    <li>Xperia XZ Premium</li>
+
+    <li>Xperia XZ1</li>
+
+    <li>Xperia XZ1 Compact</li>
+
+    <li>Xperia XZ</li>
+
+    <li>Xperia XZs</li>
+  </ul>
 
   <ol>
     <li style="margin-bottom: 10px">Download the vendor image corresponding your device from <a href="https://developer.sonymobile.com/open-devices/list-of-devices-and-resources/">List of devices and resources</a>.</li>
