@@ -47,11 +47,9 @@ TAG_NAME=$5
 clean_dir vendor
 
 setup_git https://www.github.com/abioteau/vendor_sony.git vendor/sony
-setup_git https://www.github.com/abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt
 
 unzip -X -b -d $WORKSPACE_DIRECTORY orig/binary/$BINARY_FILE
 
 commit_files vendor/sony
-commit_files vendor/qcom/prebuilt
 
-exit `find $WORKSPACE_DIRECTORY/vendor -regextype posix-extended -regex "$WORKSPACE_DIRECTORY/vendor/sony/.*|$WORKSPACE_DIRECTORY/vendor/qcom/prebuilt/.*" -prune -o -type f -print | wc -l`
+exit `find $WORKSPACE_DIRECTORY/vendor -regextype posix-extended -regex "$WORKSPACE_DIRECTORY/vendor/sony/.*" -prune -o -type f -print | wc -l`
