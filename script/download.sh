@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 08/29/2017
+# Last revised 10/05/2017
 
 mkdir -p sonyxperiadev
 
@@ -85,7 +85,10 @@ do
             sed 's/SW_binaries_for_Xperia_AOSP_//g' | \
             sed 's/_v.*//g' | \
             tr '[:upper:]' '[:lower:]'`
-        ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${branchName}"
+        tagName=`echo "${binaryFile}" | \
+            sed 's/SW_binaries_for_//g' | \
+            sed 's/.zip//g'`
+        ./script/extract_binary.sh . "${binaryFile}" "${commitMessage}" "${branchName}" "${tagName}"
         if [ $? -ne 0 ]
         then
             exit 1

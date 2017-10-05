@@ -2,14 +2,14 @@
 # Script to extract Sony Xperia binaries
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 01/31/2017
+# Last revised 10/05/2017
 
 setup_git() {
     git clone $1 $WORKSPACE_DIRECTORY/$2
     cd $WORKSPACE_DIRECTORY/$2
     git config --local user.email "adrien.bioteau@gmail.com"
     git config --local user.name "Adrien Bioteau"
-    git checkout $ORIGIN_GIT_BRANCH
+    git checkout origin/$GIT_BRANCH
     git rm -rf *
     cd -
 }
@@ -29,7 +29,7 @@ clean_dir() {
 
 if [ $# -ne 5 ]
 then
-    echo "[USAGE] ./extract_binary.sh <workspace_directory> <binary_file> <commit_message> <git_branch> <origin_git_branch>"
+    echo "[USAGE] ./extract_binary.sh <workspace_directory> <binary_file> <commit_message> <git_branch> <git_tag>"
     exit 1
 fi
 
@@ -42,16 +42,7 @@ then
 else
     GIT_BRANCH=$4"-mr0"
 fi
-if [[ $5 == *"mr"* ]]
-then
-    ORIGIN_GIT_BRANCH=`echo $5 | sed 's/\([a-z]\)_\(mr[0-9]\)\(.*\)/\1-\2\3/g'`
-else
-    ORIGIN_GIT_BRANCH=$5"-mr0"
-fi
-
-TAG_NAME=`echo $BINARY_FILE | \
-    sed 's/SW_binaries_for_//g' | \
-    sed 's/.zip//g'`
+TAG_NAME=$5
 
 clean_dir vendor
 
