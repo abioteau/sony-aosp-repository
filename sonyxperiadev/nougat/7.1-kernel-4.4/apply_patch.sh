@@ -79,6 +79,7 @@ cd bionic && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/50/234150/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/53/236953/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/90/497890/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/01/503201/1/*.patch`
 cd ../bootable/recovery && repo start $GIT_BRANCH .
 git format-patch -o /tmp/35fff61b1c0d736d090a1cd1bb4e99141cc88ad8 -1 35fff61b1c0d736d090a1cd1bb4e99141cc88ad8 && git am -3 --committer-date-is-author-date /tmp/35fff61b1c0d736d090a1cd1bb4e99141cc88ad8/0001-*.patch && rm -rf /tmp/35fff61b1c0d736d090a1cd1bb4e99141cc88ad8
 git format-patch -o /tmp/d00f5eb63a8e4690f9bef1e943d539d052444d9b -1 d00f5eb63a8e4690f9bef1e943d539d052444d9b && git am -3 --committer-date-is-author-date /tmp/d00f5eb63a8e4690f9bef1e943d539d052444d9b/0001-*.patch && rm -rf /tmp/d00f5eb63a8e4690f9bef1e943d539d052444d9b

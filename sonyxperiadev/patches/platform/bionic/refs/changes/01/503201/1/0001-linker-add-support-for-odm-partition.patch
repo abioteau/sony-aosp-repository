@@ -1,0 +1,55 @@
+From 8bbcb7800313843a187ec23e8fe4d352419d2dac Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Mon, 25 Sep 2017 17:47:49 +0200
+Subject: [PATCH] linker: add support for odm partition
+
+If libraries are on the odm partition they will fail to load
+This patch adds the odm path as a search path for linker.
+
+Change-Id: I1f540189cd54e7b1b9f38efcdef38ed63e95ec05
+Test: libraries load from the odm partition
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ linker/linker.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/linker/linker.cpp b/linker/linker.cpp
+index a043b859a..b6eb97c09 100644
+--- a/linker/linker.cpp
++++ b/linker/linker.cpp
+@@ -158,18 +158,23 @@ static soinfo* somain; // main process, always the one after libdl_info
+ #if defined(__LP64__)
+ static const char* const kSystemLibDir     = "/system/lib64";
+ static const char* const kVendorLibDir     = "/vendor/lib64";
++static const char* const kOdmLibDir        = "/odm/lib64";
+ static const char* const kAsanSystemLibDir = "/data/lib64";
+ static const char* const kAsanVendorLibDir = "/data/vendor/lib64";
++static const char* const kAsanOdmLibDir    = "/data/odm/lib64";
+ #else
+ static const char* const kSystemLibDir     = "/system/lib";
+ static const char* const kVendorLibDir     = "/vendor/lib";
++static const char* const kOdmLibDir        = "/odm/lib";
+ static const char* const kAsanSystemLibDir = "/data/lib";
+ static const char* const kAsanVendorLibDir = "/data/vendor/lib";
++static const char* const kAsanOdmLibDir    = "/data/odm/lib";
+ #endif
+ 
+ static const char* const kDefaultLdPaths[] = {
+   kSystemLibDir,
+   kVendorLibDir,
++  kOdmLibDir,
+   nullptr
+ };
+ 
+@@ -178,6 +183,8 @@ static const char* const kAsanDefaultLdPaths[] = {
+   kSystemLibDir,
+   kAsanVendorLibDir,
+   kVendorLibDir,
++  kAsanOdmLibDir,
++  kOdmLibDir,
+   nullptr
+ };
+ 
+-- 
+2.13.0
+
