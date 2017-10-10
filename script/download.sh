@@ -128,7 +128,7 @@ download_web_page "http://developer.sonymobile.com/open-devices/aosp-build-instr
 extract_section_from_web_page orig/marshmallow/index.html.tmp orig/marshmallow/index.html '/<div id="main" role="main"/,$p' '/<div class="column small-column sidebar-column">/q' 's/<div class="column small-column sidebar-column">//g'
 extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.html '/<dt id="build-aosp-marshmallow-6.0"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-marshmallow-6.0.html
-extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.1.html '/<dt id="build-aosp-marshmallow-experimental"/,$p' '/\/dd>/q'
+extract_section_from_web_page orig/marshmallow/index.html sonyxperiadev/build-aosp-marshmallow-6.0.1.html '/<dt id="build-aosp-marshmallow"/,$p' '/\/dd>/q'
 check_null_web_page sonyxperiadev/build-aosp-marshmallow-6.0.1.html
 aospVersionCounter=$((aospVersionCounter+1))
 
