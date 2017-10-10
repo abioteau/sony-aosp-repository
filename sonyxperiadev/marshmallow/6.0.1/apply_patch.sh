@@ -75,7 +75,11 @@ rm -rf vendor_manifests
 ~/bin/repo sync -j $NB_CORES
 ~/bin/repo manifest -o manifest.xml -r
 
-cd external/libnfc-nci && repo start $GIT_BRANCH .
+cd bionic && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/50/234150/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/53/236953/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/90/497890/1/*.patch`
+cd ../external/libnfc-nci && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/libnfc-nci/refs/changes/61/170861/2/*.patch`
 cd ../toybox && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/toybox/refs/changes/53/265153/1/*.patch`
@@ -101,7 +105,9 @@ git format-patch -o /tmp/888834f9aba0609222c6e6bbd86bd6625af28746 -1 888834f9aba
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/70/212570/5/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/80/212580/2/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/keymaster/refs/changes/61/213261/1/*.patch`
-cd ../../broadcom/libbt && repo start $GIT_BRANCH .
+cd ../../libhardware && repo start $GIT_BRANCH .
+git format-patch -o /tmp/48f57ad4f470ebcb71ac10df4e5e0953a6cfacd8 -1 48f57ad4f470ebcb71ac10df4e5e0953a6cfacd8 && git am -3 --committer-date-is-author-date /tmp/48f57ad4f470ebcb71ac10df4e5e0953a6cfacd8/0001-*.patch && rm -rf /tmp/48f57ad4f470ebcb71ac10df4e5e0953a6cfacd8
+cd ../broadcom/libbt && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/broadcom/libbt/refs/changes/17/114817/2/*.patch`
 cd ../../../system/core && repo start $GIT_BRANCH .
 git format-patch -o /tmp/9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9 -1 9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9 && git am -3 --committer-date-is-author-date /tmp/9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9/0001-*.patch && rm -rf /tmp/9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9

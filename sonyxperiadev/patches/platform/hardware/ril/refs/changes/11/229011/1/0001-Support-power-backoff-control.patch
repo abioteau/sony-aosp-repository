@@ -64,5 +64,5 @@ index 163aa46..b2e9fe2 100644
      {RIL_REQUEST_GET_ACTIVITY_INFO, dispatchVoid, responseActivityData},
 +    {RIL_REQUEST_SET_TRANSMIT_POWER, dispatchString, responseVoid},
 -- 
-2.11.0
+2.13.0
 

@@ -9,7 +9,7 @@
 
 <body>
   <dl>
-    <dt id="build-aosp-marshmallow-experimental"><a class="question" href="#build-aosp-marshmallow-experimental">Build AOSP Marshmallow 6.0.1</a></dt>
+    <dt id="build-aosp-marshmallow"><a class="question" href="#build-aosp-marshmallow">Build AOSP Marshmallow 6.0.1</a></dt>
   </dl>
 
   <p>This guide assumes you run Ubuntu (we used Ubuntu 14.04 LTS), but it should work in a similar way on any Linux-based system. To use&Acirc;&nbsp;these instructions, you should be familiar with Android development. Follow the steps below to build Android Marshmallow on an unlocked Xperia device. The instructions will guide you through each step from how to prepare your environment and install all necessary tools to downloading and configuring the code, before you can finally build AOSP images and flash them on your device.</p>
@@ -128,7 +128,11 @@ repo sync
   <ol>
     <li>In a terminal window, enter:
       <pre class="prettyprint">
-cd external/libnfc-nci
+cd bionic
+git fetch http://android.googlesource.com/platform/bionic refs/changes/50/234150/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/bionic refs/changes/53/236953/1 &amp;&amp; git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/bionic refs/changes/90/497890/1 &amp;&amp; git cherry-pick FETCH_HEAD
+cd ../external/libnfc-nci
 git fetch https://android.googlesource.com/platform/external/libnfc-nci refs/changes/61/170861/2 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../toybox
 git fetch https://android.googlesource.com/platform/external/toybox refs/changes/53/265153/1 &amp;&amp; git cherry-pick FETCH_HEAD
@@ -154,7 +158,9 @@ git cherry-pick 888834f9aba0609222c6e6bbd86bd6625af28746
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/70/212570/5 &amp;&amp; git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/80/212580/2 &amp;&amp; git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/61/213261/1 &amp;&amp; git cherry-pick FETCH_HEAD
-cd ../../broadcom/libbt/
+cd ../../libhardware
+git cherry-pick 48f57ad4f470ebcb71ac10df4e5e0953a6cfacd8
+cd ../broadcom/libbt/
 git fetch https://android.googlesource.com/platform/hardware/broadcom/libbt refs/changes/17/114817/2 &amp;&amp; git cherry-pick FETCH_HEAD
 cd ../../../system/core
 git cherry-pick 9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9

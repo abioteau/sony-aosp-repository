@@ -1,4 +1,8 @@
-cd external/libnfc-nci
+cd bionic
+git fetch http://android.googlesource.com/platform/bionic refs/changes/50/234150/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/bionic refs/changes/53/236953/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/bionic refs/changes/90/497890/1 && git cherry-pick FETCH_HEAD
+cd ../external/libnfc-nci
 git fetch https://android.googlesource.com/platform/external/libnfc-nci refs/changes/61/170861/2 && git cherry-pick FETCH_HEAD
 cd ../toybox
 git fetch https://android.googlesource.com/platform/external/toybox refs/changes/53/265153/1 && git cherry-pick FETCH_HEAD
@@ -24,7 +28,9 @@ git cherry-pick 888834f9aba0609222c6e6bbd86bd6625af28746
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/70/212570/5 && git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/80/212580/2 && git cherry-pick FETCH_HEAD
 git fetch https://android.googlesource.com/platform/hardware/qcom/keymaster refs/changes/61/213261/1 && git cherry-pick FETCH_HEAD
-cd ../../broadcom/libbt/
+cd ../../libhardware
+git cherry-pick 48f57ad4f470ebcb71ac10df4e5e0953a6cfacd8
+cd ../broadcom/libbt/
 git fetch https://android.googlesource.com/platform/hardware/broadcom/libbt refs/changes/17/114817/2 && git cherry-pick FETCH_HEAD
 cd ../../../system/core
 git cherry-pick 9cb3d3ccf49bf0fd484563fbf611c68789d5b8a9
