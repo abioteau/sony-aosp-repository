@@ -31,3 +31,6 @@ setup_git
 commit_sonyxperiadev_files
 upload_files abioteau/sony-aosp-repository.git .
 upload_files abioteau/vendor_sony.git vendor/sony
+upload_files abioteau/vendor_sony_loire.git vendor/sony/loire
+upload_files abioteau/vendor_sony_tone.git vendor/sony/tone
+upload_files abioteau/vendor_sony_yoshino.git vendor/sony/yoshino
