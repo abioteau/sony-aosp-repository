@@ -31,4 +31,3 @@ setup_git
 commit_sonyxperiadev_files
 upload_files abioteau/sony-aosp-repository.git .
 upload_files abioteau/vendor_sony.git vendor/sony
-upload_files abioteau/vendor_qcom_prebuilt.git vendor/qcom/prebuilt
