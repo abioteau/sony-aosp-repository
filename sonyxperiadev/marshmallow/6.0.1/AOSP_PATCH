@@ -2,6 +2,7 @@ cd bionic
 git fetch http://android.googlesource.com/platform/bionic refs/changes/50/234150/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/bionic refs/changes/53/236953/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/bionic refs/changes/90/497890/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/bionic refs/changes/95/506395/1 && git cherry-pick FETCH_HEAD
 cd ../external/libnfc-nci
 git fetch https://android.googlesource.com/platform/external/libnfc-nci refs/changes/61/170861/2 && git cherry-pick FETCH_HEAD
 cd ../toybox

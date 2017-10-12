@@ -1,0 +1,30 @@
+From 56ecd6470b1a225a16a38a2d9ca30aca379bf78c Mon Sep 17 00:00:00 2001
+From: Humberto Borba <humberos@gmail.com>
+Date: Tue, 10 Oct 2017 12:19:34 -0300
+Subject: [PATCH] bionic: linker: Add support for odm partition
+
+Change-Id: I7e58f4bae09139aeca608eae3b2c27da6b711641
+Signed-off-by: Humberto Borba <humberos@gmail.com>
+---
+ linker/linker.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/linker/linker.cpp b/linker/linker.cpp
+index b860f70b9..df50f38f7 100644
+--- a/linker/linker.cpp
++++ b/linker/linker.cpp
+@@ -78,9 +78,11 @@ static const char* const kDefaultLdPaths[] = {
+ #if defined(__LP64__)
+   "/vendor/lib64",
+   "/system/lib64",
++  "/odm/lib64",
+ #else
+   "/vendor/lib",
+   "/system/lib",
++  "/odm/lib",
+ #endif
+   nullptr
+ };
+-- 
+2.13.0
+
