@@ -88,6 +88,9 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/build/soong/refs/changes/12/367312/2/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/build/soong/refs/changes/32/367332/3/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/build/soong/refs/changes/92/367392/2/*.patch`
+cd ../../bootable/recovery && repo start $GIT_BRANCH .
+git format-patch -o /tmp/846012fc444e6076dabf874ed8cbdab358c2e0fb -1 846012fc444e6076dabf874ed8cbdab358c2e0fb && git am -3 --committer-date-is-author-date /tmp/846012fc444e6076dabf874ed8cbdab358c2e0fb/0001-*.patch && rm -rf /tmp/846012fc444e6076dabf874ed8cbdab358c2e0fb
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bootable/recovery/refs/changes/35/517735/2/*.patch`
 cd ../../external/wpa_supplicant_8 && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/wpa_supplicant_8/refs/changes/00/512300/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/wpa_supplicant_8/refs/changes/01/512301/1/*.patch`
