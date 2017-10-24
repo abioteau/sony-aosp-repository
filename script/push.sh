@@ -3,7 +3,7 @@
 # Script to commit and push
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 01/31/2017
+# Last revised 10/24/2017
 
 setup_git() {
     git config --global user.email "adrien.bioteau@gmail.com"
@@ -22,7 +22,7 @@ upload_files() {
     then
         cd $2
         git remote add origin-travis https://${GH_TOKEN}@github.com/$1 > /dev/null 2>&1
-        git push --quiet --tags --set-upstream origin-travis `git rev-parse --abbrev-ref HEAD`
+        git push --quiet --tags --set-upstream origin-travis `git for-each-ref refs/heads --format='%(refname:short)'`
         cd -
     fi
 }
