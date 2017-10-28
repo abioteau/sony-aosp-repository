@@ -19,7 +19,7 @@ Signed-off-by: Magnus Landqvist <magnus.landqvist@sony.com>
  create mode 100644 minui/graphics_overlay.h
 
 diff --git a/minui/Android.mk b/minui/Android.mk
-index 546ba2f..349d224 100644
+index 546ba2fe..349d2246 100644
 --- a/minui/Android.mk
 +++ b/minui/Android.mk
 @@ -24,6 +24,7 @@ LOCAL_SRC_FILES := \
@@ -46,7 +46,7 @@ index 546ba2f..349d224 100644
  
  # libminui (shared library)
 diff --git a/minui/graphics.cpp b/minui/graphics.cpp
-index 56f471b..e465ddd 100644
+index 56f471bc..e465dddc 100644
 --- a/minui/graphics.cpp
 +++ b/minui/graphics.cpp
 @@ -27,6 +27,7 @@
@@ -74,7 +74,7 @@ index 56f471b..e465ddd 100644
      gr_draw = backend->Init();
 diff --git a/minui/graphics_overlay.cpp b/minui/graphics_overlay.cpp
 new file mode 100644
-index 0000000..7dc7da3
+index 00000000..7dc7da3f
 --- /dev/null
 +++ b/minui/graphics_overlay.cpp
 @@ -0,0 +1,577 @@
@@ -657,7 +657,7 @@ index 0000000..7dc7da3
 +}
 diff --git a/minui/graphics_overlay.h b/minui/graphics_overlay.h
 new file mode 100644
-index 0000000..2a3b186
+index 00000000..2a3b1868
 --- /dev/null
 +++ b/minui/graphics_overlay.h
 @@ -0,0 +1,73 @@
