@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 10/05/2017
+# Last revised 11/05/2017
 
 mkdir -p sonyxperiadev
 
@@ -280,7 +280,7 @@ do
     echo "# Script to apply Sony Xperia patches" >> ${outdir}/apply_patch.sh
     echo "# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
     echo "# Permission to copy and modify is granted under the GPLv3 license" >> ${outdir}/apply_patch.sh
-    echo "# Last revised 08/29/2017" >> ${outdir}/apply_patch.sh
+    echo "# Last revised 11/05/2017" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "relpath () {" >> ${outdir}/apply_patch.sh
     echo "    [ \$# -ge 1 ] && [ \$# -le 2 ] || return 1" >> ${outdir}/apply_patch.sh
@@ -335,18 +335,14 @@ do
     if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
     then
         echo "sed -i -e \"/^  <!-- Sony AOSP addons -->/d; /^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/\" .repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
-        for repo in "sonyxperiadev/local_manifests" "abioteau/vendor_manifests"
-        do
-            repodir=`basename -s .git $repo`
-            echo "git clone \$GITHUB_MIRROR_URL/$repo" >> ${outdir}/apply_patch.sh
-            echo "cd $repodir" >> ${outdir}/apply_patch.sh
-            echo "git checkout -f "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
-            echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_REL_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
-            echo "find *.xml | xargs -I {} sed -i -e \"/^  <include name=\\\"{}\\\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\\\"{}\\\"\/>\n\1/\" ../.repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
-            echo "cp *.xml ../.repo/manifests/." >> ${outdir}/apply_patch.sh
-            echo "cd .." >> ${outdir}/apply_patch.sh
-            echo "rm -rf $repodir" >> ${outdir}/apply_patch.sh
-        done
+        echo "git clone \$GITHUB_MIRROR_URL/abioteau/local_manifests" >> ${outdir}/apply_patch.sh
+        echo "cd local_manifests" >> ${outdir}/apply_patch.sh
+        echo "git checkout -f "`cat ${outdir}/LOCAL_MANIFESTS_BRANCH` >> ${outdir}/apply_patch.sh
+        echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_REL_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" *.xml" >> ${outdir}/apply_patch.sh
+        echo "find *.xml | xargs -I {} sed -i -e \"/^  <include name=\\\"{}\\\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\\\"{}\\\"\/>\n\1/\" ../.repo/manifests/default.xml" >> ${outdir}/apply_patch.sh
+        echo "cp *.xml ../.repo/manifests/." >> ${outdir}/apply_patch.sh
+        echo "cd .." >> ${outdir}/apply_patch.sh
+        echo "rm -rf local_manifests" >> ${outdir}/apply_patch.sh
     else
         echo "cp \$ROOTDIR/${outdir}/sony.xml .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
         echo "sed -i \"s/fetch=\\\".*:\\/\\/github.com\\/\\(.*\\)\\\"/fetch=\\\"\$(echo \$GITHUB_MIRROR_REL_URL | sed 's/\//\\\\\//g')\\/\\1\\\"/\" .repo/manifests/sony.xml" >> ${outdir}/apply_patch.sh
