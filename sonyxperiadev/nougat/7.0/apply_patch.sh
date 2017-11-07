@@ -2,7 +2,7 @@
 # Script to apply Sony Xperia patches
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 08/29/2017
+# Last revised 11/05/2017
 
 relpath () {
     [ $# -ge 1 ] && [ $# -le 2 ] || return 1
@@ -55,7 +55,7 @@ cd $AOSP_WORKSPACE
 ~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-7.0.0_r34
 
 sed -i -e "/^  <!-- Sony AOSP addons -->/d; /^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/" .repo/manifests/default.xml
-git clone $GITHUB_MIRROR_URL/sonyxperiadev/local_manifests
+git clone $GITHUB_MIRROR_URL/abioteau/local_manifests
 cd local_manifests
 git checkout -f n-mr0
 sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_REL_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
@@ -63,14 +63,6 @@ find *.xml | xargs -I {} sed -i -e "/^  <include name=\"{}\"\/>/d; /^<\/manifest
 cp *.xml ../.repo/manifests/.
 cd ..
 rm -rf local_manifests
-git clone $GITHUB_MIRROR_URL/abioteau/vendor_manifests
-cd vendor_manifests
-git checkout -f n-mr0
-sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_REL_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
-find *.xml | xargs -I {} sed -i -e "/^  <include name=\"{}\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\"{}\"\/>\n\1/" ../.repo/manifests/default.xml
-cp *.xml ../.repo/manifests/.
-cd ..
-rm -rf vendor_manifests
 
 ~/bin/repo sync -j $NB_CORES
 ~/bin/repo manifest -o manifest.xml -r

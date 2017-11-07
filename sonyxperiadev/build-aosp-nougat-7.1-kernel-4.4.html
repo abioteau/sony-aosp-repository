@@ -198,9 +198,10 @@ make &acirc;&euro;&ldquo;j &lt;insert the cpu thread number of your computer&gt;
   <ol>
     <li style="margin-bottom: 10px">On your device: Connect the device to your computer in Fastboot mode, by pressing volume up while inserting the USB cable. When the device is in Fastboot mode, the LED on the device will be illuminated in blue.</li>
 
-    <li style="margin-bottom: 10px">On your computer: Flash the boot, system and userdata images by entering the following commands in a terminal window:
+    <li style="margin-bottom: 10px">On your computer: Flash the boot, recovery, system and userdata images by entering the following commands in a terminal window:
       <pre class="prettyprint">
 fastboot &acirc;&euro;&ldquo;S 256M flash boot out/target/product/&lt;device&gt;/boot.img
+fastboot &acirc;&euro;&ldquo;S 256M flash recovery out/target/product/&lt;device&gt;/recovery.img
 fastboot &acirc;&euro;&ldquo;S 256M flash system out/target/product/&lt;device&gt;/system.img
 fastboot &acirc;&euro;&ldquo;S 256M flash userdata out/target/product/&lt;device&gt;/userdata.img
 </pre>

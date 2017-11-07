@@ -2,7 +2,7 @@
 # Script to apply Sony Xperia patches
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 08/29/2017
+# Last revised 11/05/2017
 
 relpath () {
     [ $# -ge 1 ] && [ $# -le 2 ] || return 1
