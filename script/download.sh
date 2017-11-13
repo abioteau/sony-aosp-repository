@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/05/2017
+# Last revised 11/13/2017
 
 mkdir -p sonyxperiadev
 
@@ -200,7 +200,7 @@ do
 
     # Extract Sony repository manifest
     grep -o "git checkout [a-zA-Z0-9.\/\_\-]*${kernelTag}" ${file} | \
-        sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH        
+        sed 's/git checkout //g' > ${outdir}/LOCAL_MANIFESTS_BRANCH
     /usr/bin/dos2unix ${outdir}/LOCAL_MANIFESTS_BRANCH
 
     if [[ -s ${outdir}/LOCAL_MANIFESTS_BRANCH ]]
