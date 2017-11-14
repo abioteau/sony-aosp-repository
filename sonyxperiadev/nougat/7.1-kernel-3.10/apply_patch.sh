@@ -131,6 +131,7 @@ git format-patch -o /tmp/565ba02b89b64deb8bf7232ac2c2a38b01f63523 -1 565ba02b89b
 git format-patch -o /tmp/3f0250c3cc84b2480ef70d51343204eecbe84532 -1 3f0250c3cc84b2480ef70d51343204eecbe84532 && git am -3 --committer-date-is-author-date /tmp/3f0250c3cc84b2480ef70d51343204eecbe84532/0001-*.patch && rm -rf /tmp/3f0250c3cc84b2480ef70d51343204eecbe84532
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/52/269652/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/12/373812/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/75/537175/1/*.patch`
 cd ../extras && repo start $GIT_BRANCH .
 git format-patch -o /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2 -1 c71eaf37486bed9163ad528f51de29dd56b34fd2 && git am -3 --committer-date-is-author-date /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2/0001-*.patch && rm -rf /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2
 cd ../../packages/apps/Music && repo start $GIT_BRANCH .

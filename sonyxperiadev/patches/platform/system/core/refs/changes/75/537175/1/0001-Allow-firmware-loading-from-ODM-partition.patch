@@ -1,0 +1,32 @@
+From f57c67a489216c970c617ba1ad195677e4cd5d89 Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Wed, 4 Oct 2017 06:44:57 +0200
+Subject: [PATCH] Allow firmware loading from ODM partition
+
+ODM partition may contain firmware and we should allow
+firmware loading from this partition
+
+Test: firmware is loaded succesfully
+Change-Id: I7d327bc79a04d1a2dee0fd47407eb53f9d391665
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ init/devices.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/init/devices.cpp b/init/devices.cpp
+index 39571ac..05542f2 100644
+--- a/init/devices.cpp
++++ b/init/devices.cpp
+@@ -58,7 +58,8 @@
+ #define SYSFS_PREFIX    "/sys"
+ static const char *firmware_dirs[] = { "/etc/firmware",
+                                        "/vendor/firmware",
+-                                       "/firmware/image" };
++                                       "/firmware/image",
++                                       "/odm/firmware" };
+ 
+ extern struct selabel_handle *sehandle;
+ 
+-- 
+2.13.0
+
