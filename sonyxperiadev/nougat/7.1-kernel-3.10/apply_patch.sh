@@ -75,6 +75,7 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 cd ../bootable/recovery && repo start $GIT_BRANCH .
 git format-patch -o /tmp/35fff61b1c0d736d090a1cd1bb4e99141cc88ad8 -1 35fff61b1c0d736d090a1cd1bb4e99141cc88ad8 && git am -3 --committer-date-is-author-date /tmp/35fff61b1c0d736d090a1cd1bb4e99141cc88ad8/0001-*.patch && rm -rf /tmp/35fff61b1c0d736d090a1cd1bb4e99141cc88ad8
 git format-patch -o /tmp/d00f5eb63a8e4690f9bef1e943d539d052444d9b -1 d00f5eb63a8e4690f9bef1e943d539d052444d9b && git am -3 --committer-date-is-author-date /tmp/d00f5eb63a8e4690f9bef1e943d539d052444d9b/0001-*.patch && rm -rf /tmp/d00f5eb63a8e4690f9bef1e943d539d052444d9b
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bootable/recovery/refs/changes/15/538015/2/*.patch`
 cd ../../external/toybox && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/toybox/refs/changes/74/265074/1/*.patch`
 git format-patch -o /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da -1 d3e8dd1bf56afc2277960472a46907d419e4b3da && git am -3 --committer-date-is-author-date /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da/0001-*.patch && rm -rf /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da
