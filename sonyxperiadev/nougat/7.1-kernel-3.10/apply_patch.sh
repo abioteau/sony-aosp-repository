@@ -135,7 +135,9 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/75/537175/1/*.patch`
 cd ../extras && repo start $GIT_BRANCH .
 git format-patch -o /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2 -1 c71eaf37486bed9163ad528f51de29dd56b34fd2 && git am -3 --committer-date-is-author-date /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2/0001-*.patch && rm -rf /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2
-cd ../../packages/apps/Music && repo start $GIT_BRANCH .
+cd ../../packages/apps/Camera2 && repo start $GIT_BRANCH .
+git format-patch -o /tmp/8b17de0f4321fd981da98c64ad8a379ed6c0432a -1 8b17de0f4321fd981da98c64ad8a379ed6c0432a && git am -3 --committer-date-is-author-date /tmp/8b17de0f4321fd981da98c64ad8a379ed6c0432a/0001-*.patch && rm -rf /tmp/8b17de0f4321fd981da98c64ad8a379ed6c0432a
+cd ../Music && repo start $GIT_BRANCH .
 git format-patch -o /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3 -1 6036ce6127022880a3d9c99bd15db4c968f3e6a3 && git am -3 --committer-date-is-author-date /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3/0001-*.patch && rm -rf /tmp/6036ce6127022880a3d9c99bd15db4c968f3e6a3
 cd ../../../frameworks/av && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/69/343069/1/*.patch`
