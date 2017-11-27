@@ -110,6 +110,7 @@ cd ../../../system/core && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/37/469437/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/92/497892/2/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/75/537175/1/*.patch`
+git format-patch -o /tmp/d266d37e4cb6d0b31eb9422b73f051632ea7365f -1 d266d37e4cb6d0b31eb9422b73f051632ea7365f && git am -3 --committer-date-is-author-date /tmp/d266d37e4cb6d0b31eb9422b73f051632ea7365f/0001-*.patch && rm -rf /tmp/d266d37e4cb6d0b31eb9422b73f051632ea7365f
 cd ../../frameworks/av && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/92/384692/2/*.patch`
 cd ../../packages/inputmethods/LatinIME && repo start $GIT_BRANCH .
