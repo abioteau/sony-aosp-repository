@@ -23,8 +23,11 @@ extract_odm_image() {
     mkdir -p $WORKSPACE_DIRECTORY/$1/tmp
     simg2img $WORKSPACE_DIRECTORY/$1/*.img $WORKSPACE_DIRECTORY/$1/odm.raw.img
     sudo mount -t ext4 -o loop $WORKSPACE_DIRECTORY/$1/odm.raw.img $WORKSPACE_DIRECTORY/$1/tmp
+    sudo rm -rf $WORKSPACE_DIRECTORY/$1/tmp/lost+found
+    sudo chown -R $(id -u):$(id -g) $WORKSPACE_DIRECTORY/$1/tmp
     cp -rf $WORKSPACE_DIRECTORY/$1/tmp/* $2/.
     sudo umount $WORKSPACE_DIRECTORY/$1/tmp
+    sudo rm -rf $WORKSPACE_DIRECTORY/$1/tmp
 }
 
 commit_files() {
