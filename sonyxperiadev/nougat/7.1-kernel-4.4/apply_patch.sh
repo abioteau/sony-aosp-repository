@@ -81,6 +81,8 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git format-patch -o /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da -1 d3e8dd1bf56afc2277960472a46907d419e4b3da && git am -3 --committer-date-is-author-date /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da/0001-*.patch && rm -rf /tmp/d3e8dd1bf56afc2277960472a46907d419e4b3da
 git format-patch -o /tmp/1c028ca33dc059a9d8f18daafcd77b5950268f41 -1 1c028ca33dc059a9d8f18daafcd77b5950268f41 && git am -3 --committer-date-is-author-date /tmp/1c028ca33dc059a9d8f18daafcd77b5950268f41/0001-*.patch && rm -rf /tmp/1c028ca33dc059a9d8f18daafcd77b5950268f41
 git format-patch -o /tmp/cb49c305e3c78179b19d6f174ae73309544292b8 -1 cb49c305e3c78179b19d6f174ae73309544292b8 && git am -3 --committer-date-is-author-date /tmp/cb49c305e3c78179b19d6f174ae73309544292b8/0001-*.patch && rm -rf /tmp/cb49c305e3c78179b19d6f174ae73309544292b8
+cd ../iproute2 && repo start $GIT_BRANCH .
+git format-patch -o /tmp/04cd308001d732a1c8e5d244daba37c56a4641b0 -1 04cd308001d732a1c8e5d244daba37c56a4641b0 && git am -3 --committer-date-is-author-date /tmp/04cd308001d732a1c8e5d244daba37c56a4641b0/0001-*.patch && rm -rf /tmp/04cd308001d732a1c8e5d244daba37c56a4641b0
 cd ../libnfc-nci && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/libnfc-nci/refs/changes/52/371052/1/*.patch`
 cd ../../hardware/qcom/bt && repo start $GIT_BRANCH .
@@ -135,6 +137,9 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/75/537175/1/*.patch`
 cd ../extras && repo start $GIT_BRANCH .
 git format-patch -o /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2 -1 c71eaf37486bed9163ad528f51de29dd56b34fd2 && git am -3 --committer-date-is-author-date /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2/0001-*.patch && rm -rf /tmp/c71eaf37486bed9163ad528f51de29dd56b34fd2
+cd ../netd && repo start $GIT_BRANCH .
+git format-patch -o /tmp/2b078678aafceeefea6a70e96ab8ddefe515d027 -1 2b078678aafceeefea6a70e96ab8ddefe515d027 && git am -3 --committer-date-is-author-date /tmp/2b078678aafceeefea6a70e96ab8ddefe515d027/0001-*.patch && rm -rf /tmp/2b078678aafceeefea6a70e96ab8ddefe515d027
+git format-patch -o /tmp/882e467ff7b83de868fa0b9a9beb9036bf14aede -1 882e467ff7b83de868fa0b9a9beb9036bf14aede && git am -3 --committer-date-is-author-date /tmp/882e467ff7b83de868fa0b9a9beb9036bf14aede/0001-*.patch && rm -rf /tmp/882e467ff7b83de868fa0b9a9beb9036bf14aede
 cd ../../packages/apps/Camera2 && repo start $GIT_BRANCH .
 git format-patch -o /tmp/8b17de0f4321fd981da98c64ad8a379ed6c0432a -1 8b17de0f4321fd981da98c64ad8a379ed6c0432a && git am -3 --committer-date-is-author-date /tmp/8b17de0f4321fd981da98c64ad8a379ed6c0432a/0001-*.patch && rm -rf /tmp/8b17de0f4321fd981da98c64ad8a379ed6c0432a
 cd ../Music && repo start $GIT_BRANCH .

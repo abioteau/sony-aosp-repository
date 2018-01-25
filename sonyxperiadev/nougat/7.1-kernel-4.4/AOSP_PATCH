@@ -12,6 +12,8 @@ git fetch http://android.googlesource.com/platform/external/toybox refs/changes/
 git cherry-pick d3e8dd1bf56afc2277960472a46907d419e4b3da
 git cherry-pick 1c028ca33dc059a9d8f18daafcd77b5950268f41
 git cherry-pick cb49c305e3c78179b19d6f174ae73309544292b8
+cd ../iproute2
+git cherry-pick 04cd308001d732a1c8e5d244daba37c56a4641b0
 cd ../libnfc-nci
 git fetch http://android.googlesource.com/platform/external/libnfc-nci refs/changes/52/371052/1 && git cherry-pick FETCH_HEAD
 cd ../../hardware/qcom/bt
@@ -66,6 +68,9 @@ git fetch http://android.googlesource.com/platform/system/core refs/changes/12/3
 git fetch http://android.googlesource.com/platform/system/core refs/changes/75/537175/1 && git cherry-pick FETCH_HEAD
 cd ../extras
 git cherry-pick c71eaf37486bed9163ad528f51de29dd56b34fd2
+cd ../netd
+git cherry-pick 2b078678aafceeefea6a70e96ab8ddefe515d027
+git cherry-pick 882e467ff7b83de868fa0b9a9beb9036bf14aede
 cd ../../packages/apps/Camera2
 git cherry-pick 8b17de0f4321fd981da98c64ad8a379ed6c0432a
 cd ../Music
