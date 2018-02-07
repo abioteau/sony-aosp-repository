@@ -2,13 +2,13 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2018 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 01/26/2018
+# Last revised 02/07/2018
 
 mkdir -p orig
 mkdir -p sonyxperiadev
 
 #For each AOSP build instructions
-buildInstructionsList="kitkat-4.4 lollipop-5.0 lollipop-5.1 marshmallow-6.0 marshmallow-6.0.1 nougat-7.0 nougat-7.1-kernel-3.10 nougat-7.1-kernel-4.4 oreo-8.0"
+buildInstructionsList="kitkat-4.4 lollipop-5.0 lollipop-5.1 marshmallow-6.0 marshmallow-6.0.1 nougat-7.0 nougat-7.1-kernel-3.10 nougat-7.1-kernel-4.4 oreo-8.0 oreo-8.1"
 for buildInstruction in ${buildInstructionsList};
 do
     versionName=`echo ${buildInstruction} | \

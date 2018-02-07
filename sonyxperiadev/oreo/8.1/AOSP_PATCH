@@ -1,0 +1,34 @@
+cd bionic
+git fetch http://android.googlesource.com/platform/bionic refs/changes/59/555059/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/bionic refs/changes/22/553222/1 && git cherry-pick FETCH_HEAD
+cd ../bootable/recovery
+git cherry-pick 846012fc444e6076dabf874ed8cbdab358c2e0fb
+git fetch http://android.googlesource.com/platform/bootable/recovery refs/changes/35/517735/2 && git cherry-pick FETCH_HEAD
+cd ../../hardware/qcom/gps
+git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/37/464137/1 && git cherry-pick FETCH_HEAD
+cd ../audio
+git cherry-pick f6aae037da61d2ec5327e157c0489dec1231f5c2
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/91/294291/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/63/573163/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/56/535256/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/43/576643/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/41/602841/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/42/602842/1  && git cherry-pick FETCH_HEAD
+cd ../media
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/55/522855/1 && git cherry-pick FETCH_HEAD
+cd ../display
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/35/437235/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/42/576642/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/38/602838/1 && git cherry-pick FETCH_HEAD
+cd ../bt
+git fetch http://android.googlesource.com/platform/hardware/qcom/bt refs/changes/84/573184/1 && git cherry-pick FETCH_HEAD
+cd ../../../system/core
+git fetch http://android.googlesource.com/platform/system/core refs/changes/21/553221/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/system/core refs/changes/41/501741/2 && git cherry-pick FETCH_HEAD
+git revert --no-edit 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad
+git fetch http://android.googlesource.com/platform/system/core refs/changes/37/469437/1 && git cherry-pick FETCH_HEAD
+cd ../../frameworks/av
+git fetch http://android.googlesource.com/platform/frameworks/av refs/changes/92/384692/2 && git cherry-pick FETCH_HEAD
+cd ../../packages/inputmethods/LatinIME
+git fetch http://android.googlesource.com/platform/packages/inputmethods/LatinIME refs/changes/78/469478/1 && git cherry-pick FETCH_HEAD
+cd ../../../
