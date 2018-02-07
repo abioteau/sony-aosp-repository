@@ -12,7 +12,7 @@ Change-Id: Ic6980daa9512b5594e1db966cff7042f2503586e
  1 file changed, 1 insertion(+)
 
 diff --git a/include/hardware/nfc.h b/include/hardware/nfc.h
-index 58d33d9..6002e34 100644
+index 58d33d90..6002e34e 100644
 --- a/include/hardware/nfc.h
 +++ b/include/hardware/nfc.h
 @@ -54,6 +54,7 @@ __BEGIN_DECLS
@@ -24,5 +24,5 @@ index 58d33d9..6002e34 100644
  
  /*
 -- 
-2.11.0
+2.13.0
 

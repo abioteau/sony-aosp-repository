@@ -12,7 +12,7 @@ Signed-off-by: Adam Farden <adam@farden.cz>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Android.mk b/Android.mk
-index c8a8098..274459a 100644
+index c8a80983..274459a2 100644
 --- a/Android.mk
 +++ b/Android.mk
 @@ -10,7 +10,7 @@ ifneq ($(TARGET_BOARD_AUTO),true)
@@ -25,5 +25,5 @@ index c8a8098..274459a 100644
          else
            ifneq ($(filter msm8909,$(TARGET_BOARD_PLATFORM)),)
 -- 
-2.11.0
+2.13.0
 

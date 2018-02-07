@@ -14,7 +14,7 @@ Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/init/devices.cpp b/init/devices.cpp
-index 39571ac..05542f2 100644
+index 39571ac65..05542f2d3 100644
 --- a/init/devices.cpp
 +++ b/init/devices.cpp
 @@ -58,7 +58,8 @@
