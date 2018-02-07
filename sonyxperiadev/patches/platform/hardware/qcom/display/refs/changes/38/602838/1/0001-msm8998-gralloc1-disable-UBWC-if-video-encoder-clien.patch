@@ -1,0 +1,47 @@
+From 35637fc7d29c80a36b50d6dcb5594c8261bdb087 Mon Sep 17 00:00:00 2001
+From: oshmoun <oshmoun100@googlemail.com>
+Date: Sun, 28 Jan 2018 23:19:21 +0100
+Subject: [PATCH] msm8998: gralloc1: disable UBWC if video encoder client has
+ no support
+
+On msm8956, vidc does not support UBWC, but the display hal is setting the flag regardless, because adreno is reporting support.
+This leads to issues when trying to encode the actual display of the device, i.e when screen recording or when casting.
+Detect such cases by checking if:
+1. The client is video encoder
+2. It has declared inability to handle UBWC through a property
+
+Change-Id: I1ff2489b0ce8fe36a801881b848873e591077402
+---
+ msm8998/libgralloc1/gr_allocator.cpp | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/msm8998/libgralloc1/gr_allocator.cpp b/msm8998/libgralloc1/gr_allocator.cpp
+index 9adc24af..959268b5 100644
+--- a/msm8998/libgralloc1/gr_allocator.cpp
++++ b/msm8998/libgralloc1/gr_allocator.cpp
+@@ -602,6 +602,9 @@ void Allocator::GetIonHeapInfo(gralloc1_producer_usage_t prod_usage,
+ 
+ bool Allocator::IsUBwcEnabled(int format, gralloc1_producer_usage_t prod_usage,
+                               gralloc1_consumer_usage_t cons_usage) {
++  // Property is used to check whether the video encoder supports UBWC
++  char property[PROPERTY_VALUE_MAX];
++
+   // Allow UBWC, if client is using an explicitly defined UBWC pixel format.
+   if (IsUBwcFormat(format)) {
+     return true;
+@@ -623,6 +626,12 @@ bool Allocator::IsUBwcEnabled(int format, gralloc1_producer_usage_t prod_usage,
+       enable = adreno_helper_->IsUBWCSupportedByGPU(format);
+     }
+ 
++    // Check if client is video encoder, and UBWC is disabled by a prop
++    if ((cons_usage & GRALLOC1_CONSUMER_USAGE_VIDEO_ENCODER) &&
++        (property_get("video.disable.ubwc", property, "0") > 0)) {
++      enable = atoi(property) == 0;
++    }
++
+     // Allow UBWC, only if CPU usage flags are not set
+     if (enable && !(CpuCanAccess(prod_usage, cons_usage))) {
+       return true;
+-- 
+2.13.0
+

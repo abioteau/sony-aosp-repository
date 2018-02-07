@@ -14,7 +14,7 @@ Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/init/firmware_handler.cpp b/init/firmware_handler.cpp
-index b686885..8c8d9f2 100644
+index b686885fb..8c8d9f2ab 100644
 --- a/init/firmware_handler.cpp
 +++ b/init/firmware_handler.cpp
 @@ -78,8 +78,8 @@ static void ProcessFirmwareEvent(const Uevent& uevent) {
@@ -29,5 +29,5 @@ index b686885..8c8d9f2 100644
  try_loading_again:
      for (size_t i = 0; i < arraysize(firmware_dirs); i++) {
 -- 
-2.7.4
+2.13.0
 

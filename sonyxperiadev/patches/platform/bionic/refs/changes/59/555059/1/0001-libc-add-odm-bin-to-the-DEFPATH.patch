@@ -1,0 +1,31 @@
+From c7ec6d46fb619a25628427200c91eced02bc8edd Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+Date: Thu, 28 Sep 2017 21:16:21 +0200
+Subject: [PATCH] libc: add /odm/bin to the DEFPATH
+
+change is need to be able to share services on the odm partition
+
+Change-Id: I28cc37a9f049d0776fbcb7f92b05652385348b3e
+Test: services can launch from odm partition.
+
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sonymobile.com>
+---
+ libc/include/paths.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libc/include/paths.h b/libc/include/paths.h
+index d2c5956a8..922d1ceeb 100644
+--- a/libc/include/paths.h
++++ b/libc/include/paths.h
+@@ -38,7 +38,7 @@
+ #define	_PATH_BSHELL	"/system/bin/sh"
+ #endif
+ #define	_PATH_CONSOLE	"/dev/console"
+-#define	_PATH_DEFPATH	"/sbin:/system/sbin:/system/bin:/system/xbin:/vendor/bin:/vendor/xbin"
++#define	_PATH_DEFPATH	"/sbin:/system/sbin:/system/bin:/system/xbin:/odm/bin:/vendor/bin:/vendor/xbin"
+ #define	_PATH_DEV	"/dev/"
+ #define	_PATH_DEVNULL	"/dev/null"
+ #define	_PATH_KLOG	"/proc/kmsg"
+-- 
+2.13.0
+
