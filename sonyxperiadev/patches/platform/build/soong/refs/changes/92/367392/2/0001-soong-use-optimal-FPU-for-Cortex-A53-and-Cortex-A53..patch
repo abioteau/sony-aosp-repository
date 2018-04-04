@@ -12,7 +12,7 @@ Change-Id: Ib552044e549c50165492d53c76bff47c1c522d10
  1 file changed, 16 insertions(+), 4 deletions(-)
 
 diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
-index 4287143..57c5157 100644
+index 4287143a..57c5157f 100644
 --- a/cc/config/arm_device.go
 +++ b/cc/config/arm_device.go
 @@ -127,6 +127,15 @@ var (

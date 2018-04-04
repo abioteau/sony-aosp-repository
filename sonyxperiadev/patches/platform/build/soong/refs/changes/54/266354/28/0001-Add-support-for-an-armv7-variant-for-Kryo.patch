@@ -19,7 +19,7 @@ Signed-off-by: Alex Naidis <alex.naidis@linux.com>
  2 files changed, 18 insertions(+)
 
 diff --git a/android/arch.go b/android/arch.go
-index 3d56b37..6f123ea 100644
+index 3d56b372..6f123ea8 100644
 --- a/android/arch.go
 +++ b/android/arch.go
 @@ -856,6 +856,7 @@ func getMegaDeviceConfig() []archConfig {
@@ -31,7 +31,7 @@ index 3d56b37..6f123ea 100644
  		{"arm64", "armv8-a", "denver64", []string{"arm64-v8a"}},
  		{"mips", "mips32-fp", "", []string{"mips"}},
 diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
-index 1b60eae..b02c390 100644
+index 1b60eae7..b02c3901 100644
 --- a/cc/config/arm_device.go
 +++ b/cc/config/arm_device.go
 @@ -134,6 +134,14 @@ var (

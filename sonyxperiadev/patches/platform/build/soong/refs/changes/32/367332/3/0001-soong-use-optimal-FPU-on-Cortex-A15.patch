@@ -12,7 +12,7 @@ Change-Id: I94f00c9486ece201aa2c230308b9f90b0209dc4a
  1 file changed, 1 insertion(+)
 
 diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
-index 9058de2..4287143 100644
+index 9058de2f..4287143a 100644
 --- a/cc/config/arm_device.go
 +++ b/cc/config/arm_device.go
 @@ -120,6 +120,7 @@ var (

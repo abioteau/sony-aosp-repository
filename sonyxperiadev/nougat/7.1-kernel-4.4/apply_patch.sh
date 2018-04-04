@@ -123,6 +123,10 @@ git format-patch -o /tmp/af7f1cd76eaafee0d9838e6c40af9c494e884e36 -1 af7f1cd76ea
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/media/refs/changes/39/422439/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/media/refs/changes/79/422379/1/*.patch`
 cd ../gps && repo start $GIT_BRANCH .
+git format-patch -o /tmp/bc2807add2c6d891258fdf5794c38ee2429a7b3e -1 bc2807add2c6d891258fdf5794c38ee2429a7b3e && git am -3 --committer-date-is-author-date /tmp/bc2807add2c6d891258fdf5794c38ee2429a7b3e/0001-*.patch && rm -rf /tmp/bc2807add2c6d891258fdf5794c38ee2429a7b3e
+git format-patch -o /tmp/63f8eb733a0dd9b2c3a0ae282e5c8b1adde7ef16 -1 63f8eb733a0dd9b2c3a0ae282e5c8b1adde7ef16 && git am -3 --committer-date-is-author-date /tmp/63f8eb733a0dd9b2c3a0ae282e5c8b1adde7ef16/0001-*.patch && rm -rf /tmp/63f8eb733a0dd9b2c3a0ae282e5c8b1adde7ef16
+git format-patch -o /tmp/c5b4bd379426c4f32a7afcacf08ee92271f7a4ba -1 c5b4bd379426c4f32a7afcacf08ee92271f7a4ba && git am -3 --committer-date-is-author-date /tmp/c5b4bd379426c4f32a7afcacf08ee92271f7a4ba/0001-*.patch && rm -rf /tmp/c5b4bd379426c4f32a7afcacf08ee92271f7a4ba
+git format-patch -o /tmp/c2fbb41f698d238de6a6a66111e700a73823936e -1 c2fbb41f698d238de6a6a66111e700a73823936e && git am -3 --committer-date-is-author-date /tmp/c2fbb41f698d238de6a6a66111e700a73823936e/0001-*.patch && rm -rf /tmp/c2fbb41f698d238de6a6a66111e700a73823936e
 git format-patch -o /tmp/02f13da8e1d303f5b7ccbe21633e6d0cb6331868 -1 02f13da8e1d303f5b7ccbe21633e6d0cb6331868 && git am -3 --committer-date-is-author-date /tmp/02f13da8e1d303f5b7ccbe21633e6d0cb6331868/0001-*.patch && rm -rf /tmp/02f13da8e1d303f5b7ccbe21633e6d0cb6331868
 git format-patch -o /tmp/4eda8e1eabead3a9115bdd9cedd7e336ed431dbe -1 4eda8e1eabead3a9115bdd9cedd7e336ed431dbe && git am -3 --committer-date-is-author-date /tmp/4eda8e1eabead3a9115bdd9cedd7e336ed431dbe/0001-*.patch && rm -rf /tmp/4eda8e1eabead3a9115bdd9cedd7e336ed431dbe
 cd ../keymaster && repo start $GIT_BRANCH .
