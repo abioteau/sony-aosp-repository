@@ -2,7 +2,7 @@
 # Script to extract AOSP build instructions
 # Copyright (C) 2018 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 02/07/2018
+# Last revised 04/05/2018
 
 mkdir -p orig
 mkdir -p sonyxperiadev
@@ -43,9 +43,9 @@ do
     # Generate script to apply AOSP patches
     echo "#!/bin/bash" > ${outdir}/apply_patch.sh
     echo "# Script to apply Sony Xperia patches" >> ${outdir}/apply_patch.sh
-    echo "# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
+    echo "# Copyright (C) 2018 Adrien Bioteau - All Rights Reserved" >> ${outdir}/apply_patch.sh
     echo "# Permission to copy and modify is granted under the GPLv3 license" >> ${outdir}/apply_patch.sh
-    echo "# Last revised 11/05/2017" >> ${outdir}/apply_patch.sh
+    echo "# Last revised 04/09/2018" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "relpath () {" >> ${outdir}/apply_patch.sh
     echo "    [ \$# -ge 1 ] && [ \$# -le 2 ] || return 1" >> ${outdir}/apply_patch.sh
@@ -119,9 +119,9 @@ do
     echo "~/bin/repo manifest -o manifest.xml -r" >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     cat ${outdir}/AOSP_PATCH | sed 's/cd \(.*[a-zA-Z0-9]+*\).*/cd \1 \&\& repo start \$GIT_BRANCH ./g' > orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_1.sh
-    cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_1.sh | sed 's/git cherry-pick \([a-f0-9].*\)/git format-patch -o \/tmp\/\1 -1 \1 \&\& git am -3 --committer-date-is-author-date \/tmp\/\1\/0001-*.patch \&\& rm -rf \/tmp\/\1/g' > orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_2.sh
+    cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_1.sh | sed 's/git cherry-pick \([a-f0-9].*\)/git cherry-pick -n \1 \&\& export GIT_COMMITTER_DATE=\"\$(git log -1 --format=\"%ad\" \1)\" \&\& git commit --no-edit --author \"\$(git log -1 --format=\"%an <%ae>\" \1)\" --date \"\$(git log -1 --format=\"%ad\" \1)\" \&\& unset GIT_COMMITTER_DATE/g' > orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_2.sh
     cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_2.sh | sed 's/git fetch http[s]*\:\/\/android.googlesource.com\/\([a-zA-Z0-9\/-\_].*\) \(.*\) \&\& git cherry-pick FETCH_HEAD/git am -3 --committer-date-is-author-date `ls \$ROOTDIR\/sonyxperiadev\/patches\/\1\/\2\/*.patch`/g' > orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_3.sh
-    cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_3.sh | sed 's/git revert --no-edit \([a-f0-9].*\)/git revert --no-edit --no-commit \1 \&\& export GIT_COMMITTER_DATE=\"`date +\"2017-01-01 08:00:00 \+0200\"`\" \&\& git commit -m \"`cat .git\/MERGE_MSG`\" --author \"`git log -1 \1 | grep \"Author: \" | sed -e \"s\/Author: \/\/\"`\" --date \"`git log -1 \1 | grep \"Date:   \" | sed -e \"s\/Date:   \/\/\"`\" \&\& unset GIT_COMMITTER_DATE/g' >> ${outdir}/apply_patch.sh
+    cat orig/${versionName}-${versionNumber}-${kernelTag}-apply_patch_3.sh | sed 's/git revert --no-edit \([a-f0-9].*\)/git revert --no-edit --no-commit \1 \&\& export GIT_COMMITTER_DATE=\"`date +\"2017-01-01 08:00:00 \+0200\"`\" \&\& git commit --no-edit --author \"\$(git log -1 --format=\"%an <%ae>\" \1)\" --date \"\$(git log -1 --format=\"%ad\" \1)\" \&\& unset GIT_COMMITTER_DATE/g' >> ${outdir}/apply_patch.sh
     echo "" >> ${outdir}/apply_patch.sh
     echo "cd \$ROOTDIR" >> ${outdir}/apply_patch.sh
     chmod +x ${outdir}/apply_patch.sh
