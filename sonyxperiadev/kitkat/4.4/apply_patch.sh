@@ -1,8 +1,8 @@
 #!/bin/bash
 # Script to apply Sony Xperia patches
-# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
+# Copyright (C) 2018 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/05/2017
+# Last revised 04/09/2018
 
 relpath () {
     [ $# -ge 1 ] && [ $# -le 2 ] || return 1
@@ -63,18 +63,18 @@ sed -i "/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\"s
 ~/bin/repo manifest -o manifest.xml -r
 
 cd build && repo start $GIT_BRANCH .
-git format-patch -o /tmp/612e2cd0e8c79bc6ab46d13cd96c01d1be382139 -1 612e2cd0e8c79bc6ab46d13cd96c01d1be382139 && git am -3 --committer-date-is-author-date /tmp/612e2cd0e8c79bc6ab46d13cd96c01d1be382139/0001-*.patch && rm -rf /tmp/612e2cd0e8c79bc6ab46d13cd96c01d1be382139
+git cherry-pick -n 612e2cd0e8c79bc6ab46d13cd96c01d1be382139 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 612e2cd0e8c79bc6ab46d13cd96c01d1be382139)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 612e2cd0e8c79bc6ab46d13cd96c01d1be382139)" --date "$(git log -1 --format="%ad" 612e2cd0e8c79bc6ab46d13cd96c01d1be382139)" && unset GIT_COMMITTER_DATE
 cd ..
 cd hardware/qcom/bt && repo start $GIT_BRANCH .
-git format-patch -o /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056 -1 5a6037f1c8b5ff0cf263c9e63777444ba239a056 && git am -3 --committer-date-is-author-date /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056/0001-*.patch && rm -rf /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056
+git cherry-pick -n 5a6037f1c8b5ff0cf263c9e63777444ba239a056 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" --date "$(git log -1 --format="%ad" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" && unset GIT_COMMITTER_DATE
 cd ../../../
 cd hardware/qcom/audio && repo start $GIT_BRANCH .
-git format-patch -o /tmp/00f6869a0981b570f90dbf39981734f36eafdfa9 -1 00f6869a0981b570f90dbf39981734f36eafdfa9 && git am -3 --committer-date-is-author-date /tmp/00f6869a0981b570f90dbf39981734f36eafdfa9/0001-*.patch && rm -rf /tmp/00f6869a0981b570f90dbf39981734f36eafdfa9
-git format-patch -o /tmp/20bcfa8b451941843e8eabb5308f1f04f07d347a -1 20bcfa8b451941843e8eabb5308f1f04f07d347a && git am -3 --committer-date-is-author-date /tmp/20bcfa8b451941843e8eabb5308f1f04f07d347a/0001-*.patch && rm -rf /tmp/20bcfa8b451941843e8eabb5308f1f04f07d347a
+git cherry-pick -n 00f6869a0981b570f90dbf39981734f36eafdfa9 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 00f6869a0981b570f90dbf39981734f36eafdfa9)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 00f6869a0981b570f90dbf39981734f36eafdfa9)" --date "$(git log -1 --format="%ad" 00f6869a0981b570f90dbf39981734f36eafdfa9)" && unset GIT_COMMITTER_DATE
+git cherry-pick -n 20bcfa8b451941843e8eabb5308f1f04f07d347a && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 20bcfa8b451941843e8eabb5308f1f04f07d347a)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 20bcfa8b451941843e8eabb5308f1f04f07d347a)" --date "$(git log -1 --format="%ad" 20bcfa8b451941843e8eabb5308f1f04f07d347a)" && unset GIT_COMMITTER_DATE
 cd ../../../
 cd hardware/qcom/display && repo start $GIT_BRANCH .
-git format-patch -o /tmp/d5ae1812a9509d8849f4494fcf17f68bf33f533c -1 d5ae1812a9509d8849f4494fcf17f68bf33f533c && git am -3 --committer-date-is-author-date /tmp/d5ae1812a9509d8849f4494fcf17f68bf33f533c/0001-*.patch && rm -rf /tmp/d5ae1812a9509d8849f4494fcf17f68bf33f533c
-git format-patch -o /tmp/5898f2e789800fb196ce94532eef033e7d7e60b3 -1 5898f2e789800fb196ce94532eef033e7d7e60b3 && git am -3 --committer-date-is-author-date /tmp/5898f2e789800fb196ce94532eef033e7d7e60b3/0001-*.patch && rm -rf /tmp/5898f2e789800fb196ce94532eef033e7d7e60b3
+git cherry-pick -n d5ae1812a9509d8849f4494fcf17f68bf33f533c && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" d5ae1812a9509d8849f4494fcf17f68bf33f533c)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" d5ae1812a9509d8849f4494fcf17f68bf33f533c)" --date "$(git log -1 --format="%ad" d5ae1812a9509d8849f4494fcf17f68bf33f533c)" && unset GIT_COMMITTER_DATE
+git cherry-pick -n 5898f2e789800fb196ce94532eef033e7d7e60b3 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 5898f2e789800fb196ce94532eef033e7d7e60b3)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 5898f2e789800fb196ce94532eef033e7d7e60b3)" --date "$(git log -1 --format="%ad" 5898f2e789800fb196ce94532eef033e7d7e60b3)" && unset GIT_COMMITTER_DATE
 cd ../../../
 
 cd $ROOTDIR

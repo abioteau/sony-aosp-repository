@@ -1,8 +1,8 @@
 #!/bin/bash
 # Script to apply Sony Xperia patches
-# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
+# Copyright (C) 2018 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/05/2017
+# Last revised 04/09/2018
 
 relpath () {
     [ $# -ge 1 ] && [ $# -le 2 ] || return 1
@@ -76,7 +76,7 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 cd ../../hardware/qcom/gps && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/37/464137/1/*.patch`
 cd ../audio && repo start $GIT_BRANCH .
-git format-patch -o /tmp/f6aae037da61d2ec5327e157c0489dec1231f5c2 -1 f6aae037da61d2ec5327e157c0489dec1231f5c2 && git am -3 --committer-date-is-author-date /tmp/f6aae037da61d2ec5327e157c0489dec1231f5c2/0001-*.patch && rm -rf /tmp/f6aae037da61d2ec5327e157c0489dec1231f5c2
+git cherry-pick -n f6aae037da61d2ec5327e157c0489dec1231f5c2 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" f6aae037da61d2ec5327e157c0489dec1231f5c2)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" f6aae037da61d2ec5327e157c0489dec1231f5c2)" --date "$(git log -1 --format="%ad" f6aae037da61d2ec5327e157c0489dec1231f5c2)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/91/294291/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/63/573163/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/56/535256/1/*.patch`
@@ -95,7 +95,7 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 cd ../../../system/core && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/21/553221/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/41/501741/2/*.patch`
-git revert --no-edit --no-commit 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit -m "`cat .git/MERGE_MSG`" --author "`git log -1 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad | grep "Author: " | sed -e "s/Author: //"`" --date "`git log -1 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad | grep "Date:   " | sed -e "s/Date:   //"`" && unset GIT_COMMITTER_DATE
+git revert --no-edit --no-commit 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad)" --date "$(git log -1 --format="%ad" 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/37/469437/1/*.patch`
 cd ../../frameworks/av && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/92/384692/2/*.patch`

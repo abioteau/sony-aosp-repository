@@ -1,8 +1,8 @@
 #!/bin/bash
 # Script to apply Sony Xperia patches
-# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
+# Copyright (C) 2018 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/05/2017
+# Last revised 04/09/2018
 
 relpath () {
     [ $# -ge 1 ] && [ $# -le 2 ] || return 1
@@ -81,7 +81,7 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/build/soong/refs/changes/32/367332/3/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/build/soong/refs/changes/92/367392/2/*.patch`
 cd ../../bootable/recovery && repo start $GIT_BRANCH .
-git format-patch -o /tmp/846012fc444e6076dabf874ed8cbdab358c2e0fb -1 846012fc444e6076dabf874ed8cbdab358c2e0fb && git am -3 --committer-date-is-author-date /tmp/846012fc444e6076dabf874ed8cbdab358c2e0fb/0001-*.patch && rm -rf /tmp/846012fc444e6076dabf874ed8cbdab358c2e0fb
+git cherry-pick -n 846012fc444e6076dabf874ed8cbdab358c2e0fb && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 846012fc444e6076dabf874ed8cbdab358c2e0fb)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 846012fc444e6076dabf874ed8cbdab358c2e0fb)" --date "$(git log -1 --format="%ad" 846012fc444e6076dabf874ed8cbdab358c2e0fb)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bootable/recovery/refs/changes/35/517735/2/*.patch`
 cd ../../external/wpa_supplicant_8 && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/wpa_supplicant_8/refs/changes/00/512300/1/*.patch`
@@ -94,10 +94,10 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/wpa_supplicant_8/refs/changes/07/512307/1/*.patch`
 cd ../../hardware/qcom/gps && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/37/464137/1/*.patch`
-git format-patch -o /tmp/2804ee1ebc305ae91f95b3411cc70da69ae2635d -1 2804ee1ebc305ae91f95b3411cc70da69ae2635d && git am -3 --committer-date-is-author-date /tmp/2804ee1ebc305ae91f95b3411cc70da69ae2635d/0001-*.patch && rm -rf /tmp/2804ee1ebc305ae91f95b3411cc70da69ae2635d
-git format-patch -o /tmp/305b9daae60215de907f2e4913a20e02fd2b0c70 -1 305b9daae60215de907f2e4913a20e02fd2b0c70 && git am -3 --committer-date-is-author-date /tmp/305b9daae60215de907f2e4913a20e02fd2b0c70/0001-*.patch && rm -rf /tmp/305b9daae60215de907f2e4913a20e02fd2b0c70
+git cherry-pick -n 2804ee1ebc305ae91f95b3411cc70da69ae2635d && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 2804ee1ebc305ae91f95b3411cc70da69ae2635d)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 2804ee1ebc305ae91f95b3411cc70da69ae2635d)" --date "$(git log -1 --format="%ad" 2804ee1ebc305ae91f95b3411cc70da69ae2635d)" && unset GIT_COMMITTER_DATE
+git cherry-pick -n 305b9daae60215de907f2e4913a20e02fd2b0c70 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 305b9daae60215de907f2e4913a20e02fd2b0c70)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 305b9daae60215de907f2e4913a20e02fd2b0c70)" --date "$(git log -1 --format="%ad" 305b9daae60215de907f2e4913a20e02fd2b0c70)" && unset GIT_COMMITTER_DATE
 cd ../audio && repo start $GIT_BRANCH .
-git format-patch -o /tmp/f6aae037da61d2ec5327e157c0489dec1231f5c2 -1 f6aae037da61d2ec5327e157c0489dec1231f5c2 && git am -3 --committer-date-is-author-date /tmp/f6aae037da61d2ec5327e157c0489dec1231f5c2/0001-*.patch && rm -rf /tmp/f6aae037da61d2ec5327e157c0489dec1231f5c2
+git cherry-pick -n f6aae037da61d2ec5327e157c0489dec1231f5c2 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" f6aae037da61d2ec5327e157c0489dec1231f5c2)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" f6aae037da61d2ec5327e157c0489dec1231f5c2)" --date "$(git log -1 --format="%ad" f6aae037da61d2ec5327e157c0489dec1231f5c2)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/91/294291/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/63/573163/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/56/535256/1/*.patch`
@@ -116,7 +116,7 @@ cd ../../../system/core && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/37/469437/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/92/497892/2/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/75/537175/1/*.patch`
-git format-patch -o /tmp/d266d37e4cb6d0b31eb9422b73f051632ea7365f -1 d266d37e4cb6d0b31eb9422b73f051632ea7365f && git am -3 --committer-date-is-author-date /tmp/d266d37e4cb6d0b31eb9422b73f051632ea7365f/0001-*.patch && rm -rf /tmp/d266d37e4cb6d0b31eb9422b73f051632ea7365f
+git cherry-pick -n d266d37e4cb6d0b31eb9422b73f051632ea7365f && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" d266d37e4cb6d0b31eb9422b73f051632ea7365f)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" d266d37e4cb6d0b31eb9422b73f051632ea7365f)" --date "$(git log -1 --format="%ad" d266d37e4cb6d0b31eb9422b73f051632ea7365f)" && unset GIT_COMMITTER_DATE
 cd ../../frameworks/av && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/av/refs/changes/92/384692/2/*.patch`
 cd ../../packages/inputmethods/LatinIME && repo start $GIT_BRANCH .

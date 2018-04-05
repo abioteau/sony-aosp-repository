@@ -1,8 +1,8 @@
 #!/bin/bash
 # Script to apply Sony Xperia patches
-# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
+# Copyright (C) 2018 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/05/2017
+# Last revised 04/09/2018
 
 relpath () {
     [ $# -ge 1 ] && [ $# -le 2 ] || return 1
@@ -63,7 +63,7 @@ sed -i "/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\"s
 ~/bin/repo manifest -o manifest.xml -r
 
 cd hardware/qcom/bt && repo start $GIT_BRANCH .
-git format-patch -o /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056 -1 5a6037f1c8b5ff0cf263c9e63777444ba239a056 && git am -3 --committer-date-is-author-date /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056/0001-*.patch && rm -rf /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056
+git cherry-pick -n 5a6037f1c8b5ff0cf263c9e63777444ba239a056 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" --date "$(git log -1 --format="%ad" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" && unset GIT_COMMITTER_DATE
 cd ../audio && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/41/166941/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/40/166940/1/*.patch`

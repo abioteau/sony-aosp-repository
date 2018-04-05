@@ -1,8 +1,8 @@
 #!/bin/bash
 # Script to apply Sony Xperia patches
-# Copyright (C) 2017 Adrien Bioteau - All Rights Reserved
+# Copyright (C) 2018 Adrien Bioteau - All Rights Reserved
 # Permission to copy and modify is granted under the GPLv3 license
-# Last revised 11/05/2017
+# Last revised 04/09/2018
 
 relpath () {
     [ $# -ge 1 ] && [ $# -le 2 ] || return 1
@@ -63,10 +63,10 @@ sed -i "/^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n  <include name=\"s
 ~/bin/repo manifest -o manifest.xml -r
 
 cd hardware/qcom/bt && repo start $GIT_BRANCH .
-git format-patch -o /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056 -1 5a6037f1c8b5ff0cf263c9e63777444ba239a056 && git am -3 --committer-date-is-author-date /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056/0001-*.patch && rm -rf /tmp/5a6037f1c8b5ff0cf263c9e63777444ba239a056
+git cherry-pick -n 5a6037f1c8b5ff0cf263c9e63777444ba239a056 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" --date "$(git log -1 --format="%ad" 5a6037f1c8b5ff0cf263c9e63777444ba239a056)" && unset GIT_COMMITTER_DATE
 cd ../display && repo start $GIT_BRANCH .
 git revert 0fdae193307fb17bb537598ab62682edd5138b72
-git format-patch -o /tmp/e9e1e3a16144a2410e592f67bab8e24c60df52ea -1 e9e1e3a16144a2410e592f67bab8e24c60df52ea && git am -3 --committer-date-is-author-date /tmp/e9e1e3a16144a2410e592f67bab8e24c60df52ea/0001-*.patch && rm -rf /tmp/e9e1e3a16144a2410e592f67bab8e24c60df52ea
+git cherry-pick -n e9e1e3a16144a2410e592f67bab8e24c60df52ea && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" e9e1e3a16144a2410e592f67bab8e24c60df52ea)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" e9e1e3a16144a2410e592f67bab8e24c60df52ea)" --date "$(git log -1 --format="%ad" e9e1e3a16144a2410e592f67bab8e24c60df52ea)" && unset GIT_COMMITTER_DATE
 cd ../../../external/libnfc-nci && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/libnfc-nci/refs/changes/42/103142/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/libnfc-nci/refs/changes/23/103123/1/*.patch`
