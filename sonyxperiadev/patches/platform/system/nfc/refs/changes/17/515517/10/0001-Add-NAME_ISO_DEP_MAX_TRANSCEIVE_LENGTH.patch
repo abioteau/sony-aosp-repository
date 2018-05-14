@@ -1,0 +1,26 @@
+From e2f79f058b98e0a58180138969bf7e5e1e54c49c Mon Sep 17 00:00:00 2001
+From: Ruchi Kandoi <kandoiruchi@google.com>
+Date: Wed, 18 Oct 2017 17:46:03 -0700
+Subject: [PATCH] Add NAME_ISO_DEP_MAX_TRANSCEIVE_LENGTH
+
+Bug: 37005118
+Test: Test if the config is read correctly
+Change-Id: I75ac2f533016ab1bd1bc05879aa821c9a8729a37
+---
+ src/include/config.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/include/config.h b/src/include/config.h
+index de282c3..c1dbf6e 100644
+--- a/src/include/config.h
++++ b/src/include/config.h
+@@ -39,5 +39,6 @@ int GetNumValue(const char* name, void* p_value, unsigned long len);
+ #define NAME_NFA_POLL_BAIL_OUT_MODE "NFA_POLL_BAIL_OUT_MODE"
+ #define NAME_NFA_PROPRIETARY_CFG "NFA_PROPRIETARY_CFG"
+ #define NAME_NFA_AID_BLOCK_ROUTE "NFA_AID_BLOCK_ROUTE"
++#define NAME_ISO_DEP_MAX_TRANSCEIVE "ISO_DEP_MAX_TRANSCEIVE"
+ 
+ #endif
+-- 
+2.13.0
+

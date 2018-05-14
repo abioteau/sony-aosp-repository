@@ -1,0 +1,30 @@
+From f1f1aaa9490ce0ac33c9b8d8e0422dfd80448af5 Mon Sep 17 00:00:00 2001
+From: Jizhou Liao <Jizhou.Liao@nxp.com>
+Date: Tue, 2 Jun 2015 16:45:43 -0700
+Subject: [PATCH] Increase APDU buffer size to support extended APDU
+
+Extended APDU supports up to 32k data, we here increase
+the buffer size to maximum value that stack can support.
+
+Test: Read/Write Tags
+Change-Id: I20ecf3835ff73671c89990354777e7c1073413a7
+---
+ src/include/gki_target.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/include/gki_target.h b/src/include/gki_target.h
+index 3bf0c8f..dfca10b 100644
+--- a/src/include/gki_target.h
++++ b/src/include/gki_target.h
+@@ -168,7 +168,7 @@
+ 
+ /* The size of the buffers in pool 3. */
+ #ifndef GKI_BUF3_SIZE
+-#define GKI_BUF3_SIZE 2500
++#define GKI_BUF3_SIZE (0xFFB0)
+ #endif
+ 
+ /* The number of buffers in buffer pool 3. */
+-- 
+2.13.0
+
