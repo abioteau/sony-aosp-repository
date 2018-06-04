@@ -7,6 +7,12 @@
 mkdir -p orig
 mkdir -p sonyxperiadev
 
+# Clean AOSP patches directory
+if [ -d sonyxperiadev/patches ]
+then
+    rm -r sonyxperiadev/patches
+fi
+
 #For each AOSP build instructions
 buildInstructionsList="kitkat-4.4 lollipop-5.0 lollipop-5.1 marshmallow-6.0 marshmallow-6.0.1 nougat-7.0 nougat-7.1.1-legacy nougat-7.1.1 nougat-7.1.2 oreo-8.0 oreo-8.1"
 for buildInstruction in ${buildInstructionsList};
