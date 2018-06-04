@@ -31,6 +31,7 @@ git cherry-pick 756b1c2343ed019ad59868c81491ea1eb7d42c57
 git cherry-pick 10b40b087cb9b7ead39da1e9fc6b7a85ecb4a901
 git cherry-pick 0f1bd9d3d73f1d1a673c23d5b180172c8c4605db
 git cherry-pick 8cede07e698cc1a15257a6b5dd653488e2bbf49e
+git cherry-pick e28f4e2acfcca00766080d294daa75ae2efb5853
 cd ../../bootable/recovery
 git cherry-pick 846012fc444e6076dabf874ed8cbdab358c2e0fb
 git fetch http://android.googlesource.com/platform/bootable/recovery refs/changes/35/517735/2 && git cherry-pick FETCH_HEAD
