@@ -68,9 +68,9 @@ rm -rf local_manifests
 ~/bin/repo manifest -o manifest.xml -r
 
 cd bionic && repo start $GIT_BRANCH .
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/53/363153/1/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/92/368092/2/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/14/265214/21/*.patch`
+git cherry-pick -n 950a95836d5040e5d123a2128c85e8ac8b46588c && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 950a95836d5040e5d123a2128c85e8ac8b46588c)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 950a95836d5040e5d123a2128c85e8ac8b46588c)" --date "$(git log -1 --format="%ad" 950a95836d5040e5d123a2128c85e8ac8b46588c)" && unset GIT_COMMITTER_DATE
+git cherry-pick -n 4d114f9e215fadc7d4f65f4d1ddccf95523ad6ee && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 4d114f9e215fadc7d4f65f4d1ddccf95523ad6ee)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 4d114f9e215fadc7d4f65f4d1ddccf95523ad6ee)" --date "$(git log -1 --format="%ad" 4d114f9e215fadc7d4f65f4d1ddccf95523ad6ee)" && unset GIT_COMMITTER_DATE
+git cherry-pick -n 04d99df80db386cad1e3f83f3d760920e6f61b32 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 04d99df80db386cad1e3f83f3d760920e6f61b32)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 04d99df80db386cad1e3f83f3d760920e6f61b32)" --date "$(git log -1 --format="%ad" 04d99df80db386cad1e3f83f3d760920e6f61b32)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/90/497890/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/91/497891/2/*.patch`
 cd ../build/soong && repo start $GIT_BRANCH .
