@@ -1,0 +1,28 @@
+From 430c9621ab10dc495ed74d2f824ac6b91b9dc249 Mon Sep 17 00:00:00 2001
+From: Jake Weinstein <xboxlover360@gmail.com>
+Date: Thu, 6 Apr 2017 20:47:23 -0400
+Subject: [PATCH] soong: use optimal FPU on Cortex-A15
+
+* Cortex-A15 supports VFPv4 instructions
+
+Test: make otapackage
+Change-Id: I94f00c9486ece201aa2c230308b9f90b0209dc4a
+---
+ cc/config/arm_device.go | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
+index 9058de2f..4287143a 100644
+--- a/cc/config/arm_device.go
++++ b/cc/config/arm_device.go
+@@ -120,6 +120,7 @@ var (
+ 		},
+ 		"cortex-a15": []string{
+ 			"-mcpu=cortex-a15",
++			"-mfpu=neon-vfpv4",
+ 			// Fake an ARM compiler flag as these processors support LPAE which GCC/clang
+ 			// don't advertise.
+ 			// TODO This is a hack and we need to add it for each processor that supports LPAE until some
+-- 
+2.13.0
+
