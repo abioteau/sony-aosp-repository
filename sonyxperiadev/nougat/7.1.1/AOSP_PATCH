@@ -7,7 +7,9 @@ cd ../bootable/recovery
 git cherry-pick 35fff61b1c0d736d090a1cd1bb4e99141cc88ad8
 git cherry-pick d00f5eb63a8e4690f9bef1e943d539d052444d9b
 git fetch http://android.googlesource.com/platform/bootable/recovery refs/changes/15/538015/2 && git cherry-pick FETCH_HEAD
-cd ../../external/toybox
+cd ../../build
+git cherry-pick 47ec5ab561bd979560bde402201268486ce9cc34
+cd ../external/toybox
 git fetch http://android.googlesource.com/platform/external/toybox refs/changes/74/265074/1 && git cherry-pick FETCH_HEAD
 git cherry-pick d3e8dd1bf56afc2277960472a46907d419e4b3da
 git cherry-pick 1c028ca33dc059a9d8f18daafcd77b5950268f41
