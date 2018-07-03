@@ -74,7 +74,9 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bionic/refs/changes/01/503201/1/*.patch`
 cd ../bootable/recovery && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/bootable/recovery/refs/changes/15/538015/2/*.patch`
-cd ../../external/toybox && repo start $GIT_BRANCH .
+cd ../../build && repo start $GIT_BRANCH .
+git cherry-pick -n 2b8f489e304e1afd7ae607000d5e7022328293db && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 2b8f489e304e1afd7ae607000d5e7022328293db)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 2b8f489e304e1afd7ae607000d5e7022328293db)" --date "$(git log -1 --format="%ad" 2b8f489e304e1afd7ae607000d5e7022328293db)" && unset GIT_COMMITTER_DATE
+cd ../external/toybox && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/external/toybox/refs/changes/74/265074/1/*.patch`
 git cherry-pick -n d3e8dd1bf56afc2277960472a46907d419e4b3da && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" d3e8dd1bf56afc2277960472a46907d419e4b3da)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" d3e8dd1bf56afc2277960472a46907d419e4b3da)" --date "$(git log -1 --format="%ad" d3e8dd1bf56afc2277960472a46907d419e4b3da)" && unset GIT_COMMITTER_DATE
 git cherry-pick -n 1c028ca33dc059a9d8f18daafcd77b5950268f41 && export GIT_COMMITTER_DATE="$(git log -1 --format="%ad" 1c028ca33dc059a9d8f18daafcd77b5950268f41)" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 1c028ca33dc059a9d8f18daafcd77b5950268f41)" --date "$(git log -1 --format="%ad" 1c028ca33dc059a9d8f18daafcd77b5950268f41)" && unset GIT_COMMITTER_DATE
