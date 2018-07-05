@@ -1,18 +1,8 @@
 cd bionic
-git cherry-pick 950a95836d5040e5d123a2128c85e8ac8b46588c
-git cherry-pick 4d114f9e215fadc7d4f65f4d1ddccf95523ad6ee
-git cherry-pick 04d99df80db386cad1e3f83f3d760920e6f61b32
 git fetch http://android.googlesource.com/platform/bionic refs/changes/90/497890/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/bionic refs/changes/91/497891/2 && git cherry-pick FETCH_HEAD
 cd ../build/make
 git cherry-pick 2b8f489e304e1afd7ae607000d5e7022328293db
-cd ../soong
-git fetch http://android.googlesource.com/platform/build/soong refs/changes/54/266354/28 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/build/soong refs/changes/93/266393/16 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/build/soong refs/changes/13/365413/2 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/build/soong refs/changes/12/367312/2 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/build/soong refs/changes/32/367332/3 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/build/soong refs/changes/92/367392/2 && git cherry-pick FETCH_HEAD
 cd ../../bootable/recovery
 git cherry-pick 846012fc444e6076dabf874ed8cbdab358c2e0fb
 git fetch http://android.googlesource.com/platform/bootable/recovery refs/changes/35/517735/2 && git cherry-pick FETCH_HEAD
@@ -30,7 +20,6 @@ git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/change
 git cherry-pick 2804ee1ebc305ae91f95b3411cc70da69ae2635d
 git cherry-pick 305b9daae60215de907f2e4913a20e02fd2b0c70
 cd ../audio
-git cherry-pick f6aae037da61d2ec5327e157c0489dec1231f5c2
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/91/294291/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/63/573163/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/56/535256/1 && git cherry-pick FETCH_HEAD
@@ -38,18 +27,17 @@ git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/chan
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/41/602841/3 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/42/602842/1 && git cherry-pick FETCH_HEAD
 cd ../media
-git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/39/422439/2 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/55/522855/1 && git cherry-pick FETCH_HEAD
 cd ../display
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/35/437235/1 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/36/437236/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/42/576642/1 && git cherry-pick FETCH_HEAD
 cd ../bt
 git fetch http://android.googlesource.com/platform/hardware/qcom/bt refs/changes/17/478117/1 && git cherry-pick FETCH_HEAD
 cd ../../../system/core
+git revert --no-edit 7f386dcab98b4a2827b5ffe29d7d3de7637841c0
 git fetch http://android.googlesource.com/platform/system/core refs/changes/37/469437/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/system/core refs/changes/92/497892/2 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/system/core refs/changes/75/537175/1 && git cherry-pick FETCH_HEAD
-git cherry-pick d266d37e4cb6d0b31eb9422b73f051632ea7365f
+git fetch http://android.googlesource.com/platform/system/core refs/changes/41/501741/2 && git cherry-pick FETCH_HEAD
 cd ../../frameworks/av
 git fetch http://android.googlesource.com/platform/frameworks/av refs/changes/92/384692/2 && git cherry-pick FETCH_HEAD
 cd ../../packages/inputmethods/LatinIME
