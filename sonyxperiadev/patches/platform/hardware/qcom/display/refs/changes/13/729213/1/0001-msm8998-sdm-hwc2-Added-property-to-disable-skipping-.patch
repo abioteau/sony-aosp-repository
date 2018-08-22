@@ -1,0 +1,45 @@
+From 7f8016eb2f5b090847e70b69c08cae555add6e7f Mon Sep 17 00:00:00 2001
+From: MarijnS95 <marijns95@gmail.com>
+Date: Fri, 10 Aug 2018 09:49:33 +0200
+Subject: [PATCH] msm8998: sdm: hwc2: Added property to disable skipping client
+ color transform.
+
+Selectively allow Client Compositor to apply color transforms. Useful on
+platforms that do not support these transforms in the Device Compositor.
+
+Test: builds ok - manual testing.
+
+Change-Id: I5e2508b2de391007f93064fe5bd506dd62050fbc
+---
+ msm8998/sdm/libs/hwc2/hwc_session.cpp | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/msm8998/sdm/libs/hwc2/hwc_session.cpp b/msm8998/sdm/libs/hwc2/hwc_session.cpp
+index a9c7e4e2..5e9b8689 100644
+--- a/msm8998/sdm/libs/hwc2/hwc_session.cpp
++++ b/msm8998/sdm/libs/hwc2/hwc_session.cpp
+@@ -218,12 +218,18 @@ int HWCSession::Close(hw_device_t *device) {
+ void HWCSession::GetCapabilities(struct hwc2_device *device, uint32_t *outCount,
+                                  int32_t *outCapabilities) {
+   bool skip_validate = !Debug::IsSkipValidateDisabled();
+-  uint32_t count = 1 + (skip_validate ? 1 : 0);
++  bool skip_client_color_transform =
++      property_get_bool("persist.hwc2.skip_client_color_transform", true);
++  uint32_t count = (skip_client_color_transform ? 1 : 0) + (skip_validate ? 1 : 0);
+ 
+   if (outCapabilities != nullptr && (*outCount >= count)) {
+-    outCapabilities[0] = HWC2_CAPABILITY_SKIP_CLIENT_COLOR_TRANSFORM;
++    DLOGI("skip_client_color_transform %d", skip_client_color_transform);
++    if (skip_client_color_transform) {
++      outCapabilities[0] = HWC2_CAPABILITY_SKIP_CLIENT_COLOR_TRANSFORM;
++    }
++
+     if (skip_validate) {
+-      outCapabilities[1] = HWC2_CAPABILITY_SKIP_VALIDATE;
++      outCapabilities[count - 1] = HWC2_CAPABILITY_SKIP_VALIDATE;
+     }
+   }
+   *outCount = count;
+-- 
+2.13.0
+

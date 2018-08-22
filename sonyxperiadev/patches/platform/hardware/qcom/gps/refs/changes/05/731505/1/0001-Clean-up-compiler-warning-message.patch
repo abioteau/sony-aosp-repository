@@ -1,0 +1,835 @@
+From fff2b0cf88160a16989fe2e4bd5408625d81f6f6 Mon Sep 17 00:00:00 2001
+From: Baili Feng <bailif@codeaurora.org>
+Date: Mon, 3 Jul 2017 21:00:31 +0800
+Subject: [PATCH] Clean up compiler warning message
+
+Test: mmma sdm845 -j4
+Test: BOARD_VNDK_VERSION=current mmma sdm845 -j4
+
+CRs-Fixed: 2070597
+Change-Id: Ic57f5211a4e4b9112888435d54df7a361bcb6767
+---
+ sdm845/android/Android.mk                          |   2 +
+ sdm845/core/Android.mk                             |   2 +
+ sdm845/core/LocAdapterBase.cpp                     |  28 ++---
+ sdm845/core/LocApiBase.cpp                         | 122 +++++++++++----------
+ sdm845/core/SystemStatus.cpp                       |  14 ++-
+ sdm845/core/loc_core_log.cpp                       |   2 +-
+ sdm845/gnss/Android.mk                             |   2 +
+ sdm845/gnss/GnssAdapter.cpp                        |   5 +-
+ sdm845/location/Android.mk                         |   1 +
+ sdm845/location/LocationAPIClientBase.cpp          |   2 +
+ sdm845/utils/Android.mk                            |   2 +
+ sdm845/utils/LocThread.cpp                         |   4 +-
+ sdm845/utils/LocTimer.cpp                          |   6 +-
+ sdm845/utils/loc_misc_utils.cpp                    |   4 +-
+ sdm845/utils/msg_q.c                               |   6 +-
+ .../elapsed_millis_since_boot.cpp                  |   2 +-
+ .../loc_pla/src/Android.mk                         |  20 +++-
+ .../loc_pla/src/platform_lib_property_service.cpp  |   4 +-
+ .../loc_stub/src/Android.mk                        |   2 +-
+ .../loc_stub/src/loc_stub_android_runtime.cpp      |   2 +-
+ .../loc_stub/src/loc_stub_property_service.cpp     |   2 +-
+ .../loc_stub/src/loc_stub_sched_policy.cpp         |   2 +-
+ .../loc_stub/src/loc_stub_time.cpp                 |   2 +-
+ 23 files changed, 138 insertions(+), 100 deletions(-)
+
+diff --git a/sdm845/android/Android.mk b/sdm845/android/Android.mk
+index d3e33ab..76fc0cf 100644
+--- a/sdm845/android/Android.mk
++++ b/sdm845/android/Android.mk
+@@ -45,6 +45,7 @@ LOCAL_SHARED_LIBRARIES += \
+     libloc_pla \
+     liblocation_api \
+ 
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
+ include $(BUILD_SHARED_LIBRARY)
+ 
+ BUILD_GNSS_HIDL_SERVICE := true
+@@ -84,5 +85,6 @@ LOCAL_SHARED_LIBRARIES += \
+     libhidltransport \
+     android.hardware.gnss@1.0 \
+ 
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
+ include $(BUILD_EXECUTABLE)
+ endif # BUILD_GNSS_HIDL_SERVICE
+diff --git a/sdm845/core/Android.mk b/sdm845/core/Android.mk
+index 313ee25..a3ad5a7 100644
+--- a/sdm845/core/Android.mk
++++ b/sdm845/core/Android.mk
+@@ -54,6 +54,8 @@ LOCAL_COPY_HEADERS:= \
+     LocAdapterProxyBase.h \
+     SystemStatus.h
+ 
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
++
+ include $(BUILD_SHARED_LIBRARY)
+ 
+ endif # not BUILD_TINY_ANDROID
+diff --git a/sdm845/core/LocAdapterBase.cpp b/sdm845/core/LocAdapterBase.cpp
+index 7cb4086..9d89c4b 100644
+--- a/sdm845/core/LocAdapterBase.cpp
++++ b/sdm845/core/LocAdapterBase.cpp
+@@ -79,7 +79,7 @@ void LocAdapterBase::
+                         const GpsLocationExtended& locationExtended,
+                         enum loc_sess_status status,
+                         LocPosTechMask loc_technology_mask,
+-                        bool fromUlp) {
++                        bool /*fromUlp*/) {
+     if (mLocAdapterProxyBase != NULL) {
+         mLocAdapterProxyBase->reportPositionEvent((UlpLocation&)location,
+                                                    (GpsLocationExtended&)locationExtended,
+@@ -91,29 +91,29 @@ void LocAdapterBase::
+ }
+ 
+ void LocAdapterBase::
+-    reportSvEvent(const GnssSvNotification& svNotify, bool fromUlp)
++    reportSvEvent(const GnssSvNotification& /*svNotify*/, bool /*fromUlp*/)
+ DEFAULT_IMPL()
+ 
+ void LocAdapterBase::
+-    reportSvMeasurementEvent(GnssSvMeasurementSet &svMeasurementSet)
++    reportSvMeasurementEvent(GnssSvMeasurementSet &/*svMeasurementSet*/)
+ DEFAULT_IMPL()
+ 
+ void LocAdapterBase::
+-    reportSvPolynomialEvent(GnssSvPolynomial &svPolynomial)
++    reportSvPolynomialEvent(GnssSvPolynomial &/*svPolynomial*/)
+ DEFAULT_IMPL()
+ 
+ void LocAdapterBase::
+-    reportStatus(LocGpsStatusValue status)
++    reportStatus(LocGpsStatusValue /*status*/)
+ DEFAULT_IMPL()
+ 
+ 
+ void LocAdapterBase::
+-    reportNmeaEvent(const char* nmea, size_t length, bool fromUlp)
++    reportNmeaEvent(const char* /*nmea*/, size_t /*length*/, bool /*fromUlp*/)
+ DEFAULT_IMPL()
+ 
+ bool LocAdapterBase::
+-    reportXtraServer(const char* url1, const char* url2,
+-                     const char* url3, const int maxlength)
++    reportXtraServer(const char* /*url1*/, const char* /*url2*/,
++                     const char* /*url3*/, const int /*maxlength*/)
+ DEFAULT_IMPL(false)
+ 
+ bool LocAdapterBase::
+@@ -129,15 +129,15 @@ bool LocAdapterBase::
+ DEFAULT_IMPL(false)
+ 
+ bool LocAdapterBase::
+-    requestATL(int connHandle, LocAGpsType agps_type)
++    requestATL(int /*connHandle*/, LocAGpsType /*agps_type*/)
+ DEFAULT_IMPL(false)
+ 
+ bool LocAdapterBase::
+-    releaseATL(int connHandle)
++    releaseATL(int /*connHandle*/)
+ DEFAULT_IMPL(false)
+ 
+ bool LocAdapterBase::
+-    requestSuplES(int connHandle)
++    requestSuplES(int /*connHandle*/)
+ DEFAULT_IMPL(false)
+ 
+ bool LocAdapterBase::
+@@ -149,15 +149,15 @@ bool LocAdapterBase::
+ DEFAULT_IMPL(false)
+ 
+ bool LocAdapterBase::
+-    requestNiNotifyEvent(const GnssNiNotification &notify, const void* data)
++    requestNiNotifyEvent(const GnssNiNotification &/*notify*/, const void* /*data*/)
+ DEFAULT_IMPL(false)
+ 
+ void LocAdapterBase::
+-    reportGnssMeasurementDataEvent(const GnssMeasurementsNotification& measurementsNotify)
++    reportGnssMeasurementDataEvent(const GnssMeasurementsNotification& /*measurementsNotify*/)
+ DEFAULT_IMPL()
+ 
+ bool LocAdapterBase::
+-    reportWwanZppFix(LocGpsLocation &zppLoc)
++    reportWwanZppFix(LocGpsLocation &/*zppLoc*/)
+ DEFAULT_IMPL(false)
+ 
+ } // namespace loc_core
+diff --git a/sdm845/core/LocApiBase.cpp b/sdm845/core/LocApiBase.cpp
+index 2dcd4cd..6cc00b1 100644
+--- a/sdm845/core/LocApiBase.cpp
++++ b/sdm845/core/LocApiBase.cpp
+@@ -30,6 +30,7 @@
+ #define LOG_TAG "LocSvc_LocApiBase"
+ 
+ #include <dlfcn.h>
++#include <inttypes.h>
+ #include <LocApiBase.h>
+ #include <LocAdapterBase.h>
+ #include <platform_lib_log_util.h>
+@@ -96,10 +97,10 @@ struct LocSsrMsg : public LocMsg {
+         mLocApi->close();
+         mLocApi->open(mLocApi->getEvtMask());
+     }
+-    inline void locallog() {
++    inline void locallog() const {
+         LOC_LOGV("LocSsrMsg");
+     }
+-    inline virtual void log() {
++    inline virtual void log() const {
+         locallog();
+     }
+ };
+@@ -116,11 +117,11 @@ struct LocOpenMsg : public LocMsg {
+     inline virtual void proc() const {
+         mLocApi->open(mMask);
+     }
+-    inline void locallog() {
++    inline void locallog() const {
+         LOC_LOGV("%s:%d]: LocOpen Mask: %x\n",
+                  __func__, __LINE__, mMask);
+     }
+-    inline virtual void log() {
++    inline virtual void log() const {
+         locallog();
+     }
+ };
+@@ -128,8 +129,8 @@ struct LocOpenMsg : public LocMsg {
+ LocApiBase::LocApiBase(const MsgTask* msgTask,
+                        LOC_API_ADAPTER_EVENT_MASK_T excludedMask,
+                        ContextBase* context) :
+-    mExcludedMask(excludedMask), mMsgTask(msgTask),
+-    mMask(0), mSupportedMsg(0), mContext(context)
++    mMsgTask(msgTask), mContext(context), mSupportedMsg(0),
++    mMask(0), mExcludedMask(excludedMask)
+ {
+     memset(mLocAdapters, 0, sizeof(mLocAdapters));
+     memset(mFeaturesSupported, 0, sizeof(mFeaturesSupported));
+@@ -235,9 +236,10 @@ void LocApiBase::reportPosition(UlpLocation& location,
+     // print the location info before delivering
+     LOC_LOGD("flags: %d\n  source: %d\n  latitude: %f\n  longitude: %f\n  "
+              "altitude: %f\n  speed: %f\n  bearing: %f\n  accuracy: %f\n  "
+-             "timestamp: %lld\n  rawDataSize: %d\n  rawData: %p\n  "
++             "timestamp: %" PRId64 "\n  rawDataSize: %d\n  rawData: %p\n  "
+              "Session status: %d\n Technology mask: %u\n "
+-             "SV used in fix (gps/glo/bds/gal/qzss) : (%x/%x/%x/%x/%x)",
++             "SV used in fix (gps/glo/bds/gal/qzss) : \
++             (%" PRIx64 "/%" PRIx64 "/%" PRIx64 "/%" PRIx64 "/%" PRIx64 ")",
+              location.gpsLocation.flags, location.position_source,
+              location.gpsLocation.latitude, location.gpsLocation.longitude,
+              location.gpsLocation.altitude, location.gpsLocation.speed,
+@@ -268,16 +270,16 @@ void LocApiBase::reportSv(GnssSvNotification& svNotify)
+         "QZSS", "BEIDOU", "GALILEO" };
+ 
+     // print the SV info before delivering
+-    LOC_LOGV("num sv: %d\n"
++    LOC_LOGV("num sv: %zu\n"
+         "      sv: constellation svid         cN0"
+         "    elevation    azimuth    flags",
+         svNotify.count);
+-    for (int i = 0; i < svNotify.count && i < LOC_GNSS_MAX_SVS; i++) {
++    for (size_t i = 0; i < svNotify.count && i < LOC_GNSS_MAX_SVS; i++) {
+         if (svNotify.gnssSvs[i].type >
+             sizeof(constellationString) / sizeof(constellationString[0]) - 1) {
+             svNotify.gnssSvs[i].type = GNSS_SV_TYPE_UNKNOWN;
+         }
+-        LOC_LOGV("   %03d: %*s  %02d    %f    %f    %f   0x%02X",
++        LOC_LOGV("   %03zu: %*s  %02d    %f    %f    %f   0x%02X",
+             i,
+             13,
+             constellationString[svNotify.gnssSvs[i].type],
+@@ -406,7 +408,7 @@ void LocApiBase::reportGnssMeasurementData(GnssMeasurementsNotification& measure
+ }
+ 
+ enum loc_api_adapter_err LocApiBase::
+-   open(LOC_API_ADAPTER_EVENT_MASK_T mask)
++   open(LOC_API_ADAPTER_EVENT_MASK_T /*mask*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+@@ -414,7 +416,7 @@ enum loc_api_adapter_err LocApiBase::
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    startFix(const LocPosMode& posMode)
++    startFix(const LocPosMode& /*posMode*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+@@ -422,27 +424,27 @@ enum loc_api_adapter_err LocApiBase::
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    deleteAidingData(const GnssAidingData& data)
++    deleteAidingData(const GnssAidingData& /*data*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    enableData(int enable)
++    enableData(int /*enable*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setAPN(char* apn, int len)
++    setAPN(char* /*apn*/, int /*len*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    injectPosition(double latitude, double longitude, float accuracy)
++    injectPosition(double /*latitude*/, double /*longitude*/, float /*accuracy*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setTime(LocGpsUtcTime time, int64_t timeReference, int uncertainty)
++    setTime(LocGpsUtcTime /*time*/, int64_t /*timeReference*/, int /*uncertainty*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setXtraData(char* data, int length)
++    setXtraData(char* /*data*/, int /*length*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+@@ -450,83 +452,83 @@ enum loc_api_adapter_err LocApiBase::
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-   atlOpenStatus(int handle, int is_succ, char* apn,
+-                 AGpsBearerType bear, LocAGpsType agpsType)
++   atlOpenStatus(int /*handle*/, int /*is_succ*/, char* /*apn*/,
++                 AGpsBearerType /*bear*/, LocAGpsType /*agpsType*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    atlCloseStatus(int handle, int is_succ)
++    atlCloseStatus(int /*handle*/, int /*is_succ*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setPositionMode(const LocPosMode& posMode)
++    setPositionMode(const LocPosMode& /*posMode*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    setServer(const char* url, int len)
++    setServer(const char* /*url*/, int /*len*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    setServer(unsigned int ip, int port, LocServerType type)
++    setServer(unsigned int /*ip*/, int /*port*/, LocServerType /*type*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    informNiResponse(GnssNiResponse userResponse, const void* passThroughData)
++    informNiResponse(GnssNiResponse /*userResponse*/, const void* /*passThroughData*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    setSUPLVersion(GnssConfigSuplVersion version)
++    setSUPLVersion(GnssConfigSuplVersion /*version*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setNMEATypes (uint32_t typesMask)
++    setNMEATypes (uint32_t /*typesMask*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    setLPPConfig(GnssConfigLppProfile profile)
++    setLPPConfig(GnssConfigLppProfile /*profile*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setSensorControlConfig(int sensorUsage,
+-                           int sensorProvider)
++    setSensorControlConfig(int /*sensorUsage*/,
++                           int /*sensorProvider*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setSensorProperties(bool gyroBiasVarianceRandomWalk_valid,
+-                        float gyroBiasVarianceRandomWalk,
+-                        bool accelBiasVarianceRandomWalk_valid,
+-                        float accelBiasVarianceRandomWalk,
+-                        bool angleBiasVarianceRandomWalk_valid,
+-                        float angleBiasVarianceRandomWalk,
+-                        bool rateBiasVarianceRandomWalk_valid,
+-                        float rateBiasVarianceRandomWalk,
+-                        bool velocityBiasVarianceRandomWalk_valid,
+-                        float velocityBiasVarianceRandomWalk)
++    setSensorProperties(bool /*gyroBiasVarianceRandomWalk_valid*/,
++                        float /*gyroBiasVarianceRandomWalk*/,
++                        bool /*accelBiasVarianceRandomWalk_valid*/,
++                        float /*accelBiasVarianceRandomWalk*/,
++                        bool /*angleBiasVarianceRandomWalk_valid*/,
++                        float /*angleBiasVarianceRandomWalk*/,
++                        bool /*rateBiasVarianceRandomWalk_valid*/,
++                        float /*rateBiasVarianceRandomWalk*/,
++                        bool /*velocityBiasVarianceRandomWalk_valid*/,
++                        float /*velocityBiasVarianceRandomWalk*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+-    setSensorPerfControlConfig(int controlMode,
+-                               int accelSamplesPerBatch,
+-                               int accelBatchesPerSec,
+-                               int gyroSamplesPerBatch,
+-                               int gyroBatchesPerSec,
+-                               int accelSamplesPerBatchHigh,
+-                               int accelBatchesPerSecHigh,
+-                               int gyroSamplesPerBatchHigh,
+-                               int gyroBatchesPerSecHigh,
+-                               int algorithmConfig)
++    setSensorPerfControlConfig(int /*controlMode*/,
++                               int /*accelSamplesPerBatch*/,
++                               int /*accelBatchesPerSec*/,
++                               int /*gyroSamplesPerBatch*/,
++                               int /*gyroBatchesPerSec*/,
++                               int /*accelSamplesPerBatchHigh*/,
++                               int /*accelBatchesPerSecHigh*/,
++                               int /*gyroSamplesPerBatchHigh*/,
++                               int /*gyroBatchesPerSecHigh*/,
++                               int /*algorithmConfig*/)
+ DEFAULT_IMPL(LOC_API_ADAPTER_ERR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    setAGLONASSProtocol(GnssConfigAGlonassPositionProtocolMask aGlonassProtocol)
++    setAGLONASSProtocol(GnssConfigAGlonassPositionProtocolMask /*aGlonassProtocol*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    setLPPeProtocolCp(GnssConfigLppeControlPlaneMask lppeCP)
++    setLPPeProtocolCp(GnssConfigLppeControlPlaneMask /*lppeCP*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ LocationError LocApiBase::
+-    setLPPeProtocolUp(GnssConfigLppeUserPlaneMask lppeUP)
++    setLPPeProtocolUp(GnssConfigLppeUserPlaneMask /*lppeUP*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ enum loc_api_adapter_err LocApiBase::
+@@ -549,7 +551,7 @@ enum loc_api_adapter_err LocApiBase::
+ }
+ 
+ int LocApiBase::
+-    initDataServiceClient(bool isDueToSsr)
++    initDataServiceClient(bool /*isDueToSsr*/)
+ DEFAULT_IMPL(-1)
+ 
+ int LocApiBase::
+@@ -569,13 +571,13 @@ void LocApiBase::
+ DEFAULT_IMPL()
+ 
+ LocationError LocApiBase::
+-    setGpsLock(GnssConfigGpsLock lock)
++    setGpsLock(GnssConfigGpsLock /*lock*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ void LocApiBase::
+-    installAGpsCert(const LocDerEncodedCertificate* pData,
+-                    size_t length,
+-                    uint32_t slotBitMask)
++    installAGpsCert(const LocDerEncodedCertificate* /*pData*/,
++                    size_t /*length*/,
++                    uint32_t /*slotBitMask*/)
+ DEFAULT_IMPL()
+ 
+ int LocApiBase::
+@@ -583,7 +585,7 @@ int LocApiBase::
+ DEFAULT_IMPL(-1)
+ 
+ LocationError LocApiBase::
+-    setXtraVersionCheck(uint32_t check)
++    setXtraVersionCheck(uint32_t /*check*/)
+ DEFAULT_IMPL(LOCATION_ERROR_SUCCESS)
+ 
+ bool LocApiBase::
+diff --git a/sdm845/core/SystemStatus.cpp b/sdm845/core/SystemStatus.cpp
+index 939005d..50cb4ed 100644
+--- a/sdm845/core/SystemStatus.cpp
++++ b/sdm845/core/SystemStatus.cpp
+@@ -28,6 +28,7 @@
+  */
+ #define LOG_TAG "LocSvc_SystemStatus"
+ 
++#include <inttypes.h>
+ #include <string>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -183,7 +184,7 @@ public:
+     {
+         memset(&mM1, 0, sizeof(mM1));
+         if (mField.size() < eMax) {
+-            LOC_LOGE("PQWM1parser - invalid size=%d", mField.size());
++            LOC_LOGE("PQWM1parser - invalid size=%zu", mField.size());
+             mM1.mTimeValid = 0;
+             return;
+         }
+@@ -615,7 +616,7 @@ public:
+         : SystemStatusNmeaBase(str_in, len_in)
+     {
+         if (mField.size() < eMax) {
+-            LOC_LOGE("PQWP7parser - invalid size=%d", mField.size());
++            LOC_LOGE("PQWP7parser - invalid size=%zu", mField.size());
+             return;
+         }
+         for (uint32_t i=0; i<SV_ALL_NUM; i++) {
+@@ -944,7 +945,7 @@ bool SystemStatusXtra::equals(SystemStatusXtra& peer)
+ 
+ void SystemStatusXtra::dump()
+ {
+-    LOC_LOGV("SystemStatusXtra: u=%ld:%ld m=%x a=%d:%d:%d:%d:%d v=%x:%x:%x:%x:%x",
++    LOC_LOGV("SystemStatusXtra: u=%ld:%ld m=%x a=%d:%d:%d:%d:%d v=%x:%x:%" PRIx64 ":%" PRIx64":%x",
+              mUtcTime.tv_sec, mUtcTime.tv_nsec,
+              mXtraValidMask,
+              mGpsXtraAge,
+@@ -986,7 +987,7 @@ bool SystemStatusEphemeris::equals(SystemStatusEphemeris& peer)
+ 
+ void SystemStatusEphemeris::dump()
+ {
+-    LOC_LOGV("Ephemeris: u=%ld:%ld ev=%x:%x:%x:%x:%x",
++    LOC_LOGV("Ephemeris: u=%ld:%ld ev=%x:%x:%" PRIx64 ":%" PRIx64 ":%x",
+              mUtcTime.tv_sec, mUtcTime.tv_nsec,
+              mGpsEpheValid,
+              mGloEpheValid,
+@@ -1042,7 +1043,10 @@ bool SystemStatusSvHealth::equals(SystemStatusSvHealth& peer)
+ 
+ void SystemStatusSvHealth::dump()
+ {
+-    LOC_LOGV("SvHealth: u=%ld:%ld u=%x:%x:%x:%x:%x g=%x:%x:%x:%x:%x b=%x:%x:%x:%x:%x",
++    LOC_LOGV("SvHealth: u=%ld:%ld \
++             u=%x:%x:%" PRIx64 ":%" PRIx64 ":%x \
++             g=%x:%x:%" PRIx64 ":%" PRIx64 ":%x \
++             b=%x:%x:%" PRIx64 ":%" PRIx64 ":%x",
+              mUtcTime.tv_sec, mUtcTime.tv_nsec,
+              mGpsUnknownMask,
+              mGloUnknownMask,
+diff --git a/sdm845/core/loc_core_log.cpp b/sdm845/core/loc_core_log.cpp
+index ae5948d..5a627dd 100644
+--- a/sdm845/core/loc_core_log.cpp
++++ b/sdm845/core/loc_core_log.cpp
+@@ -120,7 +120,7 @@ static const loc_name_val_s_type loc_eng_aiding_data_bits[] =
+ };
+ static const int loc_eng_aiding_data_bit_num = sizeof(loc_eng_aiding_data_bits) / sizeof(loc_name_val_s_type);
+ 
+-const char* loc_get_aiding_data_mask_names(LocGpsAidingData data)
++const char* loc_get_aiding_data_mask_names(LocGpsAidingData /*data*/)
+ {
+     return NULL;
+ }
+diff --git a/sdm845/gnss/Android.mk b/sdm845/gnss/Android.mk
+index ea36208..1c59757 100644
+--- a/sdm845/gnss/Android.mk
++++ b/sdm845/gnss/Android.mk
+@@ -36,6 +36,8 @@ LOCAL_C_INCLUDES:= \
+     $(TARGET_OUT_HEADERS)/libloc_pla \
+     $(TARGET_OUT_HEADERS)/liblocation_api
+ 
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
++
+ LOCAL_PRELINK_MODULE := false
+ 
+ include $(BUILD_SHARED_LIBRARY)
+diff --git a/sdm845/gnss/GnssAdapter.cpp b/sdm845/gnss/GnssAdapter.cpp
+index ca34d8c..55ebaf7 100644
+--- a/sdm845/gnss/GnssAdapter.cpp
++++ b/sdm845/gnss/GnssAdapter.cpp
+@@ -28,6 +28,7 @@
+  */
+ #define LOG_TAG "LocSvc_GnssAdapter"
+ 
++#include <inttypes.h>
+ #include <sys/stat.h>
+ #include <errno.h>
+ #include <ctype.h>
+@@ -2855,7 +2856,7 @@ bool GnssAdapter::getDebugReport(GnssDebugReport& r)
+                      reports.mTimeAndClock.back().mLeapSecUnc)*1000);
+         r.mTime.frequencyUncertaintyNsPerSec =
+             (float)(reports.mTimeAndClock.back().mClockFreqBiasUnc);
+-        LOC_LOGV("getDebugReport - timeestimate=%ld unc=%f frequnc=%f",
++        LOC_LOGV("getDebugReport - timeestimate=%" PRIu64 " unc=%f frequnc=%f",
+                 r.mTime.timeEstimate,
+                 r.mTime.timeUncertaintyNs, r.mTime.frequencyUncertaintyNsPerSec);
+     }
+@@ -2869,7 +2870,7 @@ bool GnssAdapter::getDebugReport(GnssDebugReport& r)
+     convertSatelliteInfo(r.mSatelliteInfo, GNSS_SV_TYPE_QZSS, reports);
+     convertSatelliteInfo(r.mSatelliteInfo, GNSS_SV_TYPE_BEIDOU, reports);
+     convertSatelliteInfo(r.mSatelliteInfo, GNSS_SV_TYPE_GALILEO, reports);
+-    LOC_LOGV("getDebugReport - satellite=%lu", r.mSatelliteInfo.size());
++    LOC_LOGV("getDebugReport - satellite=%zu", r.mSatelliteInfo.size());
+ 
+     return true;
+ }
+diff --git a/sdm845/location/Android.mk b/sdm845/location/Android.mk
+index 6d2c9fa..d401c8f 100644
+--- a/sdm845/location/Android.mk
++++ b/sdm845/location/Android.mk
+@@ -35,6 +35,7 @@ LOCAL_COPY_HEADERS:= \
+ 
+ LOCAL_PRELINK_MODULE := false
+ 
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
+ include $(BUILD_SHARED_LIBRARY)
+ 
+ endif # not BUILD_TINY_ANDROID
+diff --git a/sdm845/location/LocationAPIClientBase.cpp b/sdm845/location/LocationAPIClientBase.cpp
+index 141f5eb..4effa9c 100644
+--- a/sdm845/location/LocationAPIClientBase.cpp
++++ b/sdm845/location/LocationAPIClientBase.cpp
+@@ -30,6 +30,8 @@
+ #define LOG_TAG "LocSvc_APIClientBase"
+ 
+ #include <log_util.h>
++#include <platform_lib_log_util.h>
++#include <inttypes.h>
+ #include <loc_cfg.h>
+ #include "LocationAPIClientBase.h"
+ 
+diff --git a/sdm845/utils/Android.mk b/sdm845/utils/Android.mk
+index ef1e5e1..246561a 100644
+--- a/sdm845/utils/Android.mk
++++ b/sdm845/utils/Android.mk
+@@ -71,6 +71,8 @@ LOCAL_MODULE_TAGS := optional
+ 
+ LOCAL_PRELINK_MODULE := false
+ 
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
++
+ include $(BUILD_SHARED_LIBRARY)
+ 
+ include $(addsuffix /Android.mk, $(addprefix $(LOCAL_PATH)/, platform_lib_abstractions))
+diff --git a/sdm845/utils/LocThread.cpp b/sdm845/utils/LocThread.cpp
+index 685841e..d112f61 100644
+--- a/sdm845/utils/LocThread.cpp
++++ b/sdm845/utils/LocThread.cpp
+@@ -65,7 +65,7 @@ public:
+ // threashold approprietly for destroy(), e.g. mRefCount.
+ LocThreadDelegate::LocThreadDelegate(LocThread::tCreate creator,
+         const char* threadName, LocRunnable* runnable, bool joinable) :
+-    mRunnable(runnable), mJoinable(joinable), mThandle(NULL),
++    mRunnable(runnable), mJoinable(joinable), mThandle((pthread_t)NULL),
+     mMutex(PTHREAD_MUTEX_INITIALIZER), mRefCount(2) {
+ 
+     // set up thread name, if nothing is passed in
+@@ -79,7 +79,7 @@ LocThreadDelegate::LocThreadDelegate(LocThread::tCreate creator,
+         mThandle = creator(threadName, threadMain, this);
+     } else if (pthread_create(&mThandle, NULL, threadMain, this)) {
+         // pthread_create() failed
+-        mThandle = NULL;
++        mThandle = (pthread_t)NULL;
+     }
+ 
+     if (mThandle) {
+diff --git a/sdm845/utils/LocTimer.cpp b/sdm845/utils/LocTimer.cpp
+index c08bd35..5b653eb 100644
+--- a/sdm845/utils/LocTimer.cpp
++++ b/sdm845/utils/LocTimer.cpp
+@@ -283,7 +283,8 @@ void LocTimerContainer::updateSoonestTime(LocTimerDelegate* priorTop) {
+ 
+     // check if top has changed
+     if (curTop != priorTop) {
+-        struct itimerspec delay = {0};
++        struct itimerspec delay;
++        memset(&delay, 0, sizeof(struct itimerspec));
+         bool toSetTime = false;
+         // if tree is empty now, we remove poll and disarm timer
+         if (!curTop) {
+@@ -374,7 +375,8 @@ void LocTimerContainer::expire() {
+         }
+     };
+ 
+-    struct itimerspec delay = {0};
++    struct itimerspec delay;
++    memset(&delay, 0, sizeof(struct itimerspec));
+     timerfd_settime(getTimerFd(), TFD_TIMER_ABSTIME, &delay, NULL);
+     mPollTask->removePoll(*this);
+     mMsgTask->sendMsg(new MsgTimerExpire(*this));
+diff --git a/sdm845/utils/loc_misc_utils.cpp b/sdm845/utils/loc_misc_utils.cpp
+index 5d66991..fd3ee6b 100644
+--- a/sdm845/utils/loc_misc_utils.cpp
++++ b/sdm845/utils/loc_misc_utils.cpp
+@@ -26,14 +26,14 @@
+  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  */
++#define LOG_NDEBUG 0
++#define LOG_TAG "LocSvc_misc_utils"
+ #include <stdio.h>
+ #include <string.h>
+ #include <platform_lib_log_util.h>
+ #include <loc_misc_utils.h>
+ #include <ctype.h>
+ 
+-#define LOG_NDEBUG 0
+-#define LOG_TAG "LocSvc_misc_utils"
+ 
+ int loc_util_split_string(char *raw_string, char **split_strings_ptr,
+                           int max_num_substrings, char delimiter)
+diff --git a/sdm845/utils/msg_q.c b/sdm845/utils/msg_q.c
+index 10c4e48..e8b4ffe 100644
+--- a/sdm845/utils/msg_q.c
++++ b/sdm845/utils/msg_q.c
+@@ -198,7 +198,7 @@ msq_q_err_type msg_q_snd(void* msg_q_data, void* msg_obj, void (*dealloc)(void*)
+    msg_q* p_msg_q = (msg_q*)msg_q_data;
+ 
+    pthread_mutex_lock(&p_msg_q->list_mutex);
+-   LOC_LOGV("%s: Sending message with handle = 0x%08X\n", __FUNCTION__, msg_obj);
++   LOC_LOGV("%s: Sending message with handle = %p\n", __FUNCTION__, msg_obj);
+ 
+    if( p_msg_q->unblocked )
+    {
+@@ -214,7 +214,7 @@ msq_q_err_type msg_q_snd(void* msg_q_data, void* msg_obj, void (*dealloc)(void*)
+ 
+    pthread_mutex_unlock(&p_msg_q->list_mutex);
+ 
+-   LOC_LOGV("%s: Finished Sending message with handle = 0x%08X\n", __FUNCTION__, msg_obj);
++   LOC_LOGV("%s: Finished Sending message with handle = %p\n", __FUNCTION__, msg_obj);
+ 
+    return rv;
+ }
+@@ -260,7 +260,7 @@ msq_q_err_type msg_q_rcv(void* msg_q_data, void** msg_obj)
+ 
+    pthread_mutex_unlock(&p_msg_q->list_mutex);
+ 
+-   LOC_LOGV("%s: Received message 0x%08X rv = %d\n", __FUNCTION__, *msg_obj, rv);
++   LOC_LOGV("%s: Received message %p rv = %d\n", __FUNCTION__, *msg_obj, rv);
+ 
+    return rv;
+ }
+diff --git a/sdm845/utils/platform_lib_abstractions/elapsed_millis_since_boot.cpp b/sdm845/utils/platform_lib_abstractions/elapsed_millis_since_boot.cpp
+index e8cb93a..6c183a8 100644
+--- a/sdm845/utils/platform_lib_abstractions/elapsed_millis_since_boot.cpp
++++ b/sdm845/utils/platform_lib_abstractions/elapsed_millis_since_boot.cpp
+@@ -30,7 +30,7 @@
+ #include <sys/time.h>
+ #include "platform_lib_time.h"
+ 
+-int64_t systemTime(int clock)
++int64_t systemTime(int /*clock*/)
+ {
+     struct timeval t;
+     t.tv_sec = t.tv_usec = 0;
+diff --git a/sdm845/utils/platform_lib_abstractions/loc_pla/src/Android.mk b/sdm845/utils/platform_lib_abstractions/loc_pla/src/Android.mk
+index 7d321ef..4add103 100644
+--- a/sdm845/utils/platform_lib_abstractions/loc_pla/src/Android.mk
++++ b/sdm845/utils/platform_lib_abstractions/loc_pla/src/Android.mk
+@@ -1,3 +1,21 @@
++GNSS_CFLAGS := \
++    -Werror \
++    -Wno-error=unused-parameter \
++    -Wno-error=format \
++    -Wno-error=macro-redefined \
++    -Wno-error=reorder \
++    -Wno-error=missing-braces \
++    -Wno-error=self-assign \
++    -Wno-error=enum-conversion \
++    -Wno-error=logical-op-parentheses \
++    -Wno-error=null-arithmetic \
++    -Wno-error=null-conversion \
++    -Wno-error=parentheses-equality \
++    -Wno-error=undefined-bool-conversion \
++    -Wno-error=tautological-compare \
++    -Wno-error=switch \
++    -Wno-error=date-time
++
+ ifneq ($(BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE),)
+ ifneq ($(BUILD_TINY_ANDROID),true)
+ #Compile this library only for builds with the latest modem image
+@@ -47,7 +65,7 @@ LOCAL_MODULE_PATH_64 := $(TARGET_OUT_VENDOR)/lib64
+ LOCAL_MODULE_TAGS := optional
+ 
+ LOCAL_PRELINK_MODULE := false
+-
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
+ include $(BUILD_SHARED_LIBRARY)
+ endif # not BUILD_TINY_ANDROID
+ endif # BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE
+diff --git a/sdm845/utils/platform_lib_abstractions/loc_pla/src/platform_lib_property_service.cpp b/sdm845/utils/platform_lib_abstractions/loc_pla/src/platform_lib_property_service.cpp
+index 1cc63ab..dccdebc 100644
+--- a/sdm845/utils/platform_lib_abstractions/loc_pla/src/platform_lib_property_service.cpp
++++ b/sdm845/utils/platform_lib_abstractions/loc_pla/src/platform_lib_property_service.cpp
+@@ -25,14 +25,14 @@
+  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+-#include "platform_lib_property_service.h"
+-
+ #ifdef USE_GLIB
+ #include <loc_stub_property_service.h>
+ #else
+ #include <cutils/properties.h>
+ #endif /* USE_GLIB */
+ 
++#include "platform_lib_property_service.h"
++
+ int platform_lib_abstraction_property_get(const char *key, char *value, const char *default_value)
+ {
+     return property_get(key, value, default_value);
+diff --git a/sdm845/utils/platform_lib_abstractions/loc_stub/src/Android.mk b/sdm845/utils/platform_lib_abstractions/loc_stub/src/Android.mk
+index e899ca3..8f5b219 100644
+--- a/sdm845/utils/platform_lib_abstractions/loc_stub/src/Android.mk
++++ b/sdm845/utils/platform_lib_abstractions/loc_stub/src/Android.mk
+@@ -46,7 +46,7 @@ LOCAL_MODULE_PATH_64 := $(TARGET_OUT_VENDOR)/lib64
+ LOCAL_MODULE_TAGS := optional
+ 
+ LOCAL_PRELINK_MODULE := false
+-
++LOCAL_CFLAGS += $(GNSS_CFLAGS)
+ include $(BUILD_SHARED_LIBRARY)
+ endif # not BUILD_TINY_ANDROID
+ endif # BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE
+diff --git a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_android_runtime.cpp b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_android_runtime.cpp
+index 1db69b2..068df4e 100644
+--- a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_android_runtime.cpp
++++ b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_android_runtime.cpp
+@@ -30,7 +30,7 @@
+ 
+ namespace android {
+ 
+-pthread_t AndroidRuntime::createJavaThread(const char* name,
++pthread_t AndroidRuntime::createJavaThread(const char* /*name*/,
+     void (*start)(void *), void* arg)
+ {
+     pthread_t threadId = 0;
+diff --git a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_property_service.cpp b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_property_service.cpp
+index f9d9e3e..907ab02 100644
+--- a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_property_service.cpp
++++ b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_property_service.cpp
+@@ -30,7 +30,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ 
+-int property_get(const char *key, char * value, const char *default_value)
++int property_get(const char *key, char * value, const char */*default_value*/)
+ {
+     /* This will disable gps interface
+        value[0] = '1';
+diff --git a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_sched_policy.cpp b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_sched_policy.cpp
+index 781be29..5e26245 100644
+--- a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_sched_policy.cpp
++++ b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_sched_policy.cpp
+@@ -44,7 +44,7 @@ SIDE EFFECTS
+    N/A
+ 
+ ===========================================================================*/
+-int set_sched_policy(int tid, SchedPolicy policy)
++int set_sched_policy(int /*tid*/, SchedPolicy /*policy*/)
+ {
+     return 0;
+ }
+diff --git a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_time.cpp b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_time.cpp
+index 499cf00..48149a6 100644
+--- a/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_time.cpp
++++ b/sdm845/utils/platform_lib_abstractions/loc_stub/src/loc_stub_time.cpp
+@@ -31,7 +31,7 @@
+ #include <sys/time.h>
+ #include <time.h>
+ 
+-int64_t systemTime(int clock)
++int64_t systemTime(int /*clock*/)
+ {
+     struct timeval t;
+     t.tv_sec = t.tv_usec = 0;
+-- 
+2.13.0
+

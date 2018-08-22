@@ -1,0 +1,32 @@
+From 0ae34c3a19fb0a1a0bd9775199692d550af4b8f5 Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sony.com>
+Date: Thu, 9 Aug 2018 13:30:50 +0200
+Subject: [PATCH] Replace hardcoded build barrier with a generic one
+
+Bootctrl is used when AB OTA is enabled.
+We can replace the hardcoded platform filter with the
+generic AB OTA flag.
+
+Test: manual - build ok. device boots ok.
+
+Change-Id: I34ee90a2818ad23cc6b9233bdde126a0965fae0d
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sony.com>
+---
+ Android.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.mk b/Android.mk
+index 03a11d3..bb91f07 100644
+--- a/Android.mk
++++ b/Android.mk
+@@ -1,6 +1,6 @@
+ # TODO:  Find a better way to separate build configs for ADP vs non-ADP devices
+ ifneq ($(BOARD_IS_AUTOMOTIVE),true)
+-ifneq ($(filter msm8996 msm8998 sdm845,$(TARGET_BOARD_PLATFORM)),)
++ifeq ($(AB_OTA_UPDATER),true)
+ LOCAL_PATH := $(call my-dir)
+ 
+ # HAL Shared library for the target. Used by libhardware.
+-- 
+2.13.0
+

@@ -1,0 +1,45 @@
+From d6f654b013b00fa55b5c50f3f599df50847811bb Mon Sep 17 00:00:00 2001
+From: Christian Oder <myself5@carbonrom.org>
+Date: Thu, 9 Aug 2018 14:27:35 +0200
+Subject: [PATCH] fwb: Add check for odm version
+
+We update system more often than ODM. This allows linking the ODM image version to system.
+
+Test: flash outdated odm image on device with system defined odm revision and expect error
+
+Change-Id: Ifab6ca5c2f97840bb4192226f191e624267edb32
+---
+ core/java/android/os/Build.java | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/core/java/android/os/Build.java b/core/java/android/os/Build.java
+index 2de07b5bb40..3d99536b07c 100644
+--- a/core/java/android/os/Build.java
++++ b/core/java/android/os/Build.java
+@@ -999,6 +999,8 @@ public class Build {
+ 
+         final String system = SystemProperties.get("ro.build.fingerprint");
+         final String vendor = SystemProperties.get("ro.vendor.build.fingerprint");
++        final String odm_expected = SystemProperties.get("ro.odm.expect.version");
++        final String odm = SystemProperties.get("ro.odm.version");
+         final String bootimage = SystemProperties.get("ro.bootimage.build.fingerprint");
+         final String requiredBootloader = SystemProperties.get("ro.build.expect.bootloader");
+         final String currentBootloader = SystemProperties.get("ro.bootloader");
+@@ -1018,6 +1020,14 @@ public class Build {
+             }
+         }
+ 
++        if (!TextUtils.isEmpty(odm_expected)) {
++            if (!Objects.equals(odm_expected, odm)) {
++                Slog.e(TAG, "Mismatched fingerprints; system reported " + odm_expected
++                        + " but odm reported " + odm);
++                return false;
++            }
++        }
++
+         /* TODO: Figure out issue with checks failing
+         if (!TextUtils.isEmpty(bootimage)) {
+             if (!Objects.equals(system, bootimage)) {
+-- 
+2.13.0
+

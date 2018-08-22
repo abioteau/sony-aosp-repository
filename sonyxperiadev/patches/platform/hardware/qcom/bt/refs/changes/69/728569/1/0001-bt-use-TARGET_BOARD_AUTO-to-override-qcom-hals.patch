@@ -1,0 +1,31 @@
+From e0e30f0d46ef2ff5bcb707eaf47a596cb57b65af Mon Sep 17 00:00:00 2001
+From: David Viteri <davidteri91@gmail.com>
+Date: Thu, 9 Aug 2018 13:24:57 +0200
+Subject: [PATCH] bt: use TARGET_BOARD_AUTO to override qcom hals
+
+BOARD_IS_AUTOMOTIVE := true includes car packages on not car devices
+see https://android.googlesource.com/platform/packages/services/Car/+/master/car-support-lib/Android.mk#50
+
+Test: regular device is able to install car packages
+
+Change-Id: I28898df1e8855347129039b5cb0d43975d3a5415
+Signed-off-by: David Viteri <davidteri91@gmail.com>
+---
+ Android.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.mk b/Android.mk
+index 85e8d12..01b375b 100644
+--- a/Android.mk
++++ b/Android.mk
+@@ -1,6 +1,6 @@
+ LOCAL_PATH := $(call my-dir)
+ # TODO:  Find a better way to separate build configs for ADP vs non-ADP devices
+-ifneq ($(BOARD_IS_AUTOMOTIVE),true)
++ifneq ($(TARGET_BOARD_AUTO),true)
+   ifneq ($(filter msm8x27 msm8226,$(TARGET_BOARD_PLATFORM)),)
+     include $(call all-named-subdir-makefiles,msm8960)
+   else ifneq ($(filter msm8994,$(TARGET_BOARD_PLATFORM)),)
+-- 
+2.13.0
+

@@ -1,0 +1,416 @@
+From b2569ea526c5684c53f222e7dc7bc790596a7602 Mon Sep 17 00:00:00 2001
+From: Dan Pasanen <dan.pasanen@gmail.com>
+Date: Tue, 27 Oct 2015 22:52:37 -0500
+Subject: [PATCH] vold: add support for exFAT file system
+
+This is a squashed commit of following changes:
+
+vold: add support for more filesystems for public storage
+
+* Add exfat and ntfs support based off f2fs and ported to use
+  fuse
+* Add support for both along with f2fs and ext4 to PublicVolume
+* Also attempt to mount any volume if it's been determined that
+  the kernel supports it
+
+Change-Id: I0a83761cefd97791e3ec84a18e199dfd27a5ed0b
+
+vold: fs: Fix build errors
+
+* Migrate from base to android-base
+* Add missing , in Ext4 Mount function
+
+[AdrianDC] Ignore unpatched ext4 arguments
+
+Change-Id: I875b5763c472aa7da2976ec7c5db7cf28c913876
+
+Change-Id: I0a83761cefd97791e3ec84a18e199dfd27a5ed0b
+
+[ab123321] Leave exfat only
+
+vold: Native exfat driver support
+
+* exfat-nofuse https://github.com/dorimanx/exfat-nofuse
+
+Change-Id: I0b7d7b3f3e21defa83e08564b3fdb67a9957edc0
+
+vold: Fix native exfat driver support
+
+Change-Id: I772368c0ec054a2ba86cf0ba0e37f07ba2b82fd2
+
+vold: Don't disable dirsync for exfat
+
+* exfat in Samsung's 3.4 kernel and sdfat both support it
+
+Change-Id: I4f84342b13915dba11f6e1442bdc89eb8b4719a1
+
+vold: Make exfat driver support generic
+
+* Samsung moved to a new driver in their recent devices,
+  and inevitably there will be more in the future
+* Make our support generic with the flag TARGET_EXFAT_DRIVER=foo,
+  where foo is the -t arg the fs needs to be mounted with
+
+Change-Id: I984481972bf79bf195321e69906cc5994fb19f2d
+
+vold: Only include exfat support for devices that specify a driver
+
+* Exfat fuse is truly awful, and it breaks licensing to use
+  it on devices that were not licensed for it
+* Include exfat only on devices with proper kernel support
+* Cleanup mounting code to be inline with Vfat code
+
+Change-Id: I9f00cb6417f6366ea3736589fc1862d6505bffbd
+
+Add exfat to supported FSs if exfat is enabled
+
+* Remove fuse exfat while we're at it
+
+Change-Id: Id6b9ff5d480f7eb1cd7fe6f93db8678aabf83f44
+---
+ Android.mk       |  5 +++
+ Disk.cpp         |  1 +
+ PublicVolume.cpp | 77 ++++++++++++++++++++++++++++++++++----------
+ Utils.cpp        |  9 ++++++
+ fs/Exfat.cpp     | 97 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ fs/Exfat.h       | 39 +++++++++++++++++++++++
+ main.cpp         |  1 +
+ 7 files changed, 212 insertions(+), 17 deletions(-)
+ create mode 100644 fs/Exfat.cpp
+ create mode 100644 fs/Exfat.h
+
+diff --git a/Android.mk b/Android.mk
+index bd457f6..b08783e 100644
+--- a/Android.mk
++++ b/Android.mk
+@@ -93,6 +93,11 @@ ifeq ($(TARGET_USERIMAGES_USE_EXT4), true)
+   endif
+ endif
+ 
++ifneq ($(TARGET_EXFAT_DRIVER),)
++  vold_cflags += -DCONFIG_EXFAT_DRIVER=\"$(TARGET_EXFAT_DRIVER)\"
++  common_src_files += fs/Exfat.cpp
++endif
++
+ include $(CLEAR_VARS)
+ 
+ LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
+diff --git a/Disk.cpp b/Disk.cpp
+index 3901526..7b824e9 100644
+--- a/Disk.cpp
++++ b/Disk.cpp
+@@ -359,6 +359,7 @@ status_t Disk::readPartitions() {
+ 
+                 switch (strtol(type, nullptr, 16)) {
+                 case 0x06: // FAT16
++                case 0x07: // NTFS/exFAT
+                 case 0x0b: // W95 FAT32 (LBA)
+                 case 0x0c: // W95 FAT32 (LBA)
+                 case 0x0e: // W95 FAT16 (LBA)
+diff --git a/PublicVolume.cpp b/PublicVolume.cpp
+index 929f587..f1567c9 100644
+--- a/PublicVolume.cpp
++++ b/PublicVolume.cpp
+@@ -14,6 +14,9 @@
+  * limitations under the License.
+  */
+ 
++#ifdef CONFIG_EXFAT_DRIVER
++#include "fs/Exfat.h"
++#endif
+ #include "fs/Vfat.h"
+ #include "PublicVolume.h"
+ #include "Utils.h"
+@@ -95,16 +98,11 @@ status_t PublicVolume::doMount() {
+     // TODO: expand to support mounting other filesystems
+     readMetadata();
+ 
+-    if (mFsType != "vfat") {
++    if (!IsFilesystemSupported(mFsType)) {
+         LOG(ERROR) << getId() << " unsupported filesystem " << mFsType;
+         return -EIO;
+     }
+ 
+-    if (vfat::Check(mDevPath)) {
+-        LOG(ERROR) << getId() << " failed filesystem check";
+-        return -EIO;
+-    }
+-
+     // Use UUID as stable name, if available
+     std::string stableName = getId();
+     if (!mFsUuid.empty()) {
+@@ -129,8 +127,35 @@ status_t PublicVolume::doMount() {
+         return -errno;
+     }
+ 
+-    if (vfat::Mount(mDevPath, mRawPath, false, false, false,
+-            AID_MEDIA_RW, AID_MEDIA_RW, 0007, true)) {
++    int ret = 0;
++#ifdef CONFIG_EXFAT_DRIVER
++    if (mFsType == "exfat") {
++        ret = exfat::Check(mDevPath);
++    } else
++#endif
++    if (mFsType == "vfat") {
++        ret = vfat::Check(mDevPath);
++    } else {
++        LOG(WARNING) << getId() << " unsupported filesystem check, skipping";
++    }
++    if (ret) {
++        LOG(ERROR) << getId() << " failed filesystem check";
++        return -EIO;
++    }
++
++#ifdef CONFIG_EXFAT_DRIVER
++    if (mFsType == "exfat") {
++        ret = exfat::Mount(mDevPath, mRawPath, false, false, false,
++                AID_MEDIA_RW, AID_MEDIA_RW, 0007);
++    } else
++#endif
++    if (mFsType == "vfat") {
++        ret = vfat::Mount(mDevPath, mRawPath, false, false, false,
++                AID_MEDIA_RW, AID_MEDIA_RW, 0007, true);
++    } else {
++        ret = ::mount(mDevPath.c_str(), mRawPath.c_str(), mFsType.c_str(), 0, NULL);
++    }
++    if (ret) {
+         PLOG(ERROR) << getId() << " failed to mount " << mDevPath;
+         return -EIO;
+     }
+@@ -225,19 +250,37 @@ status_t PublicVolume::doUnmount() {
+ }
+ 
+ status_t PublicVolume::doFormat(const std::string& fsType) {
+-    if (fsType == "vfat" || fsType == "auto") {
+-        if (WipeBlockDevice(mDevPath) != OK) {
+-            LOG(WARNING) << getId() << " failed to wipe";
+-        }
+-        if (vfat::Format(mDevPath, 0)) {
+-            LOG(ERROR) << getId() << " failed to format";
+-            return -errno;
+-        }
+-    } else {
++    // "auto" is used for newly partitioned disks (see Disk::partition*)
++    // and thus is restricted to external/removable storage.
++    if (!(IsFilesystemSupported(fsType) || fsType == "auto")) {
+         LOG(ERROR) << "Unsupported filesystem " << fsType;
+         return -EINVAL;
+     }
+ 
++    if (WipeBlockDevice(mDevPath) != OK) {
++        LOG(WARNING) << getId() << " failed to wipe";
++    }
++
++    int ret = 0;
++    if (fsType == "auto") {
++        ret = vfat::Format(mDevPath, 0);
++#ifdef CONFIG_EXFAT_DRIVER
++    } else if (fsType == "exfat") {
++        ret = exfat::Format(mDevPath);
++#endif
++    } else if (fsType == "vfat") {
++        ret = vfat::Format(mDevPath, 0);
++    } else {
++        LOG(ERROR) << getId() << " unrecognized filesystem " << fsType;
++        ret = -1;
++        errno = EIO;
++    }
++
++    if (ret) {
++        LOG(ERROR) << getId() << " failed to format";
++        return -errno;
++    }
++
+     return OK;
+ }
+ 
+diff --git a/Utils.cpp b/Utils.cpp
+index 102c09a..aac90c3 100644
+--- a/Utils.cpp
++++ b/Utils.cpp
+@@ -23,6 +23,8 @@
+ #include <android-base/logging.h>
+ #include <android-base/properties.h>
+ #include <android-base/stringprintf.h>
++#include "fs/Exfat.h"
++
+ #include <cutils/fs.h>
+ #include <logwrap/logwrap.h>
+ #include <private/android_filesystem_config.h>
+@@ -533,6 +535,13 @@ bool IsFilesystemSupported(const std::string& fsType) {
+         PLOG(ERROR) << "Failed to read supported filesystems";
+         return false;
+     }
++
++#ifdef CONFIG_EXFAT_DRIVER
++    /* Add exfat if an exfat driver is present */
++    if (supported.find(CONFIG_EXFAT_DRIVER "\n") != std::string::npos)
++        supported.append("nodev\texfat\n");
++#endif
++
+     return supported.find(fsType + "\n") != std::string::npos;
+ }
+ 
+diff --git a/fs/Exfat.cpp b/fs/Exfat.cpp
+new file mode 100644
+index 0000000..5a67172
+--- /dev/null
++++ b/fs/Exfat.cpp
+@@ -0,0 +1,97 @@
++/*
++ * Copyright (C) 2015 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#include "Exfat.h"
++#include "Utils.h"
++
++#define LOG_TAG "Vold"
++
++#include <android-base/logging.h>
++#include <android-base/stringprintf.h>
++
++#include <cutils/log.h>
++
++#include <logwrap/logwrap.h>
++
++#include <vector>
++#include <string>
++
++#include <sys/mount.h>
++
++using android::base::StringPrintf;
++
++namespace android {
++namespace vold {
++namespace exfat {
++
++static const char* kMkfsPath = "/system/bin/mkfs.exfat";
++static const char* kFsckPath = "/system/bin/fsck.exfat";
++
++bool IsSupported() {
++    return access(kMkfsPath, X_OK) == 0
++            && access(kFsckPath, X_OK) == 0
++            && IsFilesystemSupported("exfat");
++}
++
++status_t Check(const std::string& source) {
++    std::vector<std::string> cmd;
++    cmd.push_back(kFsckPath);
++    cmd.push_back(source);
++
++    return ForkExecvp(cmd, sFsckContext);
++}
++
++status_t Mount(const std::string& source, const std::string& target, bool ro,
++        bool remount, bool executable, int ownerUid, int ownerGid, int permMask) {
++    int rc;
++    unsigned long flags;
++    char mountData[255];
++
++    const char* c_source = source.c_str();
++    const char* c_target = target.c_str();
++
++    flags = MS_NODEV | MS_NOSUID | MS_DIRSYNC | MS_NOATIME;
++
++    flags |= (executable ? 0 : MS_NOEXEC);
++    flags |= (ro ? MS_RDONLY : 0);
++    flags |= (remount ? MS_REMOUNT : 0);
++
++    snprintf(mountData, sizeof(mountData),
++            "uid=%d,gid=%d,fmask=%o,dmask=%o",
++            ownerUid, ownerGid, permMask, permMask);
++
++    rc = mount(c_source, c_target, CONFIG_EXFAT_DRIVER, flags, mountData);
++
++    if (rc && errno == EROFS) {
++        SLOGE("%s appears to be a read only filesystem - retrying mount RO", c_source);
++        flags |= MS_RDONLY;
++        rc = mount(c_source, c_target, CONFIG_EXFAT_DRIVER, flags, mountData);
++    }
++
++    return rc;
++}
++
++status_t Format(const std::string& source) {
++    std::vector<std::string> cmd;
++    cmd.push_back(kMkfsPath);
++    cmd.push_back(source);
++
++    return ForkExecvp(cmd);
++}
++
++}  // namespace exfat
++}  // namespace vold
++}  // namespace android
+diff --git a/fs/Exfat.h b/fs/Exfat.h
+new file mode 100644
+index 0000000..cd4fb5d
+--- /dev/null
++++ b/fs/Exfat.h
+@@ -0,0 +1,39 @@
++/*
++ * Copyright (C) 2015 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef ANDROID_VOLD_EXFAT_H
++#define ANDROID_VOLD_EXFAT_H
++
++#include <utils/Errors.h>
++
++#include <string>
++
++namespace android {
++namespace vold {
++namespace exfat {
++
++bool IsSupported();
++
++status_t Check(const std::string& source);
++status_t Mount(const std::string& source, const std::string& target, bool ro,
++        bool remount, bool executable, int ownerUid, int ownerGid, int permMask);
++status_t Format(const std::string& source);
++
++}  // namespace exfat
++}  // namespace vold
++}  // namespace android
++
++#endif
+diff --git a/main.cpp b/main.cpp
+index 30c839e..1eb7fc2 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
+     LOG(INFO) << "Vold 3.0 (the awakening) firing up";
+ 
+     LOG(VERBOSE) << "Detected support for:"
++            << (android::vold::IsFilesystemSupported("exfat") ? " exfat" : "")
+             << (android::vold::IsFilesystemSupported("ext4") ? " ext4" : "")
+             << (android::vold::IsFilesystemSupported("f2fs") ? " f2fs" : "")
+             << (android::vold::IsFilesystemSupported("vfat") ? " vfat" : "");
+-- 
+2.13.0
+

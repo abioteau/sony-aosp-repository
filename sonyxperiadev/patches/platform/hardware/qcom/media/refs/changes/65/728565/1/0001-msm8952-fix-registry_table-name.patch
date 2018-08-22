@@ -1,0 +1,41 @@
+From 37ae4c1df421d685378de2e000668dd0c6a3b4a6 Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sony.com>
+Date: Thu, 9 Aug 2018 12:28:53 +0200
+Subject: [PATCH] msm8952: fix registry_table name
+
+The registy_table name does not match the source name
+and the build will fail.
+
+Test: manual - Build OK
+
+Change-Id: I2789555066ff3787ca1b797f4eff75c284930896
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sony.com>
+---
+ sdm845/mm-core/Android.mk | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sdm845/mm-core/Android.mk b/sdm845/mm-core/Android.mk
+index 7de498e..66bce7f 100755
+--- a/sdm845/mm-core/Android.mk
++++ b/sdm845/mm-core/Android.mk
+@@ -78,7 +78,7 @@ LOCAL_CFLAGS            := $(OMXCORE_CFLAGS)
+ 
+ LOCAL_SRC_FILES         := src/common/omx_core_cmp.cpp
+ LOCAL_SRC_FILES         += src/common/qc_omx_core.c
+-ifneq (,$(filter msm8996 msm8998 sdm660 sdm845,$(TARGET_BOARD_PLATFORM)))
++ifneq (,$(filter msm8952 msm8996 msm8998 sdm660 sdm845,$(TARGET_BOARD_PLATFORM)))
+ LOCAL_SRC_FILES         += src/$(MM_CORE_TARGET)/registry_table_android.c
+ else
+ LOCAL_SRC_FILES         += src/$(MM_CORE_TARGET)/qc_registry_table_android.c
+@@ -103,7 +103,7 @@ LOCAL_CFLAGS            := $(OMXCORE_CFLAGS)
+ 
+ LOCAL_SRC_FILES         := src/common/omx_core_cmp.cpp
+ LOCAL_SRC_FILES         += src/common/qc_omx_core.c
+-ifneq (,$(filter msm8996 msm8998 sdm660 sdm845,$(TARGET_BOARD_PLATFORM)))
++ifneq (,$(filter msm8952 msm8996 msm8998 sdm660 sdm845,$(TARGET_BOARD_PLATFORM)))
+ LOCAL_SRC_FILES         += src/$(MM_CORE_TARGET)/registry_table.c
+ else
+ LOCAL_SRC_FILES         += src/$(MM_CORE_TARGET)/qc_registry_table.c
+-- 
+2.13.0
+

@@ -1,0 +1,116 @@
+From c80acef4170e65bc36899c08b117ac0e1f3470b9 Mon Sep 17 00:00:00 2001
+From: MarijnS95 <marijns95@gmail.com>
+Date: Tue, 14 Aug 2018 14:31:41 +0200
+Subject: [PATCH] Fixed leftover compiler errors.
+
+Test: mmma sdm845 -j4
+Test: BOARD_VNDK_VERSION=current mmma sdm845 -j4
+
+Change-Id: I3270a5e4a621df96b08cef25d2b272c7b15edb53
+---
+ sdm845/android/AGnssRil.cpp                   | 4 ++--
+ sdm845/android/AGnssRil.h                     | 3 ---
+ sdm845/android/location_api/GnssAPIClient.cpp | 2 +-
+ sdm845/core/LocApiBase.cpp                    | 2 +-
+ sdm845/gnss/GnssAdapter.cpp                   | 2 +-
+ sdm845/location/LocationAPIClientBase.cpp     | 2 --
+ 6 files changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/sdm845/android/AGnssRil.cpp b/sdm845/android/AGnssRil.cpp
+index b19f55f..c5a07b3 100644
+--- a/sdm845/android/AGnssRil.cpp
++++ b/sdm845/android/AGnssRil.cpp
+@@ -39,7 +39,7 @@ namespace implementation {
+ 
+ static bool sendConnectionEvent(const bool connected, const uint8_t type);
+ 
+-AGnssRil::AGnssRil(Gnss* gnss) : mGnss(gnss) {
++AGnssRil::AGnssRil(Gnss* /*gnss*/) {
+     ENTRY_LOG_CALLFLOW();
+ }
+ 
+@@ -47,7 +47,7 @@ AGnssRil::~AGnssRil() {
+     ENTRY_LOG_CALLFLOW();
+ }
+ 
+-Return<bool> AGnssRil::updateNetworkState(bool connected, NetworkType type, bool roaming) {
++Return<bool> AGnssRil::updateNetworkState(bool connected, NetworkType type, bool /*roaming*/) {
+     ENTRY_LOG_CALLFLOW();
+ 
+     // for XTRA
+diff --git a/sdm845/android/AGnssRil.h b/sdm845/android/AGnssRil.h
+index 61216d8..cc0212e 100644
+--- a/sdm845/android/AGnssRil.h
++++ b/sdm845/android/AGnssRil.h
+@@ -69,9 +69,6 @@ struct AGnssRil : public IAGnssRil {
+         return false;
+     }
+     Return<bool> updateNetworkState(bool connected, NetworkType type, bool roaming) override;
+-
+- private:
+-    Gnss* mGnss = nullptr;
+ };
+ 
+ }  // namespace implementation
+diff --git a/sdm845/android/location_api/GnssAPIClient.cpp b/sdm845/android/location_api/GnssAPIClient.cpp
+index 45e4981..b1cea32 100644
+--- a/sdm845/android/location_api/GnssAPIClient.cpp
++++ b/sdm845/android/location_api/GnssAPIClient.cpp
+@@ -378,7 +378,7 @@ void GnssAPIClient::onGnssNmeaCb(GnssNmeaNotification gnssNmeaNotification)
+         auto r = mGnssCbIface->gnssNmeaCb(
+             static_cast<GnssUtcTime>(gnssNmeaNotification.timestamp), nmeaString);
+         if (!r.isOk()) {
+-            LOC_LOGE("%s] Error from gnssNmeaCb nmea=%s length=%u description=%s", __func__,
++            LOC_LOGE("%s] Error from gnssNmeaCb nmea=%s length=%zd description=%s", __func__,
+                 gnssNmeaNotification.nmea, gnssNmeaNotification.length, r.description().c_str());
+         }
+     }
+diff --git a/sdm845/core/LocApiBase.cpp b/sdm845/core/LocApiBase.cpp
+index 7442dc8..6cc00b1 100644
+--- a/sdm845/core/LocApiBase.cpp
++++ b/sdm845/core/LocApiBase.cpp
+@@ -118,7 +118,7 @@ struct LocOpenMsg : public LocMsg {
+         mLocApi->open(mMask);
+     }
+     inline void locallog() const {
+-        LOC_LOGV("%s:%d]: LocOpen Mask: %" PRIu64 "\n",
++        LOC_LOGV("%s:%d]: LocOpen Mask: %x\n",
+                  __func__, __LINE__, mMask);
+     }
+     inline virtual void log() const {
+diff --git a/sdm845/gnss/GnssAdapter.cpp b/sdm845/gnss/GnssAdapter.cpp
+index cfa42da..a1e16aa 100644
+--- a/sdm845/gnss/GnssAdapter.cpp
++++ b/sdm845/gnss/GnssAdapter.cpp
+@@ -1027,7 +1027,7 @@ GnssAdapter::updateClientsEventMask()
+         mask |= LOC_API_ADAPTER_BIT_GNSS_MEASUREMENT;
+         mask |= LOC_API_ADAPTER_BIT_GNSS_SV_POLYNOMIAL_REPORT;
+ 
+-        LOC_LOGD("%s]: Auto usecase, Enable MEAS/POLY - mask 0x%" PRIu64 "", __func__, mask);
++        LOC_LOGD("%s]: Auto usecase, Enable MEAS/POLY - mask %#x", __func__, mask);
+     }
+ 
+     updateEvtMask(mask, LOC_REGISTRATION_MASK_SET);
+diff --git a/sdm845/location/LocationAPIClientBase.cpp b/sdm845/location/LocationAPIClientBase.cpp
+index 4effa9c..20317d2 100644
+--- a/sdm845/location/LocationAPIClientBase.cpp
++++ b/sdm845/location/LocationAPIClientBase.cpp
+@@ -30,7 +30,6 @@
+ #define LOG_TAG "LocSvc_APIClientBase"
+ 
+ #include <log_util.h>
+-#include <platform_lib_log_util.h>
+ #include <inttypes.h>
+ #include <loc_cfg.h>
+ #include "LocationAPIClientBase.h"
+@@ -687,7 +686,6 @@ uint32_t LocationAPIClientBase::locAPIGnssUpdateConfig(GnssConfig config)
+ 
+         memcpy(&mConfig, &config, sizeof(GnssConfig));
+ 
+-        uint32_t session = 0;
+         RequestQueue* requests = mRequestQueues[REQUEST_CONFIG];
+         uint32_t* idArray = mLocationControlAPI->gnssUpdateConfig(config);
+         LOC_LOGV("%s:%d] gnssUpdateConfig return array: %p", __FUNCTION__, __LINE__, idArray);
+-- 
+2.13.0
+

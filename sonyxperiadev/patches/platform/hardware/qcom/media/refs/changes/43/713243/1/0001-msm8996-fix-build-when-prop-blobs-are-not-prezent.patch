@@ -1,0 +1,56 @@
+From 6ed230d4e77c7089d5720e0d6769efb114431069 Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sony.com>
+Date: Thu, 5 Jul 2018 05:21:20 +0900
+Subject: [PATCH] msm8996: fix build when prop blobs are not prezent
+
+The vqzip binaries are proprietary and do not exist in AOSP
+
+Test: manual - build and boot
+Change-Id: I86baddb52292e65ee4a5d8dae6253920b9c0629b
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sony.com>
+---
+ sdm845/mm-core/Android.mk                 | 2 ++
+ sdm845/mm-video-v4l2/vidc/venc/Android.mk | 6 ++++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/sdm845/mm-core/Android.mk b/sdm845/mm-core/Android.mk
+index 7de498e..f0779bb 100755
+--- a/sdm845/mm-core/Android.mk
++++ b/sdm845/mm-core/Android.mk
+@@ -20,6 +20,8 @@ else ifeq ($(TARGET_BOARD_PLATFORM),msm8952)
+ MM_CORE_TARGET = 8952
+ else ifeq ($(TARGET_BOARD_PLATFORM),msm8953)
+ MM_CORE_TARGET = msm8953
++else ifeq ($(TARGET_BOARD_PLATFORM),msm8996)
++MM_CORE_TARGET = msm8996
+ else ifeq ($(TARGET_BOARD_PLATFORM),msm8998)
+ MM_CORE_TARGET = msm8998
+ else ifeq ($(TARGET_BOARD_PLATFORM),sdm660)
+diff --git a/sdm845/mm-video-v4l2/vidc/venc/Android.mk b/sdm845/mm-video-v4l2/vidc/venc/Android.mk
+index 6b80806..bc44bd1 100755
+--- a/sdm845/mm-video-v4l2/vidc/venc/Android.mk
++++ b/sdm845/mm-video-v4l2/vidc/venc/Android.mk
+@@ -24,7 +24,7 @@ TARGETS_THAT_USE_FLAG_MSM8226 := msm8226 msm8916 msm8909
+ TARGETS_THAT_NEED_SW_VENC_MPEG4 := msm8909 msm8937
+ TARGETS_THAT_NEED_SW_VENC_HEVC := msm8992
+ TARGETS_THAT_SUPPORT_UBWC := msm8996 msm8998 sdm845
+-TARGETS_THAT_SUPPORT_VQZIP := msm8996 msm8998
++TARGETS_THAT_SUPPORT_VQZIP :=
+ TARGETS_THAT_SUPPORT_PQ := msm8996 msm8998 sdm660
+ 
+ ifeq ($(TARGET_BOARD_PLATFORM),msm8610)
+@@ -39,8 +39,10 @@ ifeq ($(call is-board-platform-in-list, $(TARGETS_THAT_SUPPORT_VQZIP)),true)
+ libmm-venc-def += -D_VQZIP_
+ endif
+ 
+-ifeq ($(call is-board-platform-in-list, $(TARGETS_THAT_SUPPORT_PQ)),true)
++ifneq ($(wildcard vendor/qcom/$(TARGET_BOARD_PLATFORM)/prebuilts/grease/),)
+ libmm-venc-def += -D_PQ_
++else
++$(warning "venc: PQ compiled out")
+ endif
+ 
+ ifeq ($(call is-board-platform-in-list, $(TARGETS_THAT_USE_FLAG_MSM8226)),true)
+-- 
+2.13.0
+

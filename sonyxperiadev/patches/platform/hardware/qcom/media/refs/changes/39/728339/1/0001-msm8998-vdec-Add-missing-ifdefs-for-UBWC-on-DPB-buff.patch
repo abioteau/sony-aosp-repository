@@ -1,0 +1,63 @@
+From b641243647a7cd3f382dd2be43b74f9d6b7f9310 Mon Sep 17 00:00:00 2001
+From: "Angelo G. Del Regno" <kholk11@gmail.com>
+Date: Thu, 9 Aug 2018 11:00:42 +0200
+Subject: [PATCH] msm8998: vdec: Add missing ifdefs for UBWC on DPB buffer
+ decision
+
+When the UBWC feature is available on a SoC, we define _UBWC_.
+Vice-versa, when this is not defined, do not try to set any
+UBWC mode as, otherwise, the Venus firmware may crash because
+of unsupported modes, breaking the whole vidc functionality.
+
+This happens on at least "legacy" SoCs, such as MSM8917,
+MSM8939, MSM8952, MSM8956, MSM8976.
+
+Test: manual - build ok. Media ok.
+
+Change-Id: I76131db5272b97016679c5bc0bf6ae099167cd03
+---
+ msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp b/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp
+index 8e0b014..0677ed5 100644
+--- a/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp
++++ b/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp
+@@ -1045,6 +1045,7 @@ OMX_ERRORTYPE omx_vdec::decide_dpb_buffer_mode(bool split_opb_dpb_with_same_colo
+         dpb_bit_depth == MSM_VIDC_BIT_DEPTH_10;
+     bool dither_enable = true;
+ 
++#ifdef _UBWC_
+     switch (m_dither_config) {
+     case DITHER_DISABLE:
+         dither_enable = false;
+@@ -1058,6 +1059,7 @@ OMX_ERRORTYPE omx_vdec::decide_dpb_buffer_mode(bool split_opb_dpb_with_same_colo
+     default:
+         DEBUG_PRINT_ERROR("Unsupported dither configuration:%d", m_dither_config);
+     }
++#endif /* _UBWC_ */
+ 
+     if (tp10_enable && !dither_enable) {
+         drv_ctx.output_format = VDEC_YUV_FORMAT_NV12_TP10_UBWC;
+@@ -1087,6 +1089,7 @@ OMX_ERRORTYPE omx_vdec::decide_dpb_buffer_mode(bool split_opb_dpb_with_same_colo
+     }
+ 
+ 
++#ifdef _UBWC_
+     if (cpu_access) {
+         if (dpb_bit_depth == MSM_VIDC_BIT_DEPTH_8) {
+             /* Disabled split mode for VP9. In split mode the DPB buffers are part of the internal
+@@ -1150,6 +1153,10 @@ OMX_ERRORTYPE omx_vdec::decide_dpb_buffer_mode(bool split_opb_dpb_with_same_colo
+             }
+         }
+     }
++#else
++    eRet = set_dpb(split_opb_dpb_with_same_color_fmt,
++                       V4L2_MPEG_VIDC_VIDEO_DPB_COLOR_FMT_NONE);
++#endif /* _UBWC_ */
+     if (eRet) {
+         DEBUG_PRINT_HIGH("Failed to set DPB buffer mode: %d", eRet);
+     }
+-- 
+2.13.0
+

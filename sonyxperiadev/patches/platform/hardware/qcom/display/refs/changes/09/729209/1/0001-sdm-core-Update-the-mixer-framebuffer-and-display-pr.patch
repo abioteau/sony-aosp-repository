@@ -1,0 +1,100 @@
+From cba8698e100d080fabc701c15347f323432e1482 Mon Sep 17 00:00:00 2001
+From: "Angelo G. Del Regno" <kholk11@gmail.com>
+Date: Fri, 10 Aug 2018 09:22:30 +0200
+Subject: [PATCH] sdm: core: Update the mixer, framebuffer and display properly
+
+This is needed for the HAL to properly send the mixer and
+display properties correctly to the kernel, for it to use
+those informations to calculate the right pixel clock for
+the new resolution.
+
+If we don't send those informations, the kernel driver
+will calculate the pixclock for the old resolution,
+resulting in insufficient bandwidth, loss of commands, bad
+timings and finally hardware faults because of bad and/or
+unexpected DSI status, which will then obviously lead to
+device reboot.
+
+Test: builds ok - no reboots.
+Change-Id: I8e1324787e35f2c675f1c8580901fb3fadc8f3c9
+---
+ msm8998/sdm/libs/core/display_base.cpp | 43 +++++++++++++++++++++++++++++++++-
+ sde                                    |  1 +
+ 2 files changed, 43 insertions(+), 1 deletion(-)
+ create mode 160000 sde
+
+diff --git a/msm8998/sdm/libs/core/display_base.cpp b/msm8998/sdm/libs/core/display_base.cpp
+index 9af8e809..745d3b5a 100644
+--- a/msm8998/sdm/libs/core/display_base.cpp
++++ b/msm8998/sdm/libs/core/display_base.cpp
+@@ -485,18 +485,59 @@ DisplayError DisplayBase::SetActiveConfig(uint32_t index) {
+   lock_guard<recursive_mutex> obj(recursive_mutex_);
+   DisplayError error = kErrorNone;
+   uint32_t active_index = 0;
++  HWDisplayAttributes display_attrs;
++  HWMixerAttributes   mixer_attrs;
++  HWPanelInfo         hw_panel_info;
++  DisplayConfigVariableInfo fb_config = fb_config_;
+ 
+   hw_intf_->GetActiveConfig(&active_index);
+-
+   if (active_index == index) {
+     return kErrorNone;
+   }
+ 
++  error = hw_intf_->GetDisplayAttributes(index, &display_attrs);
++  if (error != kErrorNone)
++    return error;
++
++  error = hw_intf_->GetHWPanelInfo(&hw_panel_info);
++  if (error != kErrorNone) {
++    DLOGE("Cannot get panel info.");
++    return error;
++  }
++
++  /* Now we can start doing the real magic */
+   error = hw_intf_->SetDisplayAttributes(index);
+   if (error != kErrorNone) {
+     return error;
+   }
+ 
++  error = hw_intf_->GetMixerAttributes(&mixer_attrs);
++  if (error != kErrorNone) {
++    return error;
++  }
++  DLOGI("Current mixer attributes: w%d h%d s%d",
++        mixer_attrs.width, mixer_attrs.height,
++        mixer_attrs.split_left);
++
++  mixer_attrs.split_left = display_attrs.is_device_split ?
++    hw_panel_info.split_info.left_split : mixer_attributes_.width;
++
++  if (mixer_attrs.split_left != mixer_attributes_.split_left) {
++    DLOGI("Setting mixer left split to %d", mixer_attrs.split_left);
++
++    error = hw_intf_->SetMixerAttributes(mixer_attrs);
++    if (error != kErrorNone)
++      DLOGW("Cannot set new mixer attributes.");
++  }
++
++  fb_config.x_pixels = display_attrs.x_pixels;
++  fb_config.y_pixels = display_attrs.y_pixels;
++  SetMixerResolution(fb_config.x_pixels, fb_config.y_pixels);
++
++  display_attributes_ = display_attrs;
++  mixer_attributes_ = mixer_attrs;
++  fb_config_ = fb_config;
++
+   return ReconfigureDisplay();
+ }
+ 
+diff --git a/sde b/sde
+new file mode 160000
+index 00000000..aea71f96
+--- /dev/null
++++ b/sde
+@@ -0,0 +1 @@
++Subproject commit aea71f96fb022170b2d15cc770bab8c123f0f666
+-- 
+2.13.0
+

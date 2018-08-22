@@ -1,0 +1,112 @@
+From 58ca30a80601bcd8cf769dff5293cf2535f89ddf Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sony.com>
+Date: Sat, 26 May 2018 08:49:08 +0200
+Subject: [PATCH] media: add barier for kernel headers
+
+build will fail if the kernel is not compiled with Android
+
+Test: manual - media can be build without kernel headers
+
+Change-Id: I1d5c77acbf8589aa01bfb4b6a0d0e466374d884c
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sony.com>
+---
+ sdm845/libc2dcolorconvert/Android.mk        | 4 ++++
+ sdm845/mm-video-v4l2/vidc/common/Android.mk | 4 ++++
+ sdm845/mm-video-v4l2/vidc/vdec/Android.mk   | 4 ++++
+ sdm845/mm-video-v4l2/vidc/venc/Android.mk   | 4 ++++
+ 4 files changed, 16 insertions(+)
+
+diff --git a/sdm845/libc2dcolorconvert/Android.mk b/sdm845/libc2dcolorconvert/Android.mk
+index 9f5388d..2a8bfa3 100755
+--- a/sdm845/libc2dcolorconvert/Android.mk
++++ b/sdm845/libc2dcolorconvert/Android.mk
+@@ -8,7 +8,9 @@ LOCAL_SRC_FILES := \
+ LOCAL_C_INCLUDES := \
+     $(TARGET_OUT_HEADERS)/adreno
+ LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/qcom/display
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++endif
+ 
+ LOCAL_SHARED_LIBRARIES := liblog libdl
+ 
+@@ -18,6 +20,8 @@ LOCAL_MODULE := libc2dcolorconvert
+ 
+ LOCAL_VENDOR_MODULE := true
+ 
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ include $(BUILD_SHARED_LIBRARY)
+diff --git a/sdm845/mm-video-v4l2/vidc/common/Android.mk b/sdm845/mm-video-v4l2/vidc/common/Android.mk
+index bc25c08..32341f3 100644
+--- a/sdm845/mm-video-v4l2/vidc/common/Android.mk
++++ b/sdm845/mm-video-v4l2/vidc/common/Android.mk
+@@ -24,7 +24,9 @@ libmm-vidc-inc      := $(LOCAL_PATH)/inc
+ libmm-vidc-inc      += $(TOP)/hardware/qcom/media/sdm845/mm-core/inc
+ libmm-vidc-inc      += $(TARGET_OUT_HEADERS)/qcom/display
+ libmm-vidc-inc      += $(TOP)/hardware/qcom/media/sdm845/libc2dcolorconvert
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-vidc-inc      += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++endif
+ 
+ LOCAL_MODULE                    := libOmxVidcCommon
+ LOCAL_MODULE_TAGS               := optional
+@@ -37,7 +39,9 @@ LOCAL_SHARED_LIBRARIES    := liblog libcutils libdl
+ LOCAL_SRC_FILES   += src/vidc_common.cpp
+ LOCAL_SRC_FILES   += src/vidc_vendor_extensions.cpp
+ 
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ include $(BUILD_STATIC_LIBRARY)
+ 
+diff --git a/sdm845/mm-video-v4l2/vidc/vdec/Android.mk b/sdm845/mm-video-v4l2/vidc/vdec/Android.mk
+index d4eb1e8..cc0c630 100755
+--- a/sdm845/mm-video-v4l2/vidc/vdec/Android.mk
++++ b/sdm845/mm-video-v4l2/vidc/vdec/Android.mk
+@@ -64,7 +64,9 @@ libmm-vdec-inc          += $(TOP)/frameworks/native/include/media/hardware
+ libmm-vdec-inc      	+= $(TOP)/hardware/qcom/media/sdm845/libc2dcolorconvert
+ libmm-vdec-inc      	+= $(TARGET_OUT_HEADERS)/mm-video/SwVdec
+ libmm-vdec-inc      	+= $(TARGET_OUT_HEADERS)/mm-video/swvdec
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-vdec-inc      	+= $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++endif
+ libmm-vdec-inc      	+= $(TOP)/frameworks/native/libs/nativebase/include
+ 
+ ifeq ($(PLATFORM_SDK_VERSION), 18)  #JB_MR2
+@@ -73,7 +75,9 @@ libmm-vdec-inc += $(TOP)/hardware/qcom/media/sdm845/libstagefrighthw
+ endif
+ 
+ # Common Dependencies
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-vdec-add-dep := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ ifeq ($(call is-platform-sdk-version-at-least, 19),true)
+ # This feature is enabled for Android KK+
+diff --git a/sdm845/mm-video-v4l2/vidc/venc/Android.mk b/sdm845/mm-video-v4l2/vidc/venc/Android.mk
+index 9326d1d..a4adec8 100755
+--- a/sdm845/mm-video-v4l2/vidc/venc/Android.mk
++++ b/sdm845/mm-video-v4l2/vidc/venc/Android.mk
+@@ -73,11 +73,15 @@ libmm-venc-inc      += frameworks/native/include/media/openmax
+ libmm-venc-inc      += hardware/qcom/media/sdm845/libc2dcolorconvert
+ libmm-venc-inc      += $(TARGET_OUT_HEADERS)/libvqzip
+ libmm-venc-inc      += $(TARGET_OUT_HEADERS)/libgpustats
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-venc-inc      += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++endif
+ libmm-venc-inc      += frameworks/native/libs/nativebase/include
+ 
+ # Common Dependencies
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-venc-add-dep  := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ # ---------------------------------------------------------------------------------
+ # 			Make the Shared library (libOmxVenc)
+-- 
+2.13.0
+
