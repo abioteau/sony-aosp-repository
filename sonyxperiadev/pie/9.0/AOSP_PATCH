@@ -1,0 +1,40 @@
+cd hardware/qcom/gps
+git revert --no-edit f85d0932e27d673669cebf0776ba8a647a68905d
+git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/47/728147/2 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/05/731505/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/06/731506/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/07/731507/1 && git cherry-pick FETCH_HEAD
+cd ../audio
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/49/728149/5 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/50/728150/4 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/51/728151/3 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/52/728152/4 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/53/728153/3 && git cherry-pick FETCH_HEAD
+cd ../media
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/39/728339/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/42/728342/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/43/728343/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/44/728344/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/65/728565/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/66/728566/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/67/728567/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/94/732594/1 && git cherry-pick FETCH_HEAD
+cd ../display
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/09/729209/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/10/729210/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/11/729211/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/12/729212/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/13/729213/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/08/729208/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/14/729214/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/15/729215/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/16/729216/1 && git cherry-pick FETCH_HEAD
+cd ../bt
+git fetch http://android.googlesource.com/platform/hardware/qcom/bt refs/changes/69/728569/1 && git cherry-pick FETCH_HEAD
+cd ../bootctrl
+git fetch http://android.googlesource.com/platform/hardware/qcom/bootctrl refs/changes/70/728570/2 && git cherry-pick FETCH_HEAD
+cd ../../../frameworks/base
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/15/727815/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/75/728575/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/05/728605/1 && git cherry-pick FETCH_HEAD
+cd ../../
