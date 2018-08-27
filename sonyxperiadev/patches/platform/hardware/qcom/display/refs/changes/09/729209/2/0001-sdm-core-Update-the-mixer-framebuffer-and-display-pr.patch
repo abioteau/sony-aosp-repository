@@ -1,4 +1,4 @@
-From cba8698e100d080fabc701c15347f323432e1482 Mon Sep 17 00:00:00 2001
+From c62b4c1d5aeb39562d2241238082a73f39a7ea1b Mon Sep 17 00:00:00 2001
 From: "Angelo G. Del Regno" <kholk11@gmail.com>
 Date: Fri, 10 Aug 2018 09:22:30 +0200
 Subject: [PATCH] sdm: core: Update the mixer, framebuffer and display properly
@@ -19,9 +19,7 @@ Test: builds ok - no reboots.
 Change-Id: I8e1324787e35f2c675f1c8580901fb3fadc8f3c9
 ---
  msm8998/sdm/libs/core/display_base.cpp | 43 +++++++++++++++++++++++++++++++++-
- sde                                    |  1 +
- 2 files changed, 43 insertions(+), 1 deletion(-)
- create mode 160000 sde
+ 1 file changed, 42 insertions(+), 1 deletion(-)
 
 diff --git a/msm8998/sdm/libs/core/display_base.cpp b/msm8998/sdm/libs/core/display_base.cpp
 index 9af8e809..745d3b5a 100644
@@ -88,13 +86,6 @@ index 9af8e809..745d3b5a 100644
    return ReconfigureDisplay();
  }
  
-diff --git a/sde b/sde
-new file mode 160000
-index 00000000..aea71f96
---- /dev/null
-+++ b/sde
-@@ -0,0 +1 @@
-+Subproject commit aea71f96fb022170b2d15cc770bab8c123f0f666
 -- 
 2.13.0
 
