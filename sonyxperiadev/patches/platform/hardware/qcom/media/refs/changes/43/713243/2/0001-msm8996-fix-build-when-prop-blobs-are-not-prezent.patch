@@ -1,4 +1,4 @@
-From 6ed230d4e77c7089d5720e0d6769efb114431069 Mon Sep 17 00:00:00 2001
+From 271be0346431fc58865cdbe3a0f393d9a9589e9a Mon Sep 17 00:00:00 2001
 From: Alin Jerpelea <alin.jerpelea@sony.com>
 Date: Thu, 5 Jul 2018 05:21:20 +0900
 Subject: [PATCH] msm8996: fix build when prop blobs are not prezent
@@ -9,23 +9,9 @@ Test: manual - build and boot
 Change-Id: I86baddb52292e65ee4a5d8dae6253920b9c0629b
 Signed-off-by: Alin Jerpelea <alin.jerpelea@sony.com>
 ---
- sdm845/mm-core/Android.mk                 | 2 ++
  sdm845/mm-video-v4l2/vidc/venc/Android.mk | 6 ++++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/sdm845/mm-core/Android.mk b/sdm845/mm-core/Android.mk
-index 7de498e..f0779bb 100755
---- a/sdm845/mm-core/Android.mk
-+++ b/sdm845/mm-core/Android.mk
-@@ -20,6 +20,8 @@ else ifeq ($(TARGET_BOARD_PLATFORM),msm8952)
- MM_CORE_TARGET = 8952
- else ifeq ($(TARGET_BOARD_PLATFORM),msm8953)
- MM_CORE_TARGET = msm8953
-+else ifeq ($(TARGET_BOARD_PLATFORM),msm8996)
-+MM_CORE_TARGET = msm8996
- else ifeq ($(TARGET_BOARD_PLATFORM),msm8998)
- MM_CORE_TARGET = msm8998
- else ifeq ($(TARGET_BOARD_PLATFORM),sdm660)
 diff --git a/sdm845/mm-video-v4l2/vidc/venc/Android.mk b/sdm845/mm-video-v4l2/vidc/venc/Android.mk
 index 6b80806..bc44bd1 100755
 --- a/sdm845/mm-video-v4l2/vidc/venc/Android.mk
