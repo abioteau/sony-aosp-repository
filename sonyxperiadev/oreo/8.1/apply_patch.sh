@@ -105,6 +105,7 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/41/501741/2/*.patch`
 git revert --no-edit --no-commit 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad)" --date "$(git log -1 --format="%ad" 1d540dd0f44c1c7d40878f6a7bb447e85e6207ad)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/37/469437/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/core/refs/changes/01/741001/2/*.patch`
 cd ../nfc && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/nfc/refs/changes/17/515517/10/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/nfc/refs/changes/15/533315/4/*.patch`
