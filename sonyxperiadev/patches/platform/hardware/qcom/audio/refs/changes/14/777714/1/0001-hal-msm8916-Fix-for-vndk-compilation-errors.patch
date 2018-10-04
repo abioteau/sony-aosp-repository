@@ -1,0 +1,31 @@
+From 065ec9c4857fdd092d689a0526e0caeaaa6b1d72 Mon Sep 17 00:00:00 2001
+From: Ramjee Singh <ramjee@codeaurora.org>
+Date: Wed, 6 Jun 2018 15:22:02 +0530
+Subject: [PATCH] hal: msm8916: Fix for vndk compilation errors
+
+There are few Implicit declaration compilation errors for
+not including required header files for system functions call.
+Added required header files to fix the compilation errors.
+
+CRs-Fixed: 2258838
+Change-Id: Iffd8a3c00a2a1ad063e10c0ebf3ce9e88e3edea0
+---
+ hal/msm8916/platform.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/hal/msm8916/platform.c b/hal/msm8916/platform.c
+index d92243e..a8ed5a4 100644
+--- a/hal/msm8916/platform.c
++++ b/hal/msm8916/platform.c
+@@ -27,6 +27,8 @@
+ #include <cutils/str_parms.h>
+ #include <audio_hw.h>
+ #include <platform_api.h>
++#include <pthread.h>
++#include <unistd.h>
+ #include "platform.h"
+ #include "audio_extn.h"
+ #include "acdb.h"
+-- 
+2.13.0
+
