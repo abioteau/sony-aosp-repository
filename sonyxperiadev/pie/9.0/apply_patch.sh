@@ -68,11 +68,7 @@ rm -rf local_manifests
 ~/bin/repo manifest -o manifest.xml -r
 
 cd hardware/qcom/gps && repo start $GIT_BRANCH .
-git revert --no-edit --no-commit f85d0932e27d673669cebf0776ba8a647a68905d && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" f85d0932e27d673669cebf0776ba8a647a68905d)" --date "$(git log -1 --format="%ad" f85d0932e27d673669cebf0776ba8a647a68905d)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/47/728147/2/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/05/731505/1/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/06/731506/1/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/07/731507/1/*.patch`
 cd ../audio && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/49/728149/5/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/50/728150/4/*.patch`
