@@ -15,10 +15,6 @@ git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/ch
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/11/729211/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/12/729212/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/13/729213/1 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/08/729208/1 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/14/729214/1 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/15/729215/1 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/16/729216/1 && git cherry-pick FETCH_HEAD
 cd ../bt
 git fetch http://android.googlesource.com/platform/hardware/qcom/bt refs/changes/69/728569/1 && git cherry-pick FETCH_HEAD
 cd ../bootctrl
