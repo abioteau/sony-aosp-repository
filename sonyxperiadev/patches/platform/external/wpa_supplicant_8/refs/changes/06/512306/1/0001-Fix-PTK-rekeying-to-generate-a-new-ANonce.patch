@@ -23,7 +23,7 @@ Signed-off-by: Glen Kuhne <kuh@google.com>
  1 file changed, 21 insertions(+), 3 deletions(-)
 
 diff --git a/src/ap/wpa_auth.c b/src/ap/wpa_auth.c
-index 71f468b..85e85e0 100644
+index 71f468b8..85e85e09 100644
 --- a/src/ap/wpa_auth.c
 +++ b/src/ap/wpa_auth.c
 @@ -1912,6 +1912,21 @@ SM_STATE(WPA_PTK, AUTHENTICATION2)

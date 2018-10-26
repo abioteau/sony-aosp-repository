@@ -29,7 +29,7 @@ Signed-off-by: Glen Kuhne <kuh@google.com>
  1 file changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/src/rsn_supp/tdls.c b/src/rsn_supp/tdls.c
-index e4ac24f..c2ed952 100644
+index e4ac24ff..c2ed9522 100644
 --- a/src/rsn_supp/tdls.c
 +++ b/src/rsn_supp/tdls.c
 @@ -112,6 +112,7 @@ struct wpa_tdls_peer {

@@ -22,7 +22,7 @@ Signed-off-by: Glen Kuhne <kuh@google.com>
  2 files changed, 40 insertions(+), 15 deletions(-)
 
 diff --git a/src/rsn_supp/wpa.c b/src/rsn_supp/wpa.c
-index 1fa2783..af72298 100644
+index 1fa2783d..af72298b 100644
 --- a/src/rsn_supp/wpa.c
 +++ b/src/rsn_supp/wpa.c
 @@ -780,14 +780,17 @@ struct wpa_gtk_data {
@@ -170,7 +170,7 @@ index 1fa2783..af72298 100644
  #endif /* CONFIG_IEEE80211W */
  	} else {
 diff --git a/src/rsn_supp/wpa_i.h b/src/rsn_supp/wpa_i.h
-index 5293ca4..b061638 100644
+index 5293ca4b..b061638d 100644
 --- a/src/rsn_supp/wpa_i.h
 +++ b/src/rsn_supp/wpa_i.h
 @@ -31,8 +31,10 @@ struct wpa_sm {

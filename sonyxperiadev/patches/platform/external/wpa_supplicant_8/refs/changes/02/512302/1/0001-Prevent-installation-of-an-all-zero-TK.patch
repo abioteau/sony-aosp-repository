@@ -26,7 +26,7 @@ Signed-off-by: Glen Kuhne <kuh@google.com>
  3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/common/wpa_common.h b/src/common/wpa_common.h
-index ebcfe94..5733c75 100644
+index ebcfe943..5733c75c 100644
 --- a/src/common/wpa_common.h
 +++ b/src/common/wpa_common.h
 @@ -211,6 +211,7 @@ struct wpa_ptk {
@@ -38,7 +38,7 @@ index ebcfe94..5733c75 100644
  
  struct wpa_gtk {
 diff --git a/src/rsn_supp/wpa.c b/src/rsn_supp/wpa.c
-index bbb7ad9..eb3d75c 100644
+index bbb7ad9e..eb3d75c2 100644
 --- a/src/rsn_supp/wpa.c
 +++ b/src/rsn_supp/wpa.c
 @@ -582,7 +582,6 @@ static void wpa_supplicant_process_1_of_4(struct wpa_sm *sm,
@@ -76,7 +76,7 @@ index bbb7ad9..eb3d75c 100644
  	/* FILS HLP Container */
  	fils_process_hlp_container(sm, ie_start, end - ie_start);
 diff --git a/src/rsn_supp/wpa_i.h b/src/rsn_supp/wpa_i.h
-index b605da9..899dc45 100644
+index b605da92..899dc459 100644
 --- a/src/rsn_supp/wpa_i.h
 +++ b/src/rsn_supp/wpa_i.h
 @@ -24,7 +24,6 @@ struct wpa_sm {

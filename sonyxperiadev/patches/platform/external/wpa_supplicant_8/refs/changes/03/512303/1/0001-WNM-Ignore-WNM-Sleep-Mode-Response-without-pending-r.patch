@@ -21,7 +21,7 @@ Signed-off-by: Glen Kuhne <kuh@google.com>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/wpa_supplicant/wnm_sta.c b/wpa_supplicant/wnm_sta.c
-index 0b1a2db..bd0b517 100644
+index 0b1a2db8..bd0b5172 100644
 --- a/wpa_supplicant/wnm_sta.c
 +++ b/wpa_supplicant/wnm_sta.c
 @@ -260,7 +260,7 @@ static void ieee802_11_rx_wnmsleep_resp(struct wpa_supplicant *wpa_s,

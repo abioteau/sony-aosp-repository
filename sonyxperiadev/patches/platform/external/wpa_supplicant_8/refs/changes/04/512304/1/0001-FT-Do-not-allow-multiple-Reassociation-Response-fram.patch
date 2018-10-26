@@ -24,7 +24,7 @@ Signed-off-by: Glen Kuhne <kuh@google.com>
  3 files changed, 12 insertions(+)
 
 diff --git a/src/rsn_supp/wpa.c b/src/rsn_supp/wpa.c
-index eb3d75c..1fa2783 100644
+index eb3d75c2..1fa2783d 100644
 --- a/src/rsn_supp/wpa.c
 +++ b/src/rsn_supp/wpa.c
 @@ -2578,6 +2578,9 @@ void wpa_sm_notify_disassoc(struct wpa_sm *sm)
@@ -38,7 +38,7 @@ index eb3d75c..1fa2783 100644
  	/* Keys are not needed in the WPA state machine anymore */
  	wpa_sm_drop_sa(sm);
 diff --git a/src/rsn_supp/wpa_ft.c b/src/rsn_supp/wpa_ft.c
-index 205793e..d45bb45 100644
+index 205793e7..d45bb458 100644
 --- a/src/rsn_supp/wpa_ft.c
 +++ b/src/rsn_supp/wpa_ft.c
 @@ -153,6 +153,7 @@ static u8 * wpa_ft_gen_req_ies(struct wpa_sm *sm, size_t *len,
@@ -71,7 +71,7 @@ index 205793e..d45bb45 100644
  		return -1;
  
 diff --git a/src/rsn_supp/wpa_i.h b/src/rsn_supp/wpa_i.h
-index 899dc45..5293ca4 100644
+index 899dc459..5293ca4b 100644
 --- a/src/rsn_supp/wpa_i.h
 +++ b/src/rsn_supp/wpa_i.h
 @@ -126,6 +126,7 @@ struct wpa_sm {

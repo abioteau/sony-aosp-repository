@@ -23,7 +23,7 @@ Merged-In: I1273cf9ee58154b16512ef4284a8d2c5541d3c01
  3 files changed, 88 insertions(+), 45 deletions(-)
 
 diff --git a/src/common/wpa_common.h b/src/common/wpa_common.h
-index a84cc9b..ebcfe94 100644
+index a84cc9b2..ebcfe943 100644
 --- a/src/common/wpa_common.h
 +++ b/src/common/wpa_common.h
 @@ -213,6 +213,17 @@ struct wpa_ptk {
@@ -45,7 +45,7 @@ index a84cc9b..ebcfe94 100644
  /* WPA IE version 1
   * 00-50-f2:1 (OUI:OUI type)
 diff --git a/src/rsn_supp/wpa.c b/src/rsn_supp/wpa.c
-index 1349873..bbb7ad9 100644
+index 13498733..bbb7ad9e 100644
 --- a/src/rsn_supp/wpa.c
 +++ b/src/rsn_supp/wpa.c
 @@ -786,6 +786,15 @@ static int wpa_supplicant_install_gtk(struct wpa_sm *sm,
@@ -246,7 +246,7 @@ index 1349873..bbb7ad9 100644
  	} else {
  		wpa_printf(MSG_DEBUG, "Unknown element id");
 diff --git a/src/rsn_supp/wpa_i.h b/src/rsn_supp/wpa_i.h
-index ab54a18..b605da9 100644
+index ab54a18f..b605da92 100644
 --- a/src/rsn_supp/wpa_i.h
 +++ b/src/rsn_supp/wpa_i.h
 @@ -31,6 +31,10 @@ struct wpa_sm {
