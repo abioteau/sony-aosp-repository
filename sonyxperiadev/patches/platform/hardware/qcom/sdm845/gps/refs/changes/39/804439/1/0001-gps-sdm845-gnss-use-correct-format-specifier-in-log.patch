@@ -1,0 +1,30 @@
+From c1bdb439aaf7ecddd9f499dce5c7b56ea458cce4 Mon Sep 17 00:00:00 2001
+From: oshmoun <oshmoun100@googlemail.com>
+Date: Mon, 29 Oct 2018 10:31:15 +0100
+Subject: [PATCH] gps: sdm845: gnss: use correct format specifier in log
+
+LOC_API_ADAPTER_EVENT_MASK_T was changed from 'unsigned int' to 'uint64_t'.
+correct the format specifier used to print LOC_API_ADAPTER_EVENT_MASK_T to avoid breaking compilation of libgnss.
+
+Test: 'make libgnss' finishes without issues.
+Change-Id: I24ad0342d6d26f1c7fe2fcac451a71bbfba8bfe0
+---
+ sdm845/gnss/GnssAdapter.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sdm845/gnss/GnssAdapter.cpp b/sdm845/gnss/GnssAdapter.cpp
+index ff9138d..dfff4d0 100644
+--- a/sdm845/gnss/GnssAdapter.cpp
++++ b/sdm845/gnss/GnssAdapter.cpp
+@@ -1726,7 +1726,7 @@ GnssAdapter::updateClientsEventMask()
+         mask |= LOC_API_ADAPTER_BIT_GNSS_MEASUREMENT;
+         mask |= LOC_API_ADAPTER_BIT_GNSS_SV_POLYNOMIAL_REPORT;
+ 
+-        LOC_LOGD("%s]: Auto usecase, Enable MEAS/POLY - mask 0x%x", __func__, mask);
++        LOC_LOGD("%s]: Auto usecase, Enable MEAS/POLY - mask 0x%" PRIu64 "", __func__, mask);
+     }
+ 
+     if (mAgpsCbInfo.statusV4Cb != NULL) {
+-- 
+2.13.0
+
