@@ -1,0 +1,772 @@
+From 01062d8acaae88b141893d69358d6c13e3495377 Mon Sep 17 00:00:00 2001
+From: Paras Nagda <pnagda@codeaurora.org>
+Date: Thu, 19 Apr 2018 20:05:35 +0530
+Subject: [PATCH] msm8998: mm-video-v4l2: enable compilation for both 3.18
+ kernel and 4.9 kernel
+
+added definitions in userspace to support both
+3.18 kernel and 4.9 kernel compilation.
+
+Change-Id: If1eb2575dd80a1e6684c84e573baf78ae698bb20
+---
+ msm8998/mm-core/inc/qc_omx_msg.h                   |   2 +-
+ msm8998/mm-video-v4l2/vidc/common/Android.mk       |   3 +
+ .../vidc/common/inc/extra_data_handler.h           |  22 ++
+ msm8998/mm-video-v4l2/vidc/vdec/Android.mk         |   3 +
+ .../vidc/vdec/inc/decoder_driver_test.h            |  10 +-
+ msm8998/mm-video-v4l2/vidc/vdec/inc/omx_swvdec.h   |  13 +-
+ msm8998/mm-video-v4l2/vidc/vdec/inc/omx_vdec.h     | 224 +++++++++++++++++++++
+ .../mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp  |  28 +++
+ msm8998/mm-video-v4l2/vidc/venc/Android.mk         |   4 +
+ .../mm-video-v4l2/vidc/venc/inc/omx_video_base.h   | 126 ++++++++++++
+ .../mm-video-v4l2/vidc/venc/src/omx_video_base.cpp |   5 +
+ .../vidc/venc/src/omx_video_encoder.cpp            |  12 +-
+ .../vidc/venc/src/video_encoder_device_v4l2.cpp    |   8 +
+ 13 files changed, 456 insertions(+), 4 deletions(-)
+
+diff --git a/msm8998/mm-core/inc/qc_omx_msg.h b/msm8998/mm-core/inc/qc_omx_msg.h
+index deb0ab7..09a9975 100644
+--- a/msm8998/mm-core/inc/qc_omx_msg.h
++++ b/msm8998/mm-core/inc/qc_omx_msg.h
+@@ -36,7 +36,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #ifndef _QC_OMX_MSG_H_
+ #define _QC_OMX_MSG_H_
+-
++#undef DEBUG_PRINT_ERROR
+ #ifdef _ENABLE_QC_MSG_LOG_
+     #ifdef _ANDROID_
+         #include <utils/Log.h>
+diff --git a/msm8998/mm-video-v4l2/vidc/common/Android.mk b/msm8998/mm-video-v4l2/vidc/common/Android.mk
+index 962950b..568c25e 100644
+--- a/msm8998/mm-video-v4l2/vidc/common/Android.mk
++++ b/msm8998/mm-video-v4l2/vidc/common/Android.mk
+@@ -15,6 +15,9 @@ libmm-vidc-def += -Dinline=__inline
+ libmm-vidc-def += -D_ANDROID_
+ libmm-vidc-def += -Werror
+ libmm-vidc-def += -D_ANDROID_ICS_
++ifeq ($(TARGET_KERNEL_VERSION), 4.9)
++libmm-vidc-def += -D_TARGET_KERNEL_VERSION_49_
++endif
+ 
+ # ---------------------------------------------------------------------------------
+ # 			Make the Shared library (libOmxVidcCommon)
+diff --git a/msm8998/mm-video-v4l2/vidc/common/inc/extra_data_handler.h b/msm8998/mm-video-v4l2/vidc/common/inc/extra_data_handler.h
+index dd1af29..439344e 100644
+--- a/msm8998/mm-video-v4l2/vidc/common/inc/extra_data_handler.h
++++ b/msm8998/mm-video-v4l2/vidc/common/inc/extra_data_handler.h
+@@ -34,8 +34,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <string.h>
+ #include <stdlib.h>
+ #include "OMX_QCOMExtns.h"
++#ifndef _TARGET_KERNEL_VERSION_49_
+ #include<linux/msm_vidc_dec.h>
+ #include<linux/msm_vidc_enc.h>
++#else
++#include <media/msm_vidc.h>
++#endif
+ 
+ #ifdef _ANDROID_
+ extern "C" {
+@@ -50,6 +54,24 @@ extern "C" {
+ #define VDEC_OMX_SEI 0x7F000007
+ #define FRAME_PACK_SIZE 18
+ #define H264_EMULATION_BYTE 0x03
++
++#ifdef _TARGET_KERNEL_VERSION_49_
++/*Post processing flags bit masks*/
++#define VDEC_EXTRADATA_NONE 0x001
++#define VDEC_EXTRADATA_QP 0x004
++#define VDEC_EXTRADATA_MB_ERROR_MAP 0x008
++#define VDEC_EXTRADATA_SEI 0x010
++#define VDEC_EXTRADATA_VUI 0x020
++#define VDEC_EXTRADATA_VC1 0x040
++
++/*Post processing flags bit masks*/
++#define VEN_EXTRADATA_NONE          0x001
++#define VEN_EXTRADATA_QCOMFILLER    0x002
++#define VEN_EXTRADATA_SLICEINFO     0x100
++#define VEN_EXTRADATA_LTRINFO       0x200
++#define VEN_EXTRADATA_MBINFO        0x400
++#endif
++
+ class extra_data_handler
+ {
+     public:
+diff --git a/msm8998/mm-video-v4l2/vidc/vdec/Android.mk b/msm8998/mm-video-v4l2/vidc/vdec/Android.mk
+index 4c44fc8..0545516 100644
+--- a/msm8998/mm-video-v4l2/vidc/vdec/Android.mk
++++ b/msm8998/mm-video-v4l2/vidc/vdec/Android.mk
+@@ -25,6 +25,9 @@ libmm-vdec-def += -D_MSM8974_
+ libmm-vdec-def += -DPROCESS_EXTRADATA_IN_OUTPUT_PORT
+ libmm-vdec-def += -DMAX_RES_1080P
+ libmm-vdec-def += -DMAX_RES_1080P_EBI
++ifeq ($(TARGET_KERNEL_VERSION), 4.9)
++libmm-vdec-def += -D_TARGET_KERNEL_VERSION_49_
++endif
+ 
+ TARGETS_THAT_USE_HEVC_ADSP_HEAP := msm8226 msm8974
+ TARGETS_THAT_HAVE_VENUS_HEVC := apq8084 msm8994 msm8996
+diff --git a/msm8998/mm-video-v4l2/vidc/vdec/inc/decoder_driver_test.h b/msm8998/mm-video-v4l2/vidc/vdec/inc/decoder_driver_test.h
+index cc42fc1..b3240e2 100644
+--- a/msm8998/mm-video-v4l2/vidc/vdec/inc/decoder_driver_test.h
++++ b/msm8998/mm-video-v4l2/vidc/vdec/inc/decoder_driver_test.h
+@@ -32,14 +32,22 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <inttypes.h>
+-#include <linux/msm_vidc_dec.h>
+ #include <pthread.h>
+ #include <semaphore.h>
+ #include <stdio.h>
++#ifndef _TARGET_KERNEL_VERSION_49_
++#include <linux/msm_vidc_dec.h>
++#else
++#include "omx_vdec.h"
++#endif
+ 
+ struct video_decoder_context {
+     enum vdec_codec               decoder_format;
++#ifndef _TARGET_KERNEL_VERSION_49_
+     enum vdec_output_fromat       output_format;
++#else
++    enum vdec_output_format       output_format;
++#endif
+     struct vdec_picsize           video_resoultion;
+     struct vdec_allocatorproperty input_buffer;
+     struct vdec_allocatorproperty output_buffer;
+diff --git a/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_swvdec.h b/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_swvdec.h
+index 3037d8c..74bedbe 100644
+--- a/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_swvdec.h
++++ b/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_swvdec.h
+@@ -45,8 +45,9 @@
+ #include <semaphore.h>
+ 
+ #include <linux/msm_ion.h>
++#ifndef _TARGET_KERNEL_VERSION_49_
+ #include <linux/msm_vidc_dec.h>
+-
++#endif
+ #include "qc_omx_component.h"
+ 
+ #include "omx_swvdec_utils.h"
+@@ -90,6 +91,16 @@ typedef struct {
+ 
+ /// @cond
+ 
++#ifdef _TARGET_KERNEL_VERSION_49_
++struct vdec_bufferpayload {
++    void *bufferaddr;
++    size_t buffer_len;
++    int pmem_fd;
++    size_t offset;
++    size_t mmaped_size;
++};
++#endif //_TARGET_KERNEL_VERSION_49_
++
+ struct vdec_ion {
+     int                        ion_fd_device;
+     struct ion_fd_data         ion_fd_data;
+diff --git a/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_vdec.h b/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_vdec.h
+index c0660fd..59958d5 100644
+--- a/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_vdec.h
++++ b/msm8998/mm-video-v4l2/vidc/vdec/inc/omx_vdec.h
+@@ -82,6 +82,49 @@ extern "C" {
+ #include <media/hardware/HardwareAPI.h>
+ #endif
+ 
++#ifdef _TARGET_KERNEL_VERSION_49_
++/* DECODER STATUS CODES */
++/* Base value for status codes */
++#define VDEC_S_BASE    0x40000000
++/* Success */
++#define VDEC_S_SUCCESS    (VDEC_S_BASE)
++/* General failure */
++#define VDEC_S_EFAIL    (VDEC_S_BASE + 1)
++/* Fatal irrecoverable  failure. Need to  tear down session. */
++#define VDEC_S_EFATAL    (VDEC_S_BASE + 2)
++/* Error with input bistream */
++#define VDEC_S_INPUT_BITSTREAM_ERR    (VDEC_S_BASE + 3)
++
++#define VDEC_MSG_BASE    0x0000000
++/* Codes to identify asynchronous message responses and events that driver
++   wants to communicate to the app.*/
++#define VDEC_MSG_RESP_INPUT_BUFFER_DONE    (VDEC_MSG_BASE + 1)
++#define VDEC_MSG_RESP_OUTPUT_BUFFER_DONE    (VDEC_MSG_BASE + 2)
++#define VDEC_MSG_RESP_INPUT_FLUSHED    (VDEC_MSG_BASE + 3)
++#define VDEC_MSG_RESP_OUTPUT_FLUSHED    (VDEC_MSG_BASE + 4)
++#define VDEC_MSG_RESP_FLUSH_INPUT_DONE    (VDEC_MSG_BASE + 5)
++#define VDEC_MSG_RESP_FLUSH_OUTPUT_DONE    (VDEC_MSG_BASE + 6)
++#define VDEC_MSG_RESP_START_DONE    (VDEC_MSG_BASE + 7)
++#define VDEC_MSG_RESP_STOP_DONE    (VDEC_MSG_BASE + 8)
++#define VDEC_MSG_RESP_PAUSE_DONE    (VDEC_MSG_BASE + 9)
++#define VDEC_MSG_RESP_RESUME_DONE    (VDEC_MSG_BASE + 10)
++#define VDEC_MSG_EVT_CONFIG_CHANGED    (VDEC_MSG_BASE + 11)
++#define VDEC_MSG_EVT_HW_ERROR    (VDEC_MSG_BASE + 12)
++#define VDEC_MSG_EVT_INFO_FIELD_DROPPED    (VDEC_MSG_BASE + 13)
++#define VDEC_MSG_EVT_HW_OVERLOAD    (VDEC_MSG_BASE + 14)
++#define VDEC_MSG_EVT_MAX_CLIENTS    (VDEC_MSG_BASE + 15)
++#define VDEC_MSG_EVT_HW_UNSUPPORTED    (VDEC_MSG_BASE + 16)
++
++/*Buffer flags bits masks.*/
++#define VDEC_BUFFERFLAG_EOS    0x00000001
++#define VDEC_BUFFERFLAG_DECODEONLY    0x00000004
++#define VDEC_BUFFERFLAG_DATACORRUPT    0x00000008
++#define VDEC_BUFFERFLAG_ENDOFFRAME    0x00000010
++#define VDEC_BUFFERFLAG_SYNCFRAME    0x00000020
++#define VDEC_BUFFERFLAG_EXTRADATA    0x00000040
++#define VDEC_BUFFERFLAG_CODECCONFIG    0x00000080
++#endif // _TARGET_KERNEL_VERSION_49_
++
+ #include <unistd.h>
+ 
+ #if defined (_ANDROID_ICS_)
+@@ -98,7 +141,9 @@ extern "C" {
+ #include "OMX_VideoExt.h"
+ #include "OMX_IndexExt.h"
+ #include "qc_omx_component.h"
++#ifndef _TARGET_KERNEL_VERSION_49_
+ #include <linux/msm_vidc_dec.h>
++#endif
+ #include <media/msm_vidc.h>
+ #include "frameparser.h"
+ #ifdef MAX_RES_1080P
+@@ -239,6 +284,179 @@ enum turbo_mode {
+     TURBO_MODE_MAX = 0xFF
+ };
+ 
++#ifdef _TARGET_KERNEL_VERSION_49_
++enum vdec_output_format {
++    VDEC_YUV_FORMAT_NV12 = 0x1,
++    VDEC_YUV_FORMAT_TILE_4x2 = 0x2,
++    VDEC_YUV_FORMAT_NV12_UBWC = 0x3,
++    VDEC_YUV_FORMAT_NV12_TP10_UBWC = 0x4,
++    VDEC_YUV_FORMAT_P010_VENUS = 0x5,
++};
++
++enum vdec_picture {
++    PICTURE_TYPE_I,
++    PICTURE_TYPE_P,
++    PICTURE_TYPE_B,
++    PICTURE_TYPE_BI,
++    PICTURE_TYPE_SKIP,
++    PICTURE_TYPE_IDR,
++    PICTURE_TYPE_UNKNOWN
++};
++
++enum vdec_codec {
++    VDEC_CODECTYPE_H264 = 0x1,
++    VDEC_CODECTYPE_H263 = 0x2,
++    VDEC_CODECTYPE_MPEG4 = 0x3,
++    VDEC_CODECTYPE_DIVX_3 = 0x4,
++    VDEC_CODECTYPE_DIVX_4 = 0x5,
++    VDEC_CODECTYPE_DIVX_5 = 0x6,
++    VDEC_CODECTYPE_DIVX_6 = 0x7,
++    VDEC_CODECTYPE_XVID = 0x8,
++    VDEC_CODECTYPE_MPEG1 = 0x9,
++    VDEC_CODECTYPE_MPEG2 = 0xa,
++    VDEC_CODECTYPE_VC1 = 0xb,
++    VDEC_CODECTYPE_VC1_RCV = 0xc,
++    VDEC_CODECTYPE_HEVC = 0xd,
++    VDEC_CODECTYPE_MVC = 0xe,
++    VDEC_CODECTYPE_VP8 = 0xf,
++    VDEC_CODECTYPE_VP9 = 0x10,
++};
++
++enum vdec_interlaced_format {
++    VDEC_InterlaceFrameProgressive = 0x1,
++    VDEC_InterlaceInterleaveFrameTopFieldFirst = 0x2,
++    VDEC_InterlaceInterleaveFrameBottomFieldFirst = 0x4
++};
++
++enum vdec_output_order {
++    VDEC_ORDER_DISPLAY = 0x1,
++    VDEC_ORDER_DECODE = 0x2
++};
++
++enum vdec_buffer {
++    VDEC_BUFFER_TYPE_INPUT,
++    VDEC_BUFFER_TYPE_OUTPUT
++};
++
++struct vdec_aspectratioinfo {
++    uint32_t aspect_ratio;
++    uint32_t par_width;
++    uint32_t par_height;
++};
++
++struct vdec_sep_metadatainfo {
++    void *metabufaddr;
++    uint32_t size;
++    int fd;
++    int offset;
++    uint32_t buffer_size;
++};
++
++struct vdec_picsize {
++    uint32_t frame_width;
++    uint32_t frame_height;
++    uint32_t stride;
++    uint32_t scan_lines;
++};
++
++struct vdec_framesize {
++    uint32_t   left;
++    uint32_t   top;
++    uint32_t   right;
++    uint32_t   bottom;
++};
++
++struct vdec_bufferpayload {
++    void *bufferaddr;
++    size_t buffer_len;
++    int pmem_fd;
++    size_t offset;
++    size_t mmaped_size;
++};
++
++struct vdec_misrinfo {
++    uint32_t misr_dpb_luma;
++    uint32_t misr_dpb_chroma;
++    uint32_t misr_opb_luma;
++    uint32_t misr_opb_chroma;
++};
++
++struct vdec_output_frameinfo {
++    void *bufferaddr;
++    size_t offset;
++    size_t len;
++    uint32_t flags;
++    int64_t time_stamp;
++    enum vdec_picture pic_type;
++    void *client_data;
++    void *input_frame_clientdata;
++    struct vdec_picsize picsize;
++    struct vdec_framesize framesize;
++    enum vdec_interlaced_format interlaced_format;
++    struct vdec_aspectratioinfo aspect_ratio_info;
++    struct vdec_sep_metadatainfo metadata_info;
++    struct vdec_misrinfo misrinfo[2];
++};
++
++union vdec_msgdata {
++    struct vdec_output_frameinfo output_frame;
++    void *input_frame_clientdata;
++};
++
++struct vdec_msginfo {
++    uint32_t status_code;
++    uint32_t msgcode;
++    union vdec_msgdata msgdata;
++    size_t msgdatasize;
++};
++
++struct vdec_allocatorproperty {
++    enum vdec_buffer buffer_type;
++    uint32_t mincount;
++    uint32_t maxcount;
++    uint32_t actualcount;
++    size_t buffer_size;
++    uint32_t alignment;
++    uint32_t buf_poolid;
++    size_t meta_buffer_size;
++};
++
++struct vdec_framerate {
++    unsigned long fps_denominator;
++    unsigned long fps_numerator;
++};
++
++struct vdec_setbuffer_cmd {
++    enum vdec_buffer buffer_type;
++    struct vdec_bufferpayload buffer;
++};
++
++struct vdec_input_frameinfo {
++    void *bufferaddr;
++    size_t offset;
++    size_t datalen;
++    uint32_t flags;
++    int64_t timestamp;
++    void *client_data;
++    int pmem_fd;
++    size_t pmem_offset;
++    void *desc_addr;
++    uint32_t desc_size;
++};
++
++struct vdec_seqheader {
++    void *ptr_seqheader;
++    size_t seq_header_len;
++    int pmem_fd;
++    size_t pmem_offset;
++};
++
++struct vdec_fillbuffer_cmd {
++    struct vdec_bufferpayload buffer;
++    void *client_data;
++};
++#endif //_TARGET_KERNEL_VERSION_49_
++
+ #ifdef USE_ION
+ struct vdec_ion {
+     int ion_device_fd;
+@@ -269,7 +487,11 @@ struct extradata_buffer_info {
+ struct video_driver_context {
+     int video_driver_fd;
+     enum vdec_codec decoder_format;
++#ifndef _TARGET_KERNEL_VERSION_49_
+     enum vdec_output_fromat output_format;
++#else
++   enum vdec_output_format output_format;
++#endif
+     enum vdec_interlaced_format interlace;
+     enum vdec_output_order picture_order;
+     struct vdec_framesize frame_size;
+@@ -1309,10 +1531,12 @@ enum instance_state {
+     MSM_VIDC_CORE_UNINIT,
+ };
+ 
++#ifndef _TARGET_KERNEL_VERSION_49_
+ enum vidc_resposes_id {
+     MSM_VIDC_DECODER_FLUSH_DONE = 0x11,
+     MSM_VIDC_DECODER_EVENT_CHANGE,
+ };
++#endif
+ 
+ #endif // _MSM8974_
+ 
+diff --git a/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp b/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp
+index a41960c..264bb9c 100644
+--- a/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp
++++ b/msm8998/mm-video-v4l2/vidc/vdec/src/omx_vdec_v4l2.cpp
+@@ -3323,13 +3323,21 @@ bool omx_vdec::execute_omx_flush(OMX_U32 flushType)
+     struct v4l2_decoder_cmd dec;
+     DEBUG_PRINT_LOW("in %s, flushing %u", __func__, (unsigned int)flushType);
+     memset((void *)&v4l2_buf,0,sizeof(v4l2_buf));
++#ifndef _TARGET_KERNEL_VERSION_49_
+     dec.cmd = V4L2_DEC_QCOM_CMD_FLUSH;
++#else
++    dec.cmd = V4L2_QCOM_CMD_FLUSH;
++#endif
+ 
+     DEBUG_PRINT_HIGH("in %s: reconfig? %d", __func__, in_reconfig);
+ 
+     if (in_reconfig && flushType == OMX_CORE_OUTPUT_PORT_INDEX) {
+         output_flush_progress = true;
++#ifndef _TARGET_KERNEL_VERSION_49_
+         dec.flags = V4L2_DEC_QCOM_CMD_FLUSH_CAPTURE;
++#else
++        dec.flags = V4L2_QCOM_CMD_FLUSH_CAPTURE;
++#endif
+     } else {
+         /* XXX: The driver/hardware does not support flushing of individual ports
+          * in all states. So we pretty much need to flush both ports internally,
+@@ -3338,7 +3346,11 @@ bool omx_vdec::execute_omx_flush(OMX_U32 flushType)
+          * we automatically omit sending the FLUSH done for the "opposite" port. */
+         input_flush_progress = true;
+         output_flush_progress = true;
++#ifndef _TARGET_KERNEL_VERSION_49_
+         dec.flags = V4L2_DEC_QCOM_CMD_FLUSH_OUTPUT | V4L2_DEC_QCOM_CMD_FLUSH_CAPTURE;
++#else
++        dec.flags = V4L2_QCOM_CMD_FLUSH_OUTPUT | V4L2_QCOM_CMD_FLUSH_CAPTURE;
++#endif
+         request_perf_level(VIDC_TURBO);
+     }
+ 
+@@ -4043,6 +4055,10 @@ OMX_ERRORTYPE  omx_vdec::get_parameter(OMX_IN OMX_HANDLETYPE     hComp,
+                     case V4L2_MPEG_VIDEO_H264_LEVEL_5_2:
+                         pParam->eLevel = OMX_VIDEO_AVCLevel52;
+                         break;
++#ifdef _TARGET_KERNEL_VERSION_49_
++                    case V4L2_MPEG_VIDEO_H264_LEVEL_UNKNOWN:
++                        return OMX_ErrorUnsupportedIndex;
++#endif
+                 }
+              } else {
+                  eRet = OMX_ErrorUnsupportedIndex;
+@@ -4517,17 +4533,29 @@ OMX_ERRORTYPE  omx_vdec::set_parameter(OMX_IN OMX_HANDLETYPE     hComp,
+                                         DEBUG_PRINT_ERROR("%s: Failed to get format on capture mplane", __func__);
+                                         return OMX_ErrorBadParameter;
+                                     }
++#ifndef _TARGET_KERNEL_VERSION_49_
+                                     enum vdec_output_fromat op_format;
++#else
++                                    enum vdec_output_format op_format;
++#endif
+                                     if (portFmt->eColorFormat == (OMX_COLOR_FORMATTYPE)
+                                             QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m ||
+                                             portFmt->eColorFormat == (OMX_COLOR_FORMATTYPE)
+                                             QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mMultiView ||
+                                             portFmt->eColorFormat == OMX_COLOR_FormatYUV420Planar ||
+                                             portFmt->eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar) {
++#ifndef _TARGET_KERNEL_VERSION_49_
+                                         op_format = (enum vdec_output_fromat)VDEC_YUV_FORMAT_NV12;
++#else
++                                        op_format = (enum vdec_output_format)VDEC_YUV_FORMAT_NV12;
++#endif
+                                     } else if (portFmt->eColorFormat == (OMX_COLOR_FORMATTYPE)
+                                             QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mCompressed) {
++#ifndef _TARGET_KERNEL_VERSION_49_
+                                         op_format = (enum vdec_output_fromat)VDEC_YUV_FORMAT_NV12_UBWC;
++#else
++                                        op_format = (enum vdec_output_format)VDEC_YUV_FORMAT_NV12_UBWC;
++#endif
+                                     } else
+                                         eRet = OMX_ErrorBadParameter;
+ 
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/Android.mk b/msm8998/mm-video-v4l2/vidc/venc/Android.mk
+index 4080333..491c20c 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/Android.mk
++++ b/msm8998/mm-video-v4l2/vidc/venc/Android.mk
+@@ -41,6 +41,10 @@ libmm-venc-def += -DMAX_RES_1080P_EBI
+ endif
+ endif
+ 
++ifeq ($(TARGET_KERNEL_VERSION), 4.9)
++libmm-venc-def += -D_TARGET_KERNEL_VERSION_49_
++endif
++
+ ifeq ($(call is-board-platform-in-list, $(TARGETS_THAT_SUPPORT_UBWC)),true)
+ libmm-venc-def += -D_UBWC_
+ endif
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/inc/omx_video_base.h b/msm8998/mm-video-v4l2/vidc/venc/inc/omx_video_base.h
+index 7ea8fd7..61ea142 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/inc/omx_video_base.h
++++ b/msm8998/mm-video-v4l2/vidc/venc/inc/omx_video_base.h
+@@ -53,7 +53,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #endif // _ANDROID_
+ #include <pthread.h>
+ #include <semaphore.h>
++#ifndef _TARGET_KERNEL_VERSION_49_
+ #include <linux/msm_vidc_enc.h>
++#endif
+ #include <media/hardware/HardwareAPI.h>
+ #include "OMX_Core.h"
+ #include "OMX_QCOMExtns.h"
+@@ -144,10 +146,80 @@ static const char* MEM_DEVICE = "/dev/pmem_smipool";
+ #define LEGACY_CAM_METADATA_TYPE encoder_media_buffer_type
+ #endif
+ 
++#ifdef _TARGET_KERNEL_VERSION_49_
++/** ENCODER STATUS CODES*/
++/* Base value for status codes */
++#define VEN_S_BASE    0x00000000
++#define VEN_S_SUCCESS    (VEN_S_BASE)/* Success */
++#define VEN_S_EFAIL    (VEN_S_BASE+1)/* General failure */
++
++/*Asynchronous messages from driver*/
++#define VEN_MSG_INDICATION    0
++#define VEN_MSG_INPUT_BUFFER_DONE    1
++#define VEN_MSG_OUTPUT_BUFFER_DONE    2
++#define VEN_MSG_NEED_OUTPUT_BUFFER    3
++#define VEN_MSG_FLUSH_INPUT_DONE    4
++#define VEN_MSG_FLUSH_OUTPUT_DONE    5
++#define VEN_MSG_START    6
++#define VEN_MSG_STOP    7
++#define VEN_MSG_PAUSE    8
++#define VEN_MSG_RESUME    9
++#define VEN_MSG_LTRUSE_FAILED    10
++#define VEN_MSG_HW_OVERLOAD    11
++#define VEN_MSG_MAX_CLIENTS    12
++
++/*Video codec profile types.*/
++#define VEN_PROFILE_MPEG4_SP      1/* 1 - MPEG4 SP profile      */
++#define VEN_PROFILE_MPEG4_ASP     2/* 2 - MPEG4 ASP profile     */
++#define VEN_PROFILE_H264_BASELINE 3/* 3 - H264 Baseline profile */
++#define VEN_PROFILE_H264_MAIN     4/* 4 - H264 Main profile     */
++#define VEN_PROFILE_H264_HIGH     5/* 5 - H264 High profile     */
++#define VEN_PROFILE_H263_BASELINE 6/* 6 - H263 Baseline profile */
++
++/*Different methods of Multi slice selection.*/
++#define VEN_MSLICE_OFF    1
++#define VEN_MSLICE_CNT_MB    2 /*number of MBscount per slice*/
++#define VEN_MSLICE_CNT_BYTE    3 /*number of bytes count per slice.*/
++#define VEN_MSLICE_GOB    4 /*Multi slice by GOB for H.263 only.*/
++
++/*Video codec profile level types.*/
++#define VEN_LEVEL_MPEG4_0    0x1/* MPEG4 Level 0  */
++#define VEN_LEVEL_MPEG4_1    0x2/* MPEG4 Level 1  */
++#define VEN_LEVEL_MPEG4_2    0x3/* MPEG4 Level 2  */
++#define VEN_LEVEL_MPEG4_3    0x4/* MPEG4 Level 3  */
++#define VEN_LEVEL_MPEG4_4    0x5/* MPEG4 Level 4  */
++#define VEN_LEVEL_MPEG4_5    0x6/* MPEG4 Level 5  */
++#define VEN_LEVEL_MPEG4_3b    0x7/* MPEG4 Level 3b */
++#define VEN_LEVEL_MPEG4_6    0x8/* MPEG4 Level 6  */
++
++#define VEN_LEVEL_H264_1    0x9/* H.264 Level 1   */
++#define VEN_LEVEL_H264_1b    0xA/* H.264 Level 1b  */
++#define VEN_LEVEL_H264_1p1    0xB/* H.264 Level 1.1 */
++#define VEN_LEVEL_H264_1p2    0xC/* H.264 Level 1.2 */
++#define VEN_LEVEL_H264_1p3    0xD/* H.264 Level 1.3 */
++#define VEN_LEVEL_H264_2    0xE/* H.264 Level 2   */
++#define VEN_LEVEL_H264_2p1    0xF/* H.264 Level 2.1 */
++#define VEN_LEVEL_H264_2p2    0x10/* H.264 Level 2.2 */
++#define VEN_LEVEL_H264_3    0x11/* H.264 Level 3   */
++#define VEN_LEVEL_H264_3p1    0x12/* H.264 Level 3.1 */
++#define VEN_LEVEL_H264_3p2    0x13/* H.264 Level 3.2 */
++#define VEN_LEVEL_H264_4    0x14/* H.264 Level 4   */
++
++#define VEN_LEVEL_H263_10    0x15/* H.263 Level 10  */
++#define VEN_LEVEL_H263_20    0x16/* H.263 Level 20  */
++#define VEN_LEVEL_H263_30    0x17/* H.263 Level 30  */
++#define VEN_LEVEL_H263_40    0x18/* H.263 Level 40  */
++#define VEN_LEVEL_H263_45    0x19/* H.263 Level 45  */
++#define VEN_LEVEL_H263_50    0x1A/* H.263 Level 50  */
++#define VEN_LEVEL_H263_60    0x1B/* H.263 Level 60  */
++#define VEN_LEVEL_H263_70    0x1C/* H.263 Level 70  */
++#endif //_TARGET_KERNEL_VERSION_49_
++
+ void* message_thread_enc(void *);
+ 
+ enum omx_venc_extradata_types {
+     VENC_EXTRADATA_SLICEINFO = 0x100,
++    VENC_EXTRADATA_LTRINFO = 0x200,
+     VENC_EXTRADATA_MBINFO = 0x400,
+     VENC_EXTRADATA_FRAMEDIMENSION = 0x1000000,
+     VENC_EXTRADATA_YUV_STATS = 0x800,
+@@ -160,6 +232,60 @@ struct output_metabuffer {
+     native_handle_t *nh;
+ };
+ 
++#ifdef _TARGET_KERNEL_VERSION_49_
++struct venc_buffer{
++    unsigned char *ptrbuffer;
++    unsigned long    sz;
++    unsigned long    len;
++    unsigned long    offset;
++    long long    timestamp;
++    unsigned long    flags;
++    void    *clientdata;
++};
++
++struct venc_bufferpayload{
++    unsigned char *pbuffer;
++    size_t    sz;
++    int    fd;
++    unsigned int    offset;
++    unsigned int    maped_size;
++    unsigned long    filled_len;
++};
++
++struct venc_voptimingcfg{
++    unsigned long    voptime_resolution;
++};
++
++struct venc_framerate{
++    unsigned long    fps_denominator;
++    unsigned long    fps_numerator;
++};
++
++struct venc_headerextension{
++    unsigned long    header_extension;
++};
++
++struct venc_multiclicecfg{
++    unsigned long    mslice_mode;
++    unsigned long    mslice_size;
++};
++
++struct venc_msg{
++    unsigned long    statuscode;
++    unsigned long    msgcode;
++    struct venc_buffer    buf;
++    unsigned long    msgdata_size;
++};
++
++struct venc_profile {
++    unsigned long    profile;
++};
++
++struct ven_profilelevel {
++    unsigned long    level;
++};
++#endif //_TARGET_KERNEL_VERSION_49_
++
+ typedef struct encoder_meta_buffer_payload_type {
+     char data[sizeof(LEGACY_CAM_METADATA_TYPE) + sizeof(int)];
+ } encoder_meta_buffer_payload_type;
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_base.cpp b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_base.cpp
+index d1c8d97..59210cf 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_base.cpp
++++ b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_base.cpp
+@@ -1898,8 +1898,13 @@ OMX_ERRORTYPE  omx_video::get_parameter(OMX_IN OMX_HANDLETYPE     hComp,
+                 }
+                 else if (pParam->nIndex == (OMX_INDEXTYPE)OMX_ExtraDataVideoLTRInfo) {
+                     if (pParam->nPortIndex == PORT_INDEX_OUT) {
++#ifndef _TARGET_KERNEL_VERSION_49_
+                         pParam->bEnabled =
+                             (OMX_BOOL)(m_sExtraData & VEN_EXTRADATA_LTRINFO);
++#else
++                        pParam->bEnabled =
++                            (OMX_BOOL)(m_sExtraData & VENC_EXTRADATA_LTRINFO);
++#endif
+                         DEBUG_PRINT_HIGH("LTR Info extradata %d", pParam->bEnabled);
+                     } else {
+                         DEBUG_PRINT_ERROR("get_parameter: LTR information is "
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
+index 526ebb4..ed98d4c 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
++++ b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
+@@ -1422,8 +1422,11 @@ OMX_ERRORTYPE  omx_venc::set_parameter(OMX_IN OMX_HANDLETYPE     hComp,
+                 else if (pParam->nIndex == (OMX_INDEXTYPE)OMX_ExtraDataVideoLTRInfo) {
+                     if (pParam->nPortIndex == PORT_INDEX_OUT) {
+                         if (pParam->bEnabled == OMX_TRUE)
++#ifndef _TARGET_KERNEL_VERSION_49_
+                             mask = VEN_EXTRADATA_LTRINFO;
+-
++#else
++                            mask = VENC_EXTRADATA_LTRINFO;
++#endif
+                         DEBUG_PRINT_HIGH("LTRInfo extradata %s",
+                                 ((pParam->bEnabled == OMX_TRUE) ? "enabled" : "disabled"));
+                     } else {
+@@ -2690,10 +2693,17 @@ int omx_venc::async_message_process (void *context, void* message)
+             omx->post_event (0,m_sVenc_msg->statuscode,\
+                     OMX_COMPONENT_GENERATE_EVENT_INPUT_FLUSH);
+             break;
++#ifndef _TARGET_KERNEL_VERSION_49_
+         case VEN_MSG_FLUSH_OUPUT_DONE:
+             omx->post_event (0,m_sVenc_msg->statuscode,\
+                     OMX_COMPONENT_GENERATE_EVENT_OUTPUT_FLUSH);
+             break;
++#else
++        case VEN_MSG_FLUSH_OUTPUT_DONE:
++            omx->post_event (0,m_sVenc_msg->statuscode,\
++                    OMX_COMPONENT_GENERATE_EVENT_OUTPUT_FLUSH);
++            break;
++#endif
+         case VEN_MSG_INPUT_BUFFER_DONE:
+             omxhdr = (OMX_BUFFERHEADERTYPE* )\
+                      m_sVenc_msg->buf.clientdata;
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp b/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
+index 0bdd914..c5fceb8 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
++++ b/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
+@@ -467,7 +467,11 @@ void* venc_dev::async_venc_message_thread (void *input)
+                     break;
+                 }
+ 
++#ifndef _TARGET_KERNEL_VERSION_49_
+                 venc_msg.msgcode = VEN_MSG_FLUSH_OUPUT_DONE;
++#else
++                venc_msg.msgcode = VEN_MSG_FLUSH_OUTPUT_DONE;
++#endif
+                 venc_msg.statuscode = VEN_S_SUCCESS;
+ 
+                 if (omx->async_message_process(input,&venc_msg) < 0) {
+@@ -3582,7 +3586,11 @@ unsigned venc_dev::venc_flush( unsigned port)
+         }
+     }
+ 
++#ifndef _TARGET_KERNEL_VERSION_49_
+     enc.cmd = V4L2_ENC_QCOM_CMD_FLUSH;
++#else
++    enc.cmd = V4L2_QCOM_CMD_FLUSH;
++#endif
+     enc.flags = V4L2_QCOM_CMD_FLUSH_OUTPUT | V4L2_QCOM_CMD_FLUSH_CAPTURE;
+ 
+     if (ioctl(m_nDriver_fd, VIDIOC_ENCODER_CMD, &enc)) {
+-- 
+2.13.0
+

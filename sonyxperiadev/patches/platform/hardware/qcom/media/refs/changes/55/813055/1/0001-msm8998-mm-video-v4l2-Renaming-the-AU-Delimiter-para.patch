@@ -1,0 +1,112 @@
+From cb97584647999d7ea8df858f2c3f4bf04f408f34 Mon Sep 17 00:00:00 2001
+From: Vikas Reddy Pachika <vpachi@codeaurora.org>
+Date: Wed, 21 Dec 2016 15:55:43 +0530
+Subject: [PATCH] msm8998: mm-video-v4l2: Renaming the AU-Delimiter
+ params/extens
+
+Renaming the H264 QCOM AU-Delimiter params/extens to generic
+name OMX_QCOM_VIDEO_CONFIG_AUD & OMX_QcomIndexParamAUDelimiter.
+And modifying accordingly in the corresponding OMX component code.
+
+CRs-Fixed: 2073804
+Change-Id: I3feccfbb06e4e237a601a355ab2f2573a165ed3b
+---
+ msm8998/mm-core/inc/OMX_QCOMExtns.h                        | 14 ++++++++++++++
+ msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp  |  7 ++++---
+ .../vidc/venc/src/video_encoder_device_v4l2.cpp            | 14 +++++++-------
+ 3 files changed, 25 insertions(+), 10 deletions(-)
+
+diff --git a/msm8998/mm-core/inc/OMX_QCOMExtns.h b/msm8998/mm-core/inc/OMX_QCOMExtns.h
+index d62f6e1..dcb4dd5 100644
+--- a/msm8998/mm-core/inc/OMX_QCOMExtns.h
++++ b/msm8998/mm-core/inc/OMX_QCOMExtns.h
+@@ -641,6 +641,8 @@ enum OMX_QCOM_EXTN_INDEXTYPE
+ 
+     /* use av-timer ticks as timestamp (used by VT-client) */
+     OMX_QTIIndexParamEnableAVTimerTimestamps = 0x7F000071,
++
++    OMX_QcomIndexParamAUDelimiter = 0x7F000072,
+ };
+ 
+ /**
+@@ -1106,6 +1108,18 @@ typedef struct OMX_QCOM_VIDEO_CONFIG_H264_AUD
+    OMX_BOOL bEnable;        /** Enable/disable the setting */
+ } OMX_QCOM_VIDEO_CONFIG_H264_AUD;
+ 
++/**
++ * This structure describes the parameters for the
++ * OMX_QcomIndexParamAUDelimiter extension.  It enables/disables
++ * the AU delimiters in the stream.
++ */
++typedef struct OMX_QCOM_VIDEO_CONFIG_AUD
++{
++   OMX_U32 nSize;           /** Size of the structure in bytes */
++   OMX_VERSIONTYPE nVersion;/** OMX specification version information */
++   OMX_BOOL bEnable;        /** Enable/disable the setting */
++} OMX_QCOM_VIDEO_CONFIG_AUD;
++
+ typedef enum QOMX_VIDEO_PERF_LEVEL
+ {
+     OMX_QCOM_PerfLevelNominal,
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
+index ed98d4c..aa5e933 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
++++ b/msm8998/mm-video-v4l2/vidc/venc/src/omx_video_encoder.cpp
+@@ -1577,12 +1577,13 @@ OMX_ERRORTYPE  omx_venc::set_parameter(OMX_IN OMX_HANDLETYPE     hComp,
+                 break;
+             }
+         case OMX_QcomIndexParamH264AUDelimiter:
++        case OMX_QcomIndexParamAUDelimiter:
+             {
+-                VALIDATE_OMX_PARAM_DATA(paramData, OMX_QCOM_VIDEO_CONFIG_H264_AUD);
++                VALIDATE_OMX_PARAM_DATA(paramData, OMX_QCOM_VIDEO_CONFIG_AUD);
+                 if(!handle->venc_set_param(paramData,
+-                            (OMX_INDEXTYPE)OMX_QcomIndexParamH264AUDelimiter)) {
++                            (OMX_INDEXTYPE)OMX_QcomIndexParamAUDelimiter)) {
+                     DEBUG_PRINT_ERROR("%s: %s",
+-                            "OMX_QComIndexParamh264AUDelimiter:",
++                            "OMX_QComIndexParamAUDelimiter:",
+                             "request for AU Delimiters failed.");
+                     return OMX_ErrorUnsupportedSetting;
+                 }
+diff --git a/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp b/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
+index c5fceb8..dc2c8ac 100644
+--- a/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
++++ b/msm8998/mm-video-v4l2/vidc/venc/src/video_encoder_device_v4l2.cpp
+@@ -2415,14 +2415,14 @@ bool venc_dev::venc_set_param(void *paramData, OMX_INDEXTYPE index)
+ 
+                 break;
+             }
+-        case OMX_QcomIndexParamH264AUDelimiter:
++        case OMX_QcomIndexParamAUDelimiter:
+             {
+-                OMX_QCOM_VIDEO_CONFIG_H264_AUD * pParam =
+-                    (OMX_QCOM_VIDEO_CONFIG_H264_AUD *)paramData;
++                OMX_QCOM_VIDEO_CONFIG_AUD * pParam =
++                    (OMX_QCOM_VIDEO_CONFIG_AUD *)paramData;
+ 
+                 DEBUG_PRINT_LOW("set AU delimiters: %d", pParam->bEnable);
+                 if(venc_set_au_delimiter(pParam->bEnable) == false) {
+-                    DEBUG_PRINT_ERROR("ERROR: set H264 AU delimiter failed");
++                    DEBUG_PRINT_ERROR("ERROR: set AU delimiter failed");
+                     return OMX_ErrorUnsupportedSetting;
+                 }
+ 
+@@ -4512,11 +4512,11 @@ bool venc_dev::venc_set_au_delimiter(OMX_BOOL enable)
+ {
+     struct v4l2_control control;
+ 
+-    control.id = V4L2_CID_MPEG_VIDC_VIDEO_H264_AU_DELIMITER;
++    control.id = V4L2_CID_MPEG_VIDC_VIDEO_AU_DELIMITER;
+     if(enable) {
+-        control.value = V4L2_MPEG_VIDC_VIDEO_H264_AU_DELIMITER_ENABLED;
++        control.value = V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_ENABLED;
+     } else {
+-        control.value = V4L2_MPEG_VIDC_VIDEO_H264_AU_DELIMITER_DISABLED;
++        control.value = V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_DISABLED;
+     }
+ 
+     DEBUG_PRINT_HIGH("Set au delimiter: %d", enable);
+-- 
+2.13.0
+
