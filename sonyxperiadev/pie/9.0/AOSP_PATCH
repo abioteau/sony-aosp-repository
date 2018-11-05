@@ -12,6 +12,8 @@ git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/chan
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/14/777714/1 && git cherry-pick FETCH_HEAD
 cd ../media
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/39/728339/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/54/813054/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/55/813055/1 && git cherry-pick FETCH_HEAD
 cd ../display
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/09/729209/2 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/10/729210/1 && git cherry-pick FETCH_HEAD
