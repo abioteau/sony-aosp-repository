@@ -1,0 +1,115 @@
+From 07a63defb34cd0a18849d4488ef11a8793e6cf3b Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sony.com>
+Date: Wed, 21 Nov 2018 05:56:08 +0100
+Subject: [PATCH] guard use of kernel sources
+
+kernel is not compiled at build time and it should not be a dependency
+
+Change-Id: I9b8cd5200cdfcc5d5ada39e6158383e7da221ae7
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sony.com>
+---
+ libc2dcolorconvert/Android.mk        | 5 ++++-
+ mm-video-v4l2/vidc/common/Android.mk | 5 ++++-
+ mm-video-v4l2/vidc/vdec/Android.mk   | 7 +++++--
+ mm-video-v4l2/vidc/venc/Android.mk   | 7 +++++--
+ 4 files changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/libc2dcolorconvert/Android.mk b/libc2dcolorconvert/Android.mk
+index 4cda9c8c..45691562 100755
+--- a/libc2dcolorconvert/Android.mk
++++ b/libc2dcolorconvert/Android.mk
+@@ -8,7 +8,11 @@ LOCAL_SRC_FILES := \
+ LOCAL_C_INCLUDES := \
+     $(TARGET_OUT_HEADERS)/adreno
+ LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/qcom/display
++
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ LOCAL_HEADER_LIBRARIES := \
+         libutils_headers \
+@@ -23,6 +27,5 @@ LOCAL_MODULE := libc2dcolorconvert
+ 
+ LOCAL_VENDOR_MODULE := true
+ 
+-LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
+ 
+ include $(BUILD_SHARED_LIBRARY)
+diff --git a/mm-video-v4l2/vidc/common/Android.mk b/mm-video-v4l2/vidc/common/Android.mk
+index c70d04e0..116592ba 100644
+--- a/mm-video-v4l2/vidc/common/Android.mk
++++ b/mm-video-v4l2/vidc/common/Android.mk
+@@ -24,7 +24,11 @@ libmm-vidc-inc      := $(LOCAL_PATH)/inc
+ libmm-vidc-inc      += $(QCOM_MEDIA_ROOT)/mm-core/inc
+ libmm-vidc-inc      += $(TARGET_OUT_HEADERS)/qcom/display
+ libmm-vidc-inc      += $(QCOM_MEDIA_ROOT)/libc2dcolorconvert
++
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-vidc-inc      += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ LOCAL_MODULE                    := libOmxVidcCommon
+ LOCAL_MODULE_TAGS               := optional
+@@ -42,7 +46,6 @@ LOCAL_HEADER_LIBRARIES := \
+ LOCAL_SRC_FILES   += src/vidc_common.cpp
+ LOCAL_SRC_FILES   += src/vidc_vendor_extensions.cpp
+ 
+-LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
+ 
+ include $(BUILD_STATIC_LIBRARY)
+ 
+diff --git a/mm-video-v4l2/vidc/vdec/Android.mk b/mm-video-v4l2/vidc/vdec/Android.mk
+index 3f8fa799..f2fe4bff 100755
+--- a/mm-video-v4l2/vidc/vdec/Android.mk
++++ b/mm-video-v4l2/vidc/vdec/Android.mk
+@@ -63,15 +63,18 @@ libmm-vdec-inc          += $(TARGET_OUT_HEADERS)/adreno
+ libmm-vdec-inc          += $(QCOM_MEDIA_ROOT)/libc2dcolorconvert
+ libmm-vdec-inc          += $(TARGET_OUT_HEADERS)/mm-video/SwVdec
+ libmm-vdec-inc          += $(TARGET_OUT_HEADERS)/mm-video/swvdec
++
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-vdec-inc          += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++# Common Dependencies
++libmm-vdec-add-dep := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ ifeq ($(PLATFORM_SDK_VERSION), 18)  #JB_MR2
+ libmm-vdec-def += -DANDROID_JELLYBEAN_MR2=1
+ libmm-vdec-inc += $(QCOM_MEDIA_ROOT)/libstagefrighthw
+ endif
+ 
+-# Common Dependencies
+-libmm-vdec-add-dep := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
+ 
+ ifeq ($(call is-platform-sdk-version-at-least, 19),true)
+ # This feature is enabled for Android KK+
+diff --git a/mm-video-v4l2/vidc/venc/Android.mk b/mm-video-v4l2/vidc/venc/Android.mk
+index b271f9d9..7d060a11 100644
+--- a/mm-video-v4l2/vidc/venc/Android.mk
++++ b/mm-video-v4l2/vidc/venc/Android.mk
+@@ -67,14 +67,17 @@ libmm-venc-inc      += $(TARGET_OUT_HEADERS)/qcom/display
+ libmm-venc-inc      += $(TARGET_OUT_HEADERS)/adreno
+ libmm-venc-inc      += $(QCOM_MEDIA_ROOT)/libc2dcolorconvert
+ libmm-venc-inc      += $(TARGET_OUT_HEADERS)/libvqzip
++
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ libmm-venc-inc      += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
++# Common Dependencies
++libmm-venc-add-dep  := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ ifeq ($(call is-board-platform-in-list, $(TARGETS_THAT_SUPPORT_SW_VENC_ROTATION)),true)
+ libmm-venc-inc      += hardware/libhardware/include/hardware
+ endif
+ 
+-# Common Dependencies
+-libmm-venc-add-dep  := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
+ 
+ # ---------------------------------------------------------------------------------
+ # 			Make the Shared library (libOmxVenc)
+-- 
+2.13.0
+

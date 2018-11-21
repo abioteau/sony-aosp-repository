@@ -87,6 +87,7 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/media/refs/changes/55/813055/1/*.patch`
 cd sdm845 && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/media/refs/changes/80/832780/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/media/refs/changes/84/832784/1/*.patch`
 cd ../../display && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/09/729209/2/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/10/729210/1/*.patch`
