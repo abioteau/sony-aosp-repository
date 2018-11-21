@@ -1,0 +1,30 @@
+From 3a2fe3ec7974f9f1e9772d0009dc4df01937f237 Mon Sep 17 00:00:00 2001
+From: oshmoun <oshmoun100@googlemail.com>
+Date: Wed, 21 Nov 2018 00:25:23 +0100
+Subject: [PATCH] Avoid missing dependency error for AOSP builds
+
+libOmxSwVencMpeg4 depends on a proprietary module.
+Avoid including it for pure AOSP builds.
+
+Test: media hal compiles without proprietary modules
+---
+ mm-video-v4l2/vidc/venc/Android.mk | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/mm-video-v4l2/vidc/venc/Android.mk b/mm-video-v4l2/vidc/venc/Android.mk
+index 53973606..b271f9d9 100644
+--- a/mm-video-v4l2/vidc/venc/Android.mk
++++ b/mm-video-v4l2/vidc/venc/Android.mk
+@@ -21,7 +21,9 @@ libmm-venc-def += -Werror
+ libmm-venc-def += -D_ANDROID_ICS_
+ 
+ TARGETS_THAT_USE_FLAG_MSM8226 := msm8226 msm8916 msm8909
++ifneq ($(TARGET_USES_AOSP),true)
+ TARGETS_THAT_NEED_SW_VENC_MPEG4 := msm8909 msm8937 sdm845 msmpeafowl sdm710 qcs605
++endif
+ TARGETS_THAT_NEED_SW_VENC_HEVC := msm8992
+ TARGETS_THAT_SUPPORT_UBWC := msm8996 msm8998 sdm845 msmpeafowl sdm710 qcs605
+ TARGETS_THAT_SUPPORT_VQZIP := msm8996 msm8998
+-- 
+2.13.0
+
