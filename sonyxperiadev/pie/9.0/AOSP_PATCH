@@ -16,7 +16,9 @@ cd ../media
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/39/728339/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/54/813054/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/55/813055/1 && git cherry-pick FETCH_HEAD
-cd ../display
+cd sdm845
+git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/media refs/changes/80/832780/1 && git cherry-pick FETCH_HEAD
+cd ../../display
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/09/729209/2 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/10/729210/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/11/729211/1 && git cherry-pick FETCH_HEAD
