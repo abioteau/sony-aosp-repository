@@ -67,7 +67,9 @@ rm -rf local_manifests
 ~/bin/repo sync -j $NB_CORES
 ~/bin/repo manifest -o manifest.xml -r
 
-cd hardware/qcom/gps && repo start $GIT_BRANCH .
+cd hardware/qcom/data/ipacfg-mgr/sdm845 && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/data/ipacfg-mgr/refs/changes/23/834623/1/*.patch`
+cd ../../../gps && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/47/728147/2/*.patch`
 git revert --no-edit --no-commit 484979c524067125b56d59afb102003ff48e3702 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 484979c524067125b56d59afb102003ff48e3702)" --date "$(git log -1 --format="%ad" 484979c524067125b56d59afb102003ff48e3702)" && unset GIT_COMMITTER_DATE
 git revert --no-edit --no-commit f475797d3c031ae97a393fa3e899034836fe7ba6 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" f475797d3c031ae97a393fa3e899034836fe7ba6)" --date "$(git log -1 --format="%ad" f475797d3c031ae97a393fa3e899034836fe7ba6)" && unset GIT_COMMITTER_DATE
