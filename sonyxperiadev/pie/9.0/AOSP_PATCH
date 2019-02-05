@@ -8,6 +8,7 @@ git revert --no-edit 35a95e0a9bc9aeab1bb1847180babda2da5fbf90
 git revert --no-edit db96236976a195bda833d821d584bc76ea4cdbae
 git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/gps refs/changes/39/804439/1 && git cherry-pick FETCH_HEAD
 cd ../audio
+git revert --no-edit 07f96d11649ffe2af61f83b4c7f22d12b407e03f
 git revert --no-edit e56cd4bc673e7068d59803b9ac02f660e6bfd14e
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/49/728149/5 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/50/728150/4 && git cherry-pick FETCH_HEAD
@@ -31,6 +32,7 @@ git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/ch
 cd ../bt
 git fetch http://android.googlesource.com/platform/hardware/qcom/bt refs/changes/69/728569/1 && git cherry-pick FETCH_HEAD
 cd ../bootctrl
+git revert --no-edit f5db01c3b14d720f3d603cfb3b887d89c2b11b28
 git revert --no-edit a8e07aecb24898d7d2b49cb785b0c193a4b134b4
 git fetch http://android.googlesource.com/platform/hardware/qcom/bootctrl refs/changes/70/728570/2 && git cherry-pick FETCH_HEAD
 cd ../../nxp/nfc
