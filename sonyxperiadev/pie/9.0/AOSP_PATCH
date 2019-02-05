@@ -10,6 +10,7 @@ git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/gps refs
 cd ../audio
 git revert --no-edit 07f96d11649ffe2af61f83b4c7f22d12b407e03f
 git revert --no-edit e56cd4bc673e7068d59803b9ac02f660e6bfd14e
+git revert --no-edit 39a2b8a03c0a8a44940ac732f636d9cc1959eff2
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/49/728149/5 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/50/728150/4 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/51/728151/3 && git cherry-pick FETCH_HEAD
