@@ -1,0 +1,97 @@
+From a31e2bda893910fa938099c4417e4b36d7513667 Mon Sep 17 00:00:00 2001
+From: Haibo Huang <hhb@google.com>
+Date: Tue, 9 Oct 2018 14:27:28 -0700
+Subject: [PATCH] Add support for cortex-a76 in soong
+
+Bug: 117125298
+Test: Change a device to be A76 and build
+Change-Id: Iae0773d54e57b247c818d44f8044180d5a3f95a8
+---
+ android/arch.go           |  2 ++
+ cc/config/arm64_device.go |  7 +++++++
+ cc/config/arm_device.go   | 10 ++++++++++
+ 3 files changed, 19 insertions(+)
+
+diff --git a/android/arch.go b/android/arch.go
+index 6516558b..33783170 100644
+--- a/android/arch.go
++++ b/android/arch.go
+@@ -1012,6 +1012,7 @@ func getMegaDeviceConfig() []archConfig {
+ 		{"arm", "armv7-a-neon", "cortex-a72", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "cortex-a73", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "cortex-a75", []string{"armeabi-v7a"}},
++		{"arm", "armv7-a-neon", "cortex-a76", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "denver", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "krait", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "kryo", []string{"armeabi-v7a"}},
+@@ -1025,6 +1026,7 @@ func getMegaDeviceConfig() []archConfig {
+ 		{"arm64", "armv8-a", "exynos-m1", []string{"arm64-v8a"}},
+ 		{"arm64", "armv8-a", "exynos-m2", []string{"arm64-v8a"}},
+ 		{"arm64", "armv8-2a", "cortex-a75", []string{"arm64-v8a"}},
++		{"arm64", "armv8-2a", "cortex-a76", []string{"arm64-v8a"}},
+ 		{"mips", "mips32-fp", "", []string{"mips"}},
+ 		{"mips", "mips32r2-fp", "", []string{"mips"}},
+ 		{"mips", "mips32r2-fp-xburst", "", []string{"mips"}},
+diff --git a/cc/config/arm64_device.go b/cc/config/arm64_device.go
+index cacd2874..6a638284 100644
+--- a/cc/config/arm64_device.go
++++ b/cc/config/arm64_device.go
+@@ -60,6 +60,11 @@ var (
+ 			// core (cortex-a55) and is sensitive to ordering.
+ 			"-mcpu=cortex-a55",
+ 		},
++		"cortex-a76": []string{
++			// Use the cortex-a55 since it is similar to the little
++			// core (cortex-a55) and is sensitive to ordering.
++			"-mcpu=cortex-a55",
++		},
+ 		"kryo": []string{
+ 			"-mcpu=kryo",
+ 		},
+@@ -85,6 +90,7 @@ func init() {
+ 		"cortex-a72",
+ 		"cortex-a73",
+ 		"cortex-a75",
++		"cortex-a76",
+ 		"kryo",
+ 		"exynos-m1",
+ 		"exynos-m2",
+@@ -136,6 +142,7 @@ var (
+ 		"cortex-a72": "${config.Arm64ClangCortexA53Cflags}",
+ 		"cortex-a73": "${config.Arm64ClangCortexA53Cflags}",
+ 		"cortex-a75": "${config.Arm64ClangCortexA55Cflags}",
++		"cortex-a76": "${config.Arm64ClangCortexA55Cflags}",
+ 		"kryo":       "${config.Arm64ClangKryoCflags}",
+ 		"exynos-m1":  "${config.Arm64ClangExynosM1Cflags}",
+ 		"exynos-m2":  "${config.Arm64ClangExynosM2Cflags}",
+diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
+index 95c94951..75f59621 100644
+--- a/cc/config/arm_device.go
++++ b/cc/config/arm_device.go
+@@ -117,6 +117,15 @@ var (
+ 			// better solution comes around. See Bug 27340895
+ 			"-D__ARM_FEATURE_LPAE=1",
+ 		},
++		"cortex-a76": []string{
++			"-mcpu=cortex-a55",
++			"-mfpu=neon-fp-armv8",
++			// Fake an ARM compiler flag as these processors support LPAE which GCC/clang
++			// don't advertise.
++			// TODO This is a hack and we need to add it for each processor that supports LPAE until some
++			// better solution comes around. See Bug 27340895
++			"-D__ARM_FEATURE_LPAE=1",
++		},
+ 		"krait": []string{
+ 			"-mcpu=krait",
+ 			"-mfpu=neon-vfpv4",
+@@ -162,6 +171,7 @@ func init() {
+ 		"cortex-a72",
+ 		"cortex-a73",
+ 		"cortex-a75",
++		"cortex-a76",
+ 		"krait",
+ 		"kryo",
+ 		"exynos-m1",
+-- 
+2.13.0
+

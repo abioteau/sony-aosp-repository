@@ -1,0 +1,28 @@
+From 6201b9eb5a91db2cb389838734e004a87505c807 Mon Sep 17 00:00:00 2001
+From: Haibo Huang <hhb@google.com>
+Date: Mon, 3 Dec 2018 10:04:00 -0800
+Subject: [PATCH] Remove denver64 from make
+
+Test: build
+Bug: 73545680
+Change-Id: I8f28c7d6beaa5b0a7de9000ebea2f4d8e87f0381
+---
+ core/combo/TARGET_linux-arm.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index 45030622d..c31906a0a 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -34,7 +34,7 @@ TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT := generic
+ endif
+ 
+ KNOWN_ARMv8_CORES := cortex-a53 cortex-a53.a57 cortex-a55 cortex-a73 cortex-a75 cortex-a76
+-KNOWN_ARMv8_CORES += kryo denver64 exynos-m1 exynos-m2
++KNOWN_ARMv8_CORES += kryo exynos-m1 exynos-m2
+ 
+ KNOWN_ARMv82a_CORES := cortex-a55 cortex-a75
+ 
+-- 
+2.13.0
+

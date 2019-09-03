@@ -1,0 +1,40 @@
+From 316f4a499c4e0e014f59e1207090f84303c5bf7d Mon Sep 17 00:00:00 2001
+From: Daniel Mentz <danielmentz@google.com>
+Date: Thu, 28 Mar 2019 18:32:29 -0700
+Subject: [PATCH] clean_header: Write to correct dst_file
+
+Write to correct dst_file when in update mode. This enables use cases
+like the following:
+
+../../../bionic/libc/kernel/tools/clean_header.py -k original-kernel-headers/ -d kernel-headers/ -u linux/ion.h
+
+Previously, we had to cd into kernel-headers/ and then run
+
+../../../../bionic/libc/kernel/tools/clean_header.py -k ../original-kernel-headers/ -d . -u linux/ion.h
+
+because the tool didn't allow the relative path to be different from the
+destination path.
+
+Change-Id: I8c5e284ce7a6737d77a2f5ead3e7e5db01317425
+---
+ libc/kernel/tools/clean_header.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libc/kernel/tools/clean_header.py b/libc/kernel/tools/clean_header.py
+index 7c802c282..072ca1a91 100755
+--- a/libc/kernel/tools/clean_header.py
++++ b/libc/kernel/tools/clean_header.py
+@@ -187,8 +187,8 @@ if __name__ == "__main__":
+         if not new_data:
+             continue
+ 
+-        b.readFile(path)
+-        r = b.editFile(path, new_data)
++        b.readFile(dst_file)
++        r = b.editFile(dst_file, new_data)
+         if r == 0:
+             r = "unchanged"
+         elif r == 1:
+-- 
+2.13.0
+

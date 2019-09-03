@@ -1,0 +1,50 @@
+From ead02eb87d6424b39cad9596cde53f643edadb51 Mon Sep 17 00:00:00 2001
+From: Isaac Lee <isaac.lee@mediatek.com>
+Date: Tue, 13 Nov 2018 17:31:28 +0800
+Subject: [PATCH] Enable armv8-2a supporting on 2nd arch. variant
+
+Newer cores are implementing armv8-2a ISAs.
+Enabling 2nd arch. variant to support for new type of cores.
+
+Test: set TARGET_2ND_ARCH_VARIANT := armv8-2a, build without warnings and not ignore armv8-2a
+BUG: 118414869
+Change-Id: I1cd64ab0ad9b253ec3d109ebd1dbc7882011ce77
+---
+ core/combo/TARGET_linux-arm.mk  | 14 +++++++++++++-
+ core/combo/arch/arm/armv8-2a.mk |  0
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+ create mode 100644 core/combo/arch/arm/armv8-2a.mk
+
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index ffb6021c3..45030622d 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -36,9 +36,21 @@ endif
+ KNOWN_ARMv8_CORES := cortex-a53 cortex-a53.a57 cortex-a55 cortex-a73 cortex-a75 cortex-a76
+ KNOWN_ARMv8_CORES += kryo denver64 exynos-m1 exynos-m2
+ 
++KNOWN_ARMv82a_CORES := cortex-a55 cortex-a75
++
++# Check for cores that implement armv8-2a ISAs.
++ifneq (,$(filter $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT), $(KNOWN_ARMv82a_CORES)))
++  ifneq ($(TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT),armv8-2a)
++    $(warning $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT) is armv8-2a.)
++    ifneq (,$(TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT))
++      $(warning TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT, $(TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT), ignored! Use armv8-2a instead.)
++    endif
++    # Overwrite TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT
++    TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT := armv8-2a
++  endif
+ # Many devices (incorrectly) use armv7-a-neon as the 2nd architecture variant
+ # for cores that implement armv8-a ISAs. The following sets it to armv8-a.
+-ifneq (,$(filter $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT), $(KNOWN_ARMv8_CORES)))
++else ifneq (,$(filter $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT), $(KNOWN_ARMv8_CORES)))
+   ifneq ($(TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT),armv8-a)
+     $(warning $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT) is armv8-a.)
+     ifneq (,$(TARGET_$(combo_2nd_arch_prefix)ARCH_VARIANT))
+diff --git a/core/combo/arch/arm/armv8-2a.mk b/core/combo/arch/arm/armv8-2a.mk
+new file mode 100644
+index 000000000..e69de29bb
+-- 
+2.13.0
+

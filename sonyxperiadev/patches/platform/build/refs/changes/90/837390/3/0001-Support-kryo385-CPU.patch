@@ -1,0 +1,36 @@
+From f7dccc6bc077f9f95bcfad0e49f19f64aed44fc9 Mon Sep 17 00:00:00 2001
+From: Artem Serov <artem.serov@linaro.org>
+Date: Thu, 22 Nov 2018 19:55:32 +0000
+Subject: [PATCH] Support kryo385 CPU.
+
+Pixel 3 should use kryo385 CPU.
+
+Related change:
+https://android-review.googlesource.com/c/platform/build/soong/+/831260
+
+Test: Builds Pixel 3.
+Bug: 119564566
+Change-Id: Iede5830093497abe753a34df3bc4913468be39d0
+---
+ core/combo/TARGET_linux-arm.mk | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index c31906a0a..9514edb29 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -34,9 +34,9 @@ TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT := generic
+ endif
+ 
+ KNOWN_ARMv8_CORES := cortex-a53 cortex-a53.a57 cortex-a55 cortex-a73 cortex-a75 cortex-a76
+-KNOWN_ARMv8_CORES += kryo exynos-m1 exynos-m2
++KNOWN_ARMv8_CORES += kryo kryo385 exynos-m1 exynos-m2
+ 
+-KNOWN_ARMv82a_CORES := cortex-a55 cortex-a75
++KNOWN_ARMv82a_CORES := cortex-a55 cortex-a75 kryo385
+ 
+ # Check for cores that implement armv8-2a ISAs.
+ ifneq (,$(filter $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT), $(KNOWN_ARMv82a_CORES)))
+-- 
+2.13.0
+

@@ -1,0 +1,87 @@
+From b06fbf7dfdb360885a1791b61c8943200c77e4e6 Mon Sep 17 00:00:00 2001
+From: Artem Serov <artem.serov@linaro.org>
+Date: Thu, 22 Nov 2018 19:51:36 +0000
+Subject: [PATCH] ART: Support kryo385 CPU.
+
+Qualcomm Kryo385 CPU supports up Armv8.2-a features: atomics,
+fp16, crc32.
+
+Related change:
+https://android-review.googlesource.com/c/platform/build/soong/+/831260
+
+Test: builds Pixel 3.
+Bug: 119564566
+Change-Id: Iede5830093497abe753a34df3bc4913468be39d0
+---
+ runtime/arch/arm/instruction_set_features_arm.cc     |  3 ++-
+ runtime/arch/arm64/instruction_set_features_arm64.cc | 14 +++++++++-----
+ 2 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/runtime/arch/arm/instruction_set_features_arm.cc b/runtime/arch/arm/instruction_set_features_arm.cc
+index e97d2cbd92..58ae394fb4 100644
+--- a/runtime/arch/arm/instruction_set_features_arm.cc
++++ b/runtime/arch/arm/instruction_set_features_arm.cc
+@@ -54,7 +54,8 @@ ArmFeaturesUniquePtr ArmInstructionSetFeatures::FromVariant(
+       "cortex-a76",
+       "exynos-m1",
+       "denver",
+-      "kryo"
++      "kryo",
++      "kryo385",
+   };
+   bool has_armv8a = FindVariantInArray(arm_variants_with_armv8a,
+                                        arraysize(arm_variants_with_armv8a),
+diff --git a/runtime/arch/arm64/instruction_set_features_arm64.cc b/runtime/arch/arm64/instruction_set_features_arm64.cc
+index 7796ca7745..963c207842 100644
+--- a/runtime/arch/arm64/instruction_set_features_arm64.cc
++++ b/runtime/arch/arm64/instruction_set_features_arm64.cc
+@@ -57,10 +57,6 @@ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromVariant(
+   static const char* arm64_variants_with_crc[] = {
+       "default",
+       "generic",
+-      "kryo",
+-      "exynos-m1",
+-      "exynos-m2",
+-      "exynos-m3",
+       "cortex-a35",
+       "cortex-a53",
+       "cortex-a53.a57",
+@@ -71,18 +67,25 @@ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromVariant(
+       "cortex-a55",
+       "cortex-a75",
+       "cortex-a76",
++      "exynos-m1",
++      "exynos-m2",
++      "exynos-m3",
++      "kryo",
++      "kryo385",
+   };
+ 
+   static const char* arm64_variants_with_lse[] = {
+       "cortex-a55",
+       "cortex-a75",
+       "cortex-a76",
++      "kryo385",
+   };
+ 
+   static const char* arm64_variants_with_fp16[] = {
+       "cortex-a55",
+       "cortex-a75",
+       "cortex-a76",
++      "kryo385",
+   };
+ 
+   static const char* arm64_variants_with_dotprod[] = {
+@@ -124,7 +127,8 @@ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromVariant(
+         "exynos-m2",
+         "exynos-m3",
+         "denver64",
+-        "kryo"
++        "kryo",
++        "kryo385",
+     };
+     if (!FindVariantInArray(arm64_known_variants, arraysize(arm64_known_variants), variant)) {
+       std::ostringstream os;
+-- 
+2.13.0
+

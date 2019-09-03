@@ -1,0 +1,28 @@
+From e211f7cd2dc419af8142df2bcb062f7a8b126843 Mon Sep 17 00:00:00 2001
+From: Haibo Huang <hhb@google.com>
+Date: Wed, 10 Oct 2018 14:33:13 -0700
+Subject: [PATCH] Add A76 to known v8-a cores
+
+Bug: 117125298
+Test: build
+Change-Id: Ice05e7d4996252cfe4a9881a628c11b0f12cfd1b
+---
+ core/combo/TARGET_linux-arm.mk | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/combo/TARGET_linux-arm.mk b/core/combo/TARGET_linux-arm.mk
+index 3ce64f984..ffb6021c3 100644
+--- a/core/combo/TARGET_linux-arm.mk
++++ b/core/combo/TARGET_linux-arm.mk
+@@ -33,7 +33,7 @@ ifeq ($(strip $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT)),)
+ TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT := generic
+ endif
+ 
+-KNOWN_ARMv8_CORES := cortex-a53 cortex-a53.a57 cortex-a55 cortex-a73 cortex-a75
++KNOWN_ARMv8_CORES := cortex-a53 cortex-a53.a57 cortex-a55 cortex-a73 cortex-a75 cortex-a76
+ KNOWN_ARMv8_CORES += kryo denver64 exynos-m1 exynos-m2
+ 
+ # Many devices (incorrectly) use armv7-a-neon as the 2nd architecture variant
+-- 
+2.13.0
+

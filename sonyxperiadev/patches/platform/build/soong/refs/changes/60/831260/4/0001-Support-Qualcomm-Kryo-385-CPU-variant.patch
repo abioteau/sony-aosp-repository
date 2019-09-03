@@ -1,0 +1,128 @@
+From d3072b0c7cef7f5a217a055e66d85890c78620bc Mon Sep 17 00:00:00 2001
+From: Artem Serov <artem.serov@linaro.org>
+Date: Thu, 15 Nov 2018 15:21:51 +0000
+Subject: [PATCH] Support Qualcomm Kryo 385 CPU variant.
+
+Support Kryo 385 cpu variant which should be used for
+Qualcomm Snapdragon 845.
+
+Motivation:
+  kryo385 CPU *IS NOT* an Arm Cortex-A75.
+
+Particular problem:
+  Cortex-A75 CPU must support optional ARMv8.2 dot product
+  feature; kryo385 CPU (Qualcomm Snapdragon 845) doesn't
+  support it.
+
+Test: Builds when kryo385 is used as cpu variant.
+Test: Pixel 3 boots to GUI with kryo385 as CPU variant
+      with this patch on AOSP 9.0.0 r16.
+
+Bug: 119564566
+
+Change-Id: I62ffb46b1977b48446c6c1ca1400b1b39f7a8457
+---
+ android/arch.go           |  2 ++
+ cc/config/arm64_device.go |  6 ++++++
+ cc/config/arm_device.go   | 13 ++++++++++++-
+ 3 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/android/arch.go b/android/arch.go
+index 7fe1b18b..1637a472 100644
+--- a/android/arch.go
++++ b/android/arch.go
+@@ -1083,6 +1083,7 @@ func getMegaDeviceConfig() []archConfig {
+ 		{"arm", "armv7-a-neon", "denver", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "krait", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "kryo", []string{"armeabi-v7a"}},
++		{"arm", "armv7-a-neon", "kryo385", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "exynos-m1", []string{"armeabi-v7a"}},
+ 		{"arm", "armv7-a-neon", "exynos-m2", []string{"armeabi-v7a"}},
+ 		{"arm64", "armv8-a", "cortex-a53", []string{"arm64-v8a"}},
+@@ -1094,6 +1095,7 @@ func getMegaDeviceConfig() []archConfig {
+ 		{"arm64", "armv8-a", "exynos-m2", []string{"arm64-v8a"}},
+ 		{"arm64", "armv8-2a", "cortex-a75", []string{"arm64-v8a"}},
+ 		{"arm64", "armv8-2a", "cortex-a76", []string{"arm64-v8a"}},
++		{"arm64", "armv8-2a", "kryo385", []string{"arm64-v8a"}},
+ 		{"mips", "mips32-fp", "", []string{"mips"}},
+ 		{"mips", "mips32r2-fp", "", []string{"mips"}},
+ 		{"mips", "mips32r2-fp-xburst", "", []string{"mips"}},
+diff --git a/cc/config/arm64_device.go b/cc/config/arm64_device.go
+index 6a638284..299799d7 100644
+--- a/cc/config/arm64_device.go
++++ b/cc/config/arm64_device.go
+@@ -68,6 +68,10 @@ var (
+ 		"kryo": []string{
+ 			"-mcpu=kryo",
+ 		},
++		"kryo385": []string{
++			// Use cortex-a53 because kryo385 is not supported in GCC/clang.
++			"-mcpu=cortex-a53",
++		},
+ 		"exynos-m1": []string{
+ 			"-mcpu=exynos-m1",
+ 		},
+@@ -92,6 +96,7 @@ func init() {
+ 		"cortex-a75",
+ 		"cortex-a76",
+ 		"kryo",
++		"kryo385",
+ 		"exynos-m1",
+ 		"exynos-m2",
+ 		"denver64")
+@@ -144,6 +149,7 @@ var (
+ 		"cortex-a75": "${config.Arm64ClangCortexA55Cflags}",
+ 		"cortex-a76": "${config.Arm64ClangCortexA55Cflags}",
+ 		"kryo":       "${config.Arm64ClangKryoCflags}",
++		"kryo385":    "${config.Arm64ClangCortexA53Cflags}",
+ 		"exynos-m1":  "${config.Arm64ClangExynosM1Cflags}",
+ 		"exynos-m2":  "${config.Arm64ClangExynosM2Cflags}",
+ 	}
+diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
+index d7591255..29378c64 100644
+--- a/cc/config/arm_device.go
++++ b/cc/config/arm_device.go
+@@ -151,6 +151,15 @@ var (
+ 			// better solution comes around. See Bug 27340895
+ 			"-D__ARM_FEATURE_LPAE=1",
+ 		},
++		"kryo385": []string{
++			// Use cortex-a53 because kryo385 is not supported in GCC/clang.
++			"-mcpu=cortex-a53",
++			// Fake an ARM compiler flag as these processors support LPAE which GCC/clang
++			// don't advertise.
++			// TODO This is a hack and we need to add it for each processor that supports LPAE until some
++			// better solution comes around. See Bug 27340895
++			"-D__ARM_FEATURE_LPAE=1",
++		},
+ 	}
+ )
+ 
+@@ -180,6 +189,7 @@ func init() {
+ 		"cortex-a76",
+ 		"krait",
+ 		"kryo",
++		"kryo385",
+ 		"exynos-m1",
+ 		"exynos-m2",
+ 		"denver")
+@@ -242,7 +252,7 @@ var (
+ 		"armv7-a":      "${config.ArmClangArmv7ACflags}",
+ 		"armv7-a-neon": "${config.ArmClangArmv7ANeonCflags}",
+ 		"armv8-a":      "${config.ArmClangArmv8ACflags}",
+-		"armv8-2a":      "${config.ArmClangArmv82ACflags}",
++		"armv8-2a":     "${config.ArmClangArmv82ACflags}",
+ 	}
+ 
+ 	armClangCpuVariantCflagsVar = map[string]string{
+@@ -258,6 +268,7 @@ var (
+ 		"cortex-a75":     "${config.ArmClangCortexA55Cflags}",
+ 		"krait":          "${config.ArmClangKraitCflags}",
+ 		"kryo":           "${config.ArmClangKryoCflags}",
++		"kryo385":        "${config.ArmClangCortexA53Cflags}",
+ 		"exynos-m1":      "${config.ArmClangCortexA53Cflags}",
+ 		"exynos-m2":      "${config.ArmClangCortexA53Cflags}",
+ 		"denver":         "${config.ArmClangCortexA15Cflags}",
+-- 
+2.13.0
+

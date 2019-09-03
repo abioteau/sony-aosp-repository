@@ -1,0 +1,78 @@
+From 270ba75991b6c8f02123ad1b016346f7ca0fea33 Mon Sep 17 00:00:00 2001
+From: mtk15504 <flash.liu@mediatek.com>
+Date: Wed, 31 Oct 2018 15:26:32 +0800
+Subject: [PATCH] Add to support armv8-2a on 2nd arch. variant
+
+Add arch. variant option to support cores that implement armv8-2a ISAs.
+
+Test: set TARGET_2ND_ARCH_VARIANT := armv8-2a, build successful and 32bit app launch ok
+
+BUG: 118414869
+Change-Id: I755b8858726bd887068923123bad106aed7b1ec8
+---
+ cc/config/arm_device.go | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/cc/config/arm_device.go b/cc/config/arm_device.go
+index 75f59621..d7591255 100644
+--- a/cc/config/arm_device.go
++++ b/cc/config/arm_device.go
+@@ -66,6 +66,11 @@ var (
+ 			"-mfloat-abi=softfp",
+ 			"-mfpu=neon-fp-armv8",
+ 		},
++		"armv8-2a": []string{
++			"-march=armv8.2-a",
++			"-mfloat-abi=softfp",
++			"-mfpu=neon-fp-armv8",
++		},
+ 	}
+ 
+ 	armClangCpuVariantCflags = map[string][]string{
+@@ -161,6 +166,7 @@ func init() {
+ 		"armv7-a",
+ 		"armv7-a-neon",
+ 		"armv8-a",
++		"armv8-2a",
+ 		"cortex-a7",
+ 		"cortex-a8",
+ 		"cortex-a9",
+@@ -180,6 +186,7 @@ func init() {
+ 
+ 	android.RegisterArchVariantFeatures(android.Arm, "armv7-a-neon", "neon")
+ 	android.RegisterArchVariantFeatures(android.Arm, "armv8-a", "neon")
++	android.RegisterArchVariantFeatures(android.Arm, "armv8-2a", "neon")
+ 
+ 	pctx.StaticVariable("armGccVersion", armGccVersion)
+ 
+@@ -208,6 +215,8 @@ func init() {
+ 		strings.Join(armClangArchVariantCflags["armv7-a-neon"], " "))
+ 	pctx.StaticVariable("ArmClangArmv8ACflags",
+ 		strings.Join(armClangArchVariantCflags["armv8-a"], " "))
++	pctx.StaticVariable("ArmClangArmv82ACflags",
++		strings.Join(armClangArchVariantCflags["armv8-2a"], " "))
+ 
+ 	// Clang cpu variant cflags
+ 	pctx.StaticVariable("ArmClangGenericCflags",
+@@ -233,6 +242,7 @@ var (
+ 		"armv7-a":      "${config.ArmClangArmv7ACflags}",
+ 		"armv7-a-neon": "${config.ArmClangArmv7ANeonCflags}",
+ 		"armv8-a":      "${config.ArmClangArmv8ACflags}",
++		"armv8-2a":      "${config.ArmClangArmv82ACflags}",
+ 	}
+ 
+ 	armClangCpuVariantCflagsVar = map[string]string{
+@@ -347,8 +357,8 @@ func armToolchainFactory(arch android.Arch) Toolchain {
+ 		}
+ 	case "armv7-a":
+ 		fixCortexA8 = "-Wl,--fix-cortex-a8"
+-	case "armv8-a":
+-		// Nothing extra for armv8-a
++	case "armv8-a", "armv8-2a":
++		// Nothing extra for armv8-a/armv8-2a
+ 	default:
+ 		panic(fmt.Sprintf("Unknown ARM architecture version: %q", arch.ArchVariant))
+ 	}
+-- 
+2.13.0
+

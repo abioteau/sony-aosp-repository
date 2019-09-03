@@ -1,0 +1,619 @@
+From 7de7c4cd0c8f800caa8c5f240eabd3965ac05ac3 Mon Sep 17 00:00:00 2001
+From: "xueliang.zhong" <xueliang.zhong@linaro.org>
+Date: Fri, 13 Jul 2018 15:03:14 +0100
+Subject: [PATCH] ART: Add support for ARMv8.x features for ARM64.
+
+Add support for cortex-a76 CPU.
+Add support for ARMv8.x in instruction set features.
+
+Test: instruction_set_features_test
+Test: instruction_set_features_arm64_test
+
+Change-Id: I3ae9db34507a3bb740fc0b7ceb335486dccdf460
+(cherry picked from commit I3ae9db34507a3bb740fc0b7ceb335486dccdf460)
+Signed-off-by: Tim <tomgus1.2@gmail.com>
+---
+ .../arch/arm64/instruction_set_features_arm64.cc   | 254 +++++++++++++++++++--
+ .../arch/arm64/instruction_set_features_arm64.h    |  44 +++-
+ .../arm64/instruction_set_features_arm64_test.cc   | 116 ++++++++--
+ 3 files changed, 380 insertions(+), 34 deletions(-)
+
+diff --git a/runtime/arch/arm64/instruction_set_features_arm64.cc b/runtime/arch/arm64/instruction_set_features_arm64.cc
+index d0f61c946c..7796ca7745 100644
+--- a/runtime/arch/arm64/instruction_set_features_arm64.cc
++++ b/runtime/arch/arm64/instruction_set_features_arm64.cc
+@@ -16,6 +16,11 @@
+ 
+ #include "instruction_set_features_arm64.h"
+ 
++#if defined(ART_TARGET_ANDROID) && defined(__aarch64__)
++#include <asm/hwcap.h>
++#include <sys/auxv.h>
++#endif
++
+ #include <fstream>
+ #include <sstream>
+ 
+@@ -31,6 +36,10 @@ using android::base::StringPrintf;
+ 
+ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromVariant(
+     const std::string& variant, std::string* error_msg) {
++  // The CPU variant string is passed to ART through --instruction-set-variant option.
++  // During build, such setting is from TARGET_CPU_VARIANT in device BoardConfig.mk, for example:
++  //   TARGET_CPU_VARIANT := cortex-a75
++
+   // Look for variants that need a fix for a53 erratum 835769.
+   static const char* arm64_variants_with_a53_835769_bug[] = {
+       // Pessimistically assume all generic CPUs are cortex-a53.
+@@ -39,14 +48,70 @@ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromVariant(
+       "cortex-a53",
+       "cortex-a53.a57",
+       "cortex-a53.a72",
+-      // Pessimistically assume all "big" cortex CPUs are paired with a cortex-a53.
++      // Pessimistically assume following "big" cortex CPUs are paired with a cortex-a53.
+       "cortex-a57",
+       "cortex-a72",
+       "cortex-a73",
+   };
++
++  static const char* arm64_variants_with_crc[] = {
++      "default",
++      "generic",
++      "kryo",
++      "exynos-m1",
++      "exynos-m2",
++      "exynos-m3",
++      "cortex-a35",
++      "cortex-a53",
++      "cortex-a53.a57",
++      "cortex-a53.a72",
++      "cortex-a57",
++      "cortex-a72",
++      "cortex-a73",
++      "cortex-a55",
++      "cortex-a75",
++      "cortex-a76",
++  };
++
++  static const char* arm64_variants_with_lse[] = {
++      "cortex-a55",
++      "cortex-a75",
++      "cortex-a76",
++  };
++
++  static const char* arm64_variants_with_fp16[] = {
++      "cortex-a55",
++      "cortex-a75",
++      "cortex-a76",
++  };
++
++  static const char* arm64_variants_with_dotprod[] = {
++      "cortex-a55",
++      "cortex-a75",
++      "cortex-a76",
++  };
++
+   bool needs_a53_835769_fix = FindVariantInArray(arm64_variants_with_a53_835769_bug,
+                                                  arraysize(arm64_variants_with_a53_835769_bug),
+                                                  variant);
++  // The variants that need a fix for 843419 are the same that need a fix for 835769.
++  bool needs_a53_843419_fix = needs_a53_835769_fix;
++
++  bool has_crc = FindVariantInArray(arm64_variants_with_crc,
++                                    arraysize(arm64_variants_with_crc),
++                                    variant);
++
++  bool has_lse = FindVariantInArray(arm64_variants_with_lse,
++                                    arraysize(arm64_variants_with_lse),
++                                    variant);
++
++  bool has_fp16 = FindVariantInArray(arm64_variants_with_fp16,
++                                     arraysize(arm64_variants_with_fp16),
++                                     variant);
++
++  bool has_dotprod = FindVariantInArray(arm64_variants_with_dotprod,
++                                        arraysize(arm64_variants_with_dotprod),
++                                        variant);
+ 
+   if (!needs_a53_835769_fix) {
+     // Check to see if this is an expected variant.
+@@ -54,6 +119,7 @@ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromVariant(
+         "cortex-a35",
+         "cortex-a55",
+         "cortex-a75",
++        "cortex-a76",
+         "exynos-m1",
+         "exynos-m2",
+         "exynos-m3",
+@@ -68,31 +134,91 @@ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromVariant(
+     }
+   }
+ 
+-  // The variants that need a fix for 843419 are the same that need a fix for 835769.
+-  bool needs_a53_843419_fix = needs_a53_835769_fix;
+-
+-  return Arm64FeaturesUniquePtr(
+-      new Arm64InstructionSetFeatures(needs_a53_835769_fix, needs_a53_843419_fix));
++  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(needs_a53_835769_fix,
++                                                                needs_a53_843419_fix,
++                                                                has_crc,
++                                                                has_lse,
++                                                                has_fp16,
++                                                                has_dotprod));
+ }
+ 
+ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromBitmap(uint32_t bitmap) {
+   bool is_a53 = (bitmap & kA53Bitfield) != 0;
+-  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(is_a53, is_a53));
++  bool has_crc = (bitmap & kCRCBitField) != 0;
++  bool has_lse = (bitmap & kLSEBitField) != 0;
++  bool has_fp16 = (bitmap & kFP16BitField) != 0;
++  bool has_dotprod = (bitmap & kDotProdBitField) != 0;
++  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(is_a53,
++                                                                is_a53,
++                                                                has_crc,
++                                                                has_lse,
++                                                                has_fp16,
++                                                                has_dotprod));
+ }
+ 
+ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromCppDefines() {
+-  const bool is_a53 = true;  // Pessimistically assume all ARM64s are A53s.
+-  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(is_a53, is_a53));
++  // For more details about ARM feature macros, refer to
++  // Arm C Language Extensions Documentation (ACLE).
++  // https://developer.arm.com/docs/101028/latest
++  bool needs_a53_835769_fix = false;
++  bool needs_a53_843419_fix = needs_a53_835769_fix;
++  bool has_crc = false;
++  bool has_lse = false;
++  bool has_fp16 = false;
++  bool has_dotprod = false;
++
++#if defined (__ARM_FEATURE_CRC32)
++  has_crc = true;
++#endif
++
++#if defined (__ARM_ARCH_8_1A__) || defined (__ARM_ARCH_8_2A__)
++  // There is no specific ACLE macro defined for ARMv8.1 LSE features.
++  has_lse = true;
++#endif
++
++#if defined (__ARM_FEATURE_FP16_SCALAR_ARITHMETIC) || defined (__ARM_FEATURE_FP16_VECTOR_ARITHMETIC)
++  has_fp16 = true;
++#endif
++
++#if defined (__ARM_FEATURE_DOTPROD)
++  has_dotprod = true;
++#endif
++
++  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(needs_a53_835769_fix,
++                                                                needs_a53_843419_fix,
++                                                                has_crc,
++                                                                has_lse,
++                                                                has_fp16,
++                                                                has_dotprod));
+ }
+ 
+ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromCpuInfo() {
+-  const bool is_a53 = true;  // Conservative default.
+-  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(is_a53, is_a53));
++  UNIMPLEMENTED(WARNING);
++  return FromCppDefines();
+ }
+ 
+ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromHwcap() {
+-  const bool is_a53 = true;  // Pessimistically assume all ARM64s are A53s.
+-  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(is_a53, is_a53));
++  bool needs_a53_835769_fix = false;  // No HWCAP for this.
++  bool needs_a53_843419_fix = false;  // No HWCAP for this.
++  bool has_crc = false;
++  bool has_lse = false;
++  bool has_fp16 = false;
++  bool has_dotprod = false;
++
++#if defined(ART_TARGET_ANDROID) && defined(__aarch64__)
++  uint64_t hwcaps = getauxval(AT_HWCAP);
++  has_crc = hwcaps & HWCAP_CRC32 ? true : false;
++  has_lse = hwcaps & HWCAP_ATOMICS ? true : false;
++  has_fp16 = hwcaps & HWCAP_FPHP ? true : false;
++  has_dotprod = hwcaps & HWCAP_ASIMDDP ? true : false;
++#endif
++
++  return Arm64FeaturesUniquePtr(new Arm64InstructionSetFeatures(needs_a53_835769_fix,
++                                                                needs_a53_843419_fix,
++                                                                has_crc,
++                                                                has_lse,
++                                                                has_fp16,
++                                                                has_dotprod));
+ }
+ 
+ Arm64FeaturesUniquePtr Arm64InstructionSetFeatures::FromAssembly() {
+@@ -106,11 +232,33 @@ bool Arm64InstructionSetFeatures::Equals(const InstructionSetFeatures* other) co
+   }
+   const Arm64InstructionSetFeatures* other_as_arm64 = other->AsArm64InstructionSetFeatures();
+   return fix_cortex_a53_835769_ == other_as_arm64->fix_cortex_a53_835769_ &&
+-      fix_cortex_a53_843419_ == other_as_arm64->fix_cortex_a53_843419_;
++      fix_cortex_a53_843419_ == other_as_arm64->fix_cortex_a53_843419_ &&
++      has_crc_ == other_as_arm64->has_crc_ &&
++      has_lse_ == other_as_arm64->has_lse_ &&
++      has_fp16_ == other_as_arm64->has_fp16_ &&
++      has_dotprod_ == other_as_arm64->has_dotprod_;
++}
++
++bool Arm64InstructionSetFeatures::HasAtLeast(const InstructionSetFeatures* other) const {
++  if (InstructionSet::kArm64 != other->GetInstructionSet()) {
++    return false;
++  }
++  // Currently 'default' feature is cortex-a53 with fixes 835769 and 843419.
++  // Newer CPUs are not required to have such features,
++  // so these two a53 fix features are not tested for HasAtLeast.
++  const Arm64InstructionSetFeatures* other_as_arm64 = other->AsArm64InstructionSetFeatures();
++  return (has_crc_ || !other_as_arm64->has_crc_)
++      && (has_lse_ || !other_as_arm64->has_lse_)
++      && (has_fp16_ || !other_as_arm64->has_fp16_)
++      && (has_dotprod_ || !other_as_arm64->has_dotprod_);
+ }
+ 
+ uint32_t Arm64InstructionSetFeatures::AsBitmap() const {
+-  return (fix_cortex_a53_835769_ ? kA53Bitfield : 0);
++  return (fix_cortex_a53_835769_ ? kA53Bitfield : 0)
++      | (has_crc_ ? kCRCBitField : 0)
++      | (has_lse_ ? kLSEBitField: 0)
++      | (has_fp16_ ? kFP16BitField: 0)
++      | (has_dotprod_ ? kDotProdBitField : 0);
+ }
+ 
+ std::string Arm64InstructionSetFeatures::GetFeatureString() const {
+@@ -120,26 +268,100 @@ std::string Arm64InstructionSetFeatures::GetFeatureString() const {
+   } else {
+     result += "-a53";
+   }
++  if (has_crc_) {
++    result += ",crc";
++  } else {
++    result += ",-crc";
++  }
++  if (has_lse_) {
++    result += ",lse";
++  } else {
++    result += ",-lse";
++  }
++  if (has_fp16_) {
++    result += ",fp16";
++  } else {
++    result += ",-fp16";
++  }
++  if (has_dotprod_) {
++    result += ",dotprod";
++  } else {
++    result += ",-dotprod";
++  }
+   return result;
+ }
+ 
+ std::unique_ptr<const InstructionSetFeatures>
+ Arm64InstructionSetFeatures::AddFeaturesFromSplitString(
+     const std::vector<std::string>& features, std::string* error_msg) const {
++  // This 'features' string is from '--instruction-set-features=' option in ART.
++  // These ARMv8.x feature strings align with those introduced in other compilers:
++  // https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
++  // User can also use armv8.x-a to select group of features:
++  //   armv8.1-a is equivalent to crc,lse
++  //   armv8.2-a is equivalent to crc,lse,fp16
++  //   armv8.3-a is equivalent to crc,lse,fp16
++  //   armv8.4-a is equivalent to crc,lse,fp16,dotprod
++  // For detailed optional & mandatory features support in armv8.x-a,
++  // please refer to section 'A1.7 ARMv8 architecture extensions' in
++  // ARM Architecture Reference Manual ARMv8 document:
++  // https://developer.arm.com/products/architecture/cpu-architecture/a-profile/docs/ddi0487/latest/
++  // arm-architecture-reference-manual-armv8-for-armv8-a-architecture-profile/
+   bool is_a53 = fix_cortex_a53_835769_;
++  bool has_crc = has_crc_;
++  bool has_lse = has_lse_;
++  bool has_fp16 = has_fp16_;
++  bool has_dotprod = has_dotprod_;
+   for (auto i = features.begin(); i != features.end(); i++) {
+     std::string feature = android::base::Trim(*i);
+     if (feature == "a53") {
+       is_a53 = true;
+     } else if (feature == "-a53") {
+       is_a53 = false;
++    } else if (feature == "crc") {
++      has_crc = true;
++    } else if (feature == "-crc") {
++      has_crc = false;
++    } else if (feature == "lse") {
++      has_lse = true;
++    } else if (feature == "-lse") {
++      has_lse = false;
++    } else if (feature == "fp16") {
++      has_fp16 = true;
++    } else if (feature == "-fp16") {
++      has_fp16 = false;
++    } else if (feature == "dotprod") {
++      has_dotprod = true;
++    } else if (feature == "-dotprod") {
++      has_dotprod = false;
++    } else if (feature == "armv8.1-a") {
++      has_crc = true;
++      has_lse = true;
++    } else if (feature == "armv8.2-a") {
++      has_crc = true;
++      has_lse = true;
++      has_fp16 = true;
++    } else if (feature == "armv8.3-a") {
++      has_crc = true;
++      has_lse = true;
++      has_fp16 = true;
++    } else if (feature == "armv8.4-a") {
++      has_crc = true;
++      has_lse = true;
++      has_fp16 = true;
++      has_dotprod = true;
+     } else {
+       *error_msg = StringPrintf("Unknown instruction set feature: '%s'", feature.c_str());
+       return nullptr;
+     }
+   }
+   return std::unique_ptr<const InstructionSetFeatures>(
+-      new Arm64InstructionSetFeatures(is_a53, is_a53));
++      new Arm64InstructionSetFeatures(is_a53,  // erratum 835769
++                                      is_a53,  // erratum 843419
++                                      has_crc,
++                                      has_lse,
++                                      has_fp16,
++                                      has_dotprod));
+ }
+ 
+ }  // namespace art
+diff --git a/runtime/arch/arm64/instruction_set_features_arm64.h b/runtime/arch/arm64/instruction_set_features_arm64.h
+index af2d4c79f9..ab30663063 100644
+--- a/runtime/arch/arm64/instruction_set_features_arm64.h
++++ b/runtime/arch/arm64/instruction_set_features_arm64.h
+@@ -49,7 +49,13 @@ class Arm64InstructionSetFeatures FINAL : public InstructionSetFeatures {
+ 
+   bool Equals(const InstructionSetFeatures* other) const OVERRIDE;
+ 
++  // Note that newer CPUs do not have a53 erratum 835769 and 843419,
++  // so the two a53 fix features (fix_cortex_a53_835769 and fix_cortex_a53_843419)
++  // are not tested for HasAtLeast.
++  bool HasAtLeast(const InstructionSetFeatures* other) const OVERRIDE;
++
+   InstructionSet GetInstructionSet() const OVERRIDE {
++
+     return InstructionSet::kArm64;
+   }
+ 
+@@ -68,6 +74,23 @@ class Arm64InstructionSetFeatures FINAL : public InstructionSetFeatures {
+       return fix_cortex_a53_843419_;
+   }
+ 
++  bool HasCRC() const {
++    return has_crc_;
++  }
++
++  bool HasLSE() const {
++    return has_lse_;
++  }
++
++  bool HasFP16() const {
++    return has_fp16_;
++  }
++
++  // Are Dot Product instructions (UDOT/SDOT) available?
++  bool HasDotProd() const {
++    return has_dotprod_;
++  }
++
+   virtual ~Arm64InstructionSetFeatures() {}
+ 
+  protected:
+@@ -77,19 +100,36 @@ class Arm64InstructionSetFeatures FINAL : public InstructionSetFeatures {
+                                  std::string* error_msg) const OVERRIDE;
+ 
+  private:
+-  Arm64InstructionSetFeatures(bool needs_a53_835769_fix, bool needs_a53_843419_fix)
++  Arm64InstructionSetFeatures(bool needs_a53_835769_fix,
++                              bool needs_a53_843419_fix,
++                              bool has_crc,
++                              bool has_lse,
++                              bool has_fp16,
++                              bool has_dotprod)
+       : InstructionSetFeatures(),
+         fix_cortex_a53_835769_(needs_a53_835769_fix),
+-        fix_cortex_a53_843419_(needs_a53_843419_fix) {
++        fix_cortex_a53_843419_(needs_a53_843419_fix),
++        has_crc_(has_crc),
++        has_lse_(has_lse),
++        has_fp16_(has_fp16),
++        has_dotprod_(has_dotprod) {
+   }
+ 
+   // Bitmap positions for encoding features as a bitmap.
+   enum {
+     kA53Bitfield = 1 << 0,
++    kCRCBitField = 1 << 1,
++    kLSEBitField = 1 << 2,
++    kFP16BitField = 1 << 3,
++    kDotProdBitField = 1 << 4,
+   };
+ 
+   const bool fix_cortex_a53_835769_;
+   const bool fix_cortex_a53_843419_;
++  const bool has_crc_;      // optional in ARMv8.0, mandatory in ARMv8.1.
++  const bool has_lse_;      // ARMv8.1 Large System Extensions.
++  const bool has_fp16_;     // ARMv8.2 FP16 extensions.
++  const bool has_dotprod_;  // optional in ARMv8.2, mandatory in ARMv8.4.
+ 
+   DISALLOW_COPY_AND_ASSIGN(Arm64InstructionSetFeatures);
+ };
+diff --git a/runtime/arch/arm64/instruction_set_features_arm64_test.cc b/runtime/arch/arm64/instruction_set_features_arm64_test.cc
+index b946f4f637..99d6b0dc59 100644
+--- a/runtime/arch/arm64/instruction_set_features_arm64_test.cc
++++ b/runtime/arch/arm64/instruction_set_features_arm64_test.cc
+@@ -28,32 +28,37 @@ TEST(Arm64InstructionSetFeaturesTest, Arm64Features) {
+   ASSERT_TRUE(arm64_features.get() != nullptr) << error_msg;
+   EXPECT_EQ(arm64_features->GetInstructionSet(), InstructionSet::kArm64);
+   EXPECT_TRUE(arm64_features->Equals(arm64_features.get()));
+-  EXPECT_STREQ("a53", arm64_features->GetFeatureString().c_str());
+-  EXPECT_EQ(arm64_features->AsBitmap(), 1U);
++  EXPECT_STREQ("a53,crc,-lse,-fp16,-dotprod", arm64_features->GetFeatureString().c_str());
++  EXPECT_EQ(arm64_features->AsBitmap(), 3U);
+ 
+   std::unique_ptr<const InstructionSetFeatures> cortex_a57_features(
+       InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "cortex-a57", &error_msg));
+   ASSERT_TRUE(cortex_a57_features.get() != nullptr) << error_msg;
+   EXPECT_EQ(cortex_a57_features->GetInstructionSet(), InstructionSet::kArm64);
+   EXPECT_TRUE(cortex_a57_features->Equals(cortex_a57_features.get()));
+-  EXPECT_STREQ("a53", cortex_a57_features->GetFeatureString().c_str());
+-  EXPECT_EQ(cortex_a57_features->AsBitmap(), 1U);
++  EXPECT_TRUE(cortex_a57_features->HasAtLeast(arm64_features.get()));
++  EXPECT_STREQ("a53,crc,-lse,-fp16,-dotprod", cortex_a57_features->GetFeatureString().c_str());
++  EXPECT_EQ(cortex_a57_features->AsBitmap(), 3U);
+ 
+   std::unique_ptr<const InstructionSetFeatures> cortex_a73_features(
+       InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "cortex-a73", &error_msg));
+   ASSERT_TRUE(cortex_a73_features.get() != nullptr) << error_msg;
+   EXPECT_EQ(cortex_a73_features->GetInstructionSet(), InstructionSet::kArm64);
+   EXPECT_TRUE(cortex_a73_features->Equals(cortex_a73_features.get()));
+-  EXPECT_STREQ("a53", cortex_a73_features->GetFeatureString().c_str());
+-  EXPECT_EQ(cortex_a73_features->AsBitmap(), 1U);
++  EXPECT_TRUE(cortex_a73_features->AsArm64InstructionSetFeatures()->HasCRC());
++  EXPECT_FALSE(cortex_a73_features->AsArm64InstructionSetFeatures()->HasLSE());
++  EXPECT_FALSE(cortex_a73_features->AsArm64InstructionSetFeatures()->HasFP16());
++  EXPECT_FALSE(cortex_a73_features->AsArm64InstructionSetFeatures()->HasDotProd());
++  EXPECT_STREQ("a53,crc,-lse,-fp16,-dotprod", cortex_a73_features->GetFeatureString().c_str());
++  EXPECT_EQ(cortex_a73_features->AsBitmap(), 3U);
+ 
+   std::unique_ptr<const InstructionSetFeatures> cortex_a35_features(
+       InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "cortex-a35", &error_msg));
+   ASSERT_TRUE(cortex_a35_features.get() != nullptr) << error_msg;
+   EXPECT_EQ(cortex_a35_features->GetInstructionSet(), InstructionSet::kArm64);
+   EXPECT_TRUE(cortex_a35_features->Equals(cortex_a35_features.get()));
+-  EXPECT_STREQ("-a53", cortex_a35_features->GetFeatureString().c_str());
+-  EXPECT_EQ(cortex_a35_features->AsBitmap(), 0U);
++  EXPECT_STREQ("-a53,crc,-lse,-fp16,-dotprod", cortex_a35_features->GetFeatureString().c_str());
++  EXPECT_EQ(cortex_a35_features->AsBitmap(), 2U);
+ 
+   std::unique_ptr<const InstructionSetFeatures> kryo_features(
+       InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "kryo", &error_msg));
+@@ -62,28 +67,107 @@ TEST(Arm64InstructionSetFeaturesTest, Arm64Features) {
+   EXPECT_TRUE(kryo_features->Equals(kryo_features.get()));
+   EXPECT_TRUE(kryo_features->Equals(cortex_a35_features.get()));
+   EXPECT_FALSE(kryo_features->Equals(cortex_a57_features.get()));
+-  EXPECT_STREQ("-a53", kryo_features->GetFeatureString().c_str());
+-  EXPECT_EQ(kryo_features->AsBitmap(), 0U);
++  EXPECT_STREQ("-a53,crc,-lse,-fp16,-dotprod", kryo_features->GetFeatureString().c_str());
++  EXPECT_EQ(kryo_features->AsBitmap(), 2U);
+ 
+   std::unique_ptr<const InstructionSetFeatures> cortex_a55_features(
+       InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "cortex-a55", &error_msg));
+   ASSERT_TRUE(cortex_a55_features.get() != nullptr) << error_msg;
+   EXPECT_EQ(cortex_a55_features->GetInstructionSet(), InstructionSet::kArm64);
+   EXPECT_TRUE(cortex_a55_features->Equals(cortex_a55_features.get()));
+-  EXPECT_TRUE(cortex_a55_features->Equals(cortex_a35_features.get()));
++  EXPECT_FALSE(cortex_a55_features->Equals(cortex_a35_features.get()));
+   EXPECT_FALSE(cortex_a55_features->Equals(cortex_a57_features.get()));
+-  EXPECT_STREQ("-a53", cortex_a55_features->GetFeatureString().c_str());
+-  EXPECT_EQ(cortex_a55_features->AsBitmap(), 0U);
++  EXPECT_TRUE(cortex_a35_features->HasAtLeast(arm64_features.get()));
++  EXPECT_STREQ("-a53,crc,lse,fp16,dotprod", cortex_a55_features->GetFeatureString().c_str());
++  EXPECT_EQ(cortex_a55_features->AsBitmap(), 30U);
+ 
+   std::unique_ptr<const InstructionSetFeatures> cortex_a75_features(
+       InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "cortex-a75", &error_msg));
+   ASSERT_TRUE(cortex_a75_features.get() != nullptr) << error_msg;
+   EXPECT_EQ(cortex_a75_features->GetInstructionSet(), InstructionSet::kArm64);
+   EXPECT_TRUE(cortex_a75_features->Equals(cortex_a75_features.get()));
+-  EXPECT_TRUE(cortex_a75_features->Equals(cortex_a35_features.get()));
++  EXPECT_FALSE(cortex_a75_features->Equals(cortex_a35_features.get()));
+   EXPECT_FALSE(cortex_a75_features->Equals(cortex_a57_features.get()));
+-  EXPECT_STREQ("-a53", cortex_a75_features->GetFeatureString().c_str());
+-  EXPECT_EQ(cortex_a75_features->AsBitmap(), 0U);
++  EXPECT_TRUE(cortex_a75_features->HasAtLeast(arm64_features.get()));
++  EXPECT_TRUE(cortex_a75_features->HasAtLeast(cortex_a55_features.get()));
++  EXPECT_FALSE(cortex_a35_features->HasAtLeast(cortex_a75_features.get()));
++  EXPECT_FALSE(cortex_a75_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_835769());
++  EXPECT_FALSE(cortex_a75_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_843419());
++  EXPECT_TRUE(cortex_a75_features->AsArm64InstructionSetFeatures()->HasCRC());
++  EXPECT_TRUE(cortex_a75_features->AsArm64InstructionSetFeatures()->HasLSE());
++  EXPECT_TRUE(cortex_a75_features->AsArm64InstructionSetFeatures()->HasFP16());
++  EXPECT_TRUE(cortex_a75_features->AsArm64InstructionSetFeatures()->HasDotProd());
++  EXPECT_STREQ("-a53,crc,lse,fp16,dotprod", cortex_a75_features->GetFeatureString().c_str());
++  EXPECT_EQ(cortex_a75_features->AsBitmap(), 30U);
++
++  std::unique_ptr<const InstructionSetFeatures> cortex_a76_features(
++      InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "cortex-a76", &error_msg));
++  ASSERT_TRUE(cortex_a76_features.get() != nullptr) << error_msg;
++  EXPECT_EQ(cortex_a76_features->GetInstructionSet(), InstructionSet::kArm64);
++  EXPECT_TRUE(cortex_a76_features->Equals(cortex_a76_features.get()));
++  EXPECT_FALSE(cortex_a76_features->Equals(cortex_a35_features.get()));
++  EXPECT_FALSE(cortex_a76_features->Equals(cortex_a57_features.get()));
++  EXPECT_TRUE(cortex_a76_features->Equals(cortex_a75_features.get()));
++  EXPECT_TRUE(cortex_a76_features->HasAtLeast(arm64_features.get()));
++  EXPECT_TRUE(cortex_a76_features->HasAtLeast(cortex_a55_features.get()));
++  EXPECT_FALSE(cortex_a35_features->HasAtLeast(cortex_a76_features.get()));
++  EXPECT_FALSE(cortex_a76_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_835769());
++  EXPECT_FALSE(cortex_a76_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_843419());
++  EXPECT_TRUE(cortex_a76_features->AsArm64InstructionSetFeatures()->HasCRC());
++  EXPECT_TRUE(cortex_a76_features->AsArm64InstructionSetFeatures()->HasLSE());
++  EXPECT_TRUE(cortex_a76_features->AsArm64InstructionSetFeatures()->HasFP16());
++  EXPECT_TRUE(cortex_a76_features->AsArm64InstructionSetFeatures()->HasDotProd());
++  EXPECT_STREQ("-a53,crc,lse,fp16,dotprod", cortex_a76_features->GetFeatureString().c_str());
++  EXPECT_EQ(cortex_a76_features->AsBitmap(), 30U);
++}
++
++TEST(Arm64InstructionSetFeaturesTest, Arm64AddFeaturesFromString) {
++  std::string error_msg;
++  std::unique_ptr<const InstructionSetFeatures> base_features(
++      InstructionSetFeatures::FromVariant(InstructionSet::kArm64, "generic", &error_msg));
++  ASSERT_TRUE(base_features.get() != nullptr) << error_msg;
++
++  // Build features for a Cortex-A76 processor (with ARMv8.2 and Dot Product exentions support).
++  std::unique_ptr<const InstructionSetFeatures> a76_features(
++      base_features->AddFeaturesFromString("-a53,armv8.2-a,dotprod", &error_msg));
++  ASSERT_TRUE(a76_features.get() != nullptr) << error_msg;
++  ASSERT_EQ(a76_features->GetInstructionSet(), InstructionSet::kArm64);
++  EXPECT_TRUE(a76_features->Equals(a76_features.get()));
++  EXPECT_FALSE(a76_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_835769());
++  EXPECT_FALSE(a76_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_843419());
++  EXPECT_TRUE(a76_features->AsArm64InstructionSetFeatures()->HasCRC());
++  EXPECT_TRUE(a76_features->AsArm64InstructionSetFeatures()->HasLSE());
++  EXPECT_TRUE(a76_features->AsArm64InstructionSetFeatures()->HasFP16());
++  EXPECT_TRUE(a76_features->AsArm64InstructionSetFeatures()->HasDotProd());
++  EXPECT_STREQ("-a53,crc,lse,fp16,dotprod", a76_features->GetFeatureString().c_str());
++  EXPECT_EQ(a76_features->AsBitmap(), 30U);
++
++  // Build features for a default ARM64 processor.
++  std::unique_ptr<const InstructionSetFeatures> generic_features(
++      base_features->AddFeaturesFromString("default", &error_msg));
++  ASSERT_TRUE(generic_features.get() != nullptr) << error_msg;
++  ASSERT_EQ(generic_features->GetInstructionSet(), InstructionSet::kArm64);
++  EXPECT_TRUE(generic_features->Equals(generic_features.get()));
++  EXPECT_FALSE(generic_features->AsArm64InstructionSetFeatures()->HasLSE());
++  EXPECT_FALSE(generic_features->AsArm64InstructionSetFeatures()->HasFP16());
++  EXPECT_FALSE(generic_features->AsArm64InstructionSetFeatures()->HasDotProd());
++  EXPECT_STREQ("a53,crc,-lse,-fp16,-dotprod", generic_features->GetFeatureString().c_str());
++  EXPECT_EQ(generic_features->AsBitmap(), 3U);
++
++  // Build features for a ARM64 processor that supports up to ARMv8.2.
++  std::unique_ptr<const InstructionSetFeatures> armv8_2a_cpu_features(
++      base_features->AddFeaturesFromString("-a53,armv8.2-a", &error_msg));
++  ASSERT_TRUE(armv8_2a_cpu_features.get() != nullptr) << error_msg;
++  ASSERT_EQ(armv8_2a_cpu_features->GetInstructionSet(), InstructionSet::kArm64);
++  EXPECT_TRUE(armv8_2a_cpu_features->Equals(armv8_2a_cpu_features.get()));
++  EXPECT_FALSE(armv8_2a_cpu_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_835769());
++  EXPECT_FALSE(armv8_2a_cpu_features->AsArm64InstructionSetFeatures()->NeedFixCortexA53_843419());
++  EXPECT_TRUE(armv8_2a_cpu_features->AsArm64InstructionSetFeatures()->HasCRC());
++  EXPECT_TRUE(armv8_2a_cpu_features->AsArm64InstructionSetFeatures()->HasLSE());
++  EXPECT_TRUE(armv8_2a_cpu_features->AsArm64InstructionSetFeatures()->HasFP16());
++  EXPECT_FALSE(armv8_2a_cpu_features->AsArm64InstructionSetFeatures()->HasDotProd());
++  EXPECT_STREQ("-a53,crc,lse,fp16,-dotprod", armv8_2a_cpu_features->GetFeatureString().c_str());
++  EXPECT_EQ(armv8_2a_cpu_features->AsBitmap(), 14U);
+ }
+ 
+ }  // namespace art
+-- 
+2.13.0
+
