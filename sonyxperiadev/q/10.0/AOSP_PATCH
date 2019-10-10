@@ -1,0 +1,42 @@
+cd hardware/qcom/data/ipacfg-mgr/sdm845
+git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/data/ipacfg-mgr refs/changes/23/834623/1 && git cherry-pick FETCH_HEAD
+cd ../../../gps
+git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/47/728147/2 && git cherry-pick FETCH_HEAD
+git revert --no-edit 484979c524067125b56d59afb102003ff48e3702
+git revert --no-edit f475797d3c031ae97a393fa3e899034836fe7ba6
+git revert --no-edit 35a95e0a9bc9aeab1bb1847180babda2da5fbf90
+git revert --no-edit db96236976a195bda833d821d584bc76ea4cdbae
+git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/gps refs/changes/39/804439/1 && git cherry-pick FETCH_HEAD
+cd ../audio
+git revert --no-edit 39a2b8a03c0a8a44940ac732f636d9cc1959eff2
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/99/1112099/2 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/00/1112100/2 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/audio refs/changes/14/777714/1 && git cherry-pick FETCH_HEAD
+cd ../media
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/39/728339/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/54/813054/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/55/813055/1 && git cherry-pick FETCH_HEAD
+cd sdm845
+git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/media refs/changes/80/832780/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/media refs/changes/84/832784/1 && git cherry-pick FETCH_HEAD
+cd ../../display
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/09/729209/2 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/10/729210/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/11/729211/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/12/729212/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/display refs/changes/13/729213/1 && git cherry-pick FETCH_HEAD
+cd ../bt
+git fetch http://android.googlesource.com/platform/hardware/qcom/bt refs/changes/69/728569/1 && git cherry-pick FETCH_HEAD
+cd ../bootctrl
+git revert --no-edit f5db01c3b14d720f3d603cfb3b887d89c2b11b28
+git revert --no-edit a8e07aecb24898d7d2b49cb785b0c193a4b134b4
+git fetch http://android.googlesource.com/platform/hardware/qcom/bootctrl refs/changes/70/728570/2 && git cherry-pick FETCH_HEAD
+cd ../../nxp/nfc
+git fetch http://android.googlesource.com/platform/hardware/nxp/nfc refs/changes/61/744361/2 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/nxp/nfc refs/changes/62/744362/5 && git cherry-pick FETCH_HEAD
+cd ../../../frameworks/base
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/15/727815/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/75/728575/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/05/728605/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/40/824340/1 && git cherry-pick FETCH_HEAD
+cd ../../
