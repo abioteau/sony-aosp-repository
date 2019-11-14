@@ -1,0 +1,39 @@
+From c82514bd034f214b16d273b10c676dd63a9e603b Mon Sep 17 00:00:00 2001
+From: MarijnS95 <marijns95@gmail.com>
+Date: Mon, 9 Sep 2019 15:50:43 +0200
+Subject: [PATCH] verity: Do not increment data when it is nullptr.
+
+Address a segfault introduced in
+d6dc877032c65768b3c6737156d3142f32cc9984
+
+As soon as leftover_ becomes non-empty, the data pointer is incremented
+and will now be an invalid pointer in case it was null previously.
+The subsequent check in HashBlocks() will now encounter a non-null data
+ptr and pass it to HashBlock(), triggering a segfault.
+
+Test: Manually build and boot an image on which this crashed before.
+Test: build_verity_tree_test
+Change-Id: I324ff6103c9d35fb290c4e96fb5009ee365a0249
+Signed-off-by: MarijnS95 <marijns95@gmail.com>
+---
+ verity/hash_tree_builder.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/verity/hash_tree_builder.cpp b/verity/hash_tree_builder.cpp
+index 197c38e5..d061ca5c 100644
+--- a/verity/hash_tree_builder.cpp
++++ b/verity/hash_tree_builder.cpp
+@@ -197,7 +197,9 @@ bool HashTreeBuilder::Update(const unsigned char* data, size_t len) {
+       return false;
+     }
+     leftover_.clear();
+-    data += append_len;
++    if (data != nullptr) {
++      data += append_len;
++    }
+     len -= append_len;
+   }
+   if (len % block_size_ != 0) {
+-- 
+2.13.0
+

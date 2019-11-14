@@ -1,0 +1,64 @@
+From 8453f02c652e1ec0467648064393b61c9b424d68 Mon Sep 17 00:00:00 2001
+From: Felix <google@ix5.org>
+Date: Sun, 26 May 2019 12:09:50 +0200
+Subject: [PATCH] fs_config: Fix cases without vendor/oem partition
+
+If the device has neither an OEM nor a vendor partiton,
+$PRIVATE_PARTITION_LIST will be empty, causing the fsconfig tool to fail
+because the "--all-partitions" argument will be empty.
+
+Quote the comma-substituted "$(PRIVATE_PARTITION_LIST)" - which may be
+empty - to appease argparse, which will then populate "_all_partitions"
+with an empty "str" object.
+
+Checking _all_partitions against None is superfluous since either
+argparse will catch the empty argument and fail early, or the argument
+will be a string, in which case it will not be None.
+
+Signed-off-by: Felix <google@ix5.org>
+Change-Id: I236e30445b303b4945467b5dc4387d54b5d984f9
+---
+ tools/fs_config/Android.mk             | 4 ++--
+ tools/fs_config/fs_config_generator.py | 4 ----
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/tools/fs_config/Android.mk b/tools/fs_config/Android.mk
+index 96db0f39f..af0da46b2 100644
+--- a/tools/fs_config/Android.mk
++++ b/tools/fs_config/Android.mk
+@@ -99,7 +99,7 @@ $(LOCAL_BUILT_MODULE): $(LOCAL_PATH)/fs_config_generator.py $(TARGET_FS_CONFIG_G
+ 	   --aid-header $(PRIVATE_ANDROID_FS_HDR) \
+ 	   --capability-header $(PRIVATE_ANDROID_CAP_HDR) \
+ 	   --partition system \
+-	   --all-partitions $(subst $(space),$(comma),$(PRIVATE_PARTITION_LIST)) \
++	   --all-partitions "$(subst $(space),$(comma),$(PRIVATE_PARTITION_LIST))" \
+ 	   --dirs \
+ 	   --out_file $@ \
+ 	   $(or $(PRIVATE_TARGET_FS_CONFIG_GEN),/dev/null)
+@@ -124,7 +124,7 @@ $(LOCAL_BUILT_MODULE): $(LOCAL_PATH)/fs_config_generator.py $(TARGET_FS_CONFIG_G
+ 	   --aid-header $(PRIVATE_ANDROID_FS_HDR) \
+ 	   --capability-header $(PRIVATE_ANDROID_CAP_HDR) \
+ 	   --partition system \
+-	   --all-partitions $(subst $(space),$(comma),$(PRIVATE_PARTITION_LIST)) \
++	   --all-partitions "$(subst $(space),$(comma),$(PRIVATE_PARTITION_LIST))" \
+ 	   --files \
+ 	   --out_file $@ \
+ 	   $(or $(PRIVATE_TARGET_FS_CONFIG_GEN),/dev/null)
+diff --git a/tools/fs_config/fs_config_generator.py b/tools/fs_config/fs_config_generator.py
+index dccff928f..440046608 100755
+--- a/tools/fs_config/fs_config_generator.py
++++ b/tools/fs_config/fs_config_generator.py
+@@ -1004,10 +1004,6 @@ class FSConfigGen(BaseGenerator):
+ 
+         self._partition = args['partition']
+         self._all_partitions = args['all_partitions']
+-        if self._partition == 'system' and self._all_partitions is None:
+-            sys.exit(
+-                'All other partitions must be provided if generating output'
+-                ' for the system partition')
+ 
+         self._out_file = args['out_file']
+ 
+-- 
+2.13.0
+

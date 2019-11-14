@@ -67,20 +67,24 @@ rm -rf local_manifests
 ~/bin/repo sync -j $NB_CORES
 ~/bin/repo manifest -o manifest.xml -r
 
-cd hardware/qcom/data/ipacfg-mgr/sdm845 && repo start $GIT_BRANCH .
+cd build/make && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/build/refs/changes/28/970728/8/*.patch`
+cd ../../hardware/qcom/data/ipacfg-mgr/sdm845 && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/data/ipacfg-mgr/refs/changes/23/834623/1/*.patch`
 cd ../../../gps && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/47/728147/2/*.patch`
 git revert --no-edit --no-commit 484979c524067125b56d59afb102003ff48e3702 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 484979c524067125b56d59afb102003ff48e3702)" --date "$(git log -1 --format="%ad" 484979c524067125b56d59afb102003ff48e3702)" && unset GIT_COMMITTER_DATE
 git revert --no-edit --no-commit f475797d3c031ae97a393fa3e899034836fe7ba6 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" f475797d3c031ae97a393fa3e899034836fe7ba6)" --date "$(git log -1 --format="%ad" f475797d3c031ae97a393fa3e899034836fe7ba6)" && unset GIT_COMMITTER_DATE
 git revert --no-edit --no-commit 35a95e0a9bc9aeab1bb1847180babda2da5fbf90 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 35a95e0a9bc9aeab1bb1847180babda2da5fbf90)" --date "$(git log -1 --format="%ad" 35a95e0a9bc9aeab1bb1847180babda2da5fbf90)" && unset GIT_COMMITTER_DATE
-git revert --no-edit --no-commit db96236976a195bda833d821d584bc76ea4cdbae && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" db96236976a195bda833d821d584bc76ea4cdbae)" --date "$(git log -1 --format="%ad" db96236976a195bda833d821d584bc76ea4cdbae)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/gps/refs/changes/39/804439/1/*.patch`
 cd ../audio && repo start $GIT_BRANCH .
 git revert --no-edit --no-commit 39a2b8a03c0a8a44940ac732f636d9cc1959eff2 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 39a2b8a03c0a8a44940ac732f636d9cc1959eff2)" --date "$(git log -1 --format="%ad" 39a2b8a03c0a8a44940ac732f636d9cc1959eff2)" && unset GIT_COMMITTER_DATE
+git revert --no-edit --no-commit d0d5c9135fed70a25a42f09f0e32b056bc7b15a8 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" d0d5c9135fed70a25a42f09f0e32b056bc7b15a8)" --date "$(git log -1 --format="%ad" d0d5c9135fed70a25a42f09f0e32b056bc7b15a8)" && unset GIT_COMMITTER_DATE
+git revert --no-edit --no-commit 8e9b92d2c87e9d1cd96ef153853287cb79d5934c && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 8e9b92d2c87e9d1cd96ef153853287cb79d5934c)" --date "$(git log -1 --format="%ad" 8e9b92d2c87e9d1cd96ef153853287cb79d5934c)" && unset GIT_COMMITTER_DATE
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/99/1112099/2/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/00/1112100/2/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/14/777714/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/audio/refs/changes/51/1118151/1/*.patch`
 cd ../media && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/media/refs/changes/39/728339/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/media/refs/changes/54/813054/1/*.patch`
@@ -88,26 +92,25 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 cd sdm845 && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/media/refs/changes/80/832780/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/media/refs/changes/84/832784/1/*.patch`
-cd ../../display && repo start $GIT_BRANCH .
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/09/729209/2/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/10/729210/1/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/11/729211/1/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/12/729212/1/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/display/refs/changes/13/729213/1/*.patch`
-cd ../bt && repo start $GIT_BRANCH .
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bt/refs/changes/69/728569/1/*.patch`
-cd ../bootctrl && repo start $GIT_BRANCH .
-git revert --no-edit --no-commit f5db01c3b14d720f3d603cfb3b887d89c2b11b28 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" f5db01c3b14d720f3d603cfb3b887d89c2b11b28)" --date "$(git log -1 --format="%ad" f5db01c3b14d720f3d603cfb3b887d89c2b11b28)" && unset GIT_COMMITTER_DATE
-git revert --no-edit --no-commit a8e07aecb24898d7d2b49cb785b0c193a4b134b4 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" a8e07aecb24898d7d2b49cb785b0c193a4b134b4)" --date "$(git log -1 --format="%ad" a8e07aecb24898d7d2b49cb785b0c193a4b134b4)" && unset GIT_COMMITTER_DATE
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bootctrl/refs/changes/70/728570/2/*.patch`
+cd ../../bootctrl && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bootctrl/refs/changes/01/965401/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bootctrl/refs/changes/93/968693/1/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bootctrl/refs/changes/96/967996/3/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/bootctrl/refs/changes/87/971787/1/*.patch`
 cd ../../nxp/nfc && repo start $GIT_BRANCH .
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/nxp/nfc/refs/changes/61/744361/2/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/nxp/nfc/refs/changes/62/744362/5/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/nxp/nfc/refs/changes/77/980177/3/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/nxp/nfc/refs/changes/69/980169/2/*.patch`
 cd ../../../frameworks/base && repo start $GIT_BRANCH .
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/15/727815/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/75/728575/1/*.patch`
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/05/728605/1/*.patch`
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/40/824340/1/*.patch`
-cd ../../
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/40/824340/2/*.patch`
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/96/1147496/2/*.patch`
+cd ../../system/extras && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/extras/refs/changes/52/1117052/1/*.patch`
+cd ../../packages/apps/DeskClock && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/packages/apps/DeskClock/refs/changes/26/987326/1/*.patch`
+cd ../Messaging && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/packages/apps/Messaging/refs/changes/82/941082/1/*.patch`
+cd ../../../
 
 cd $ROOTDIR

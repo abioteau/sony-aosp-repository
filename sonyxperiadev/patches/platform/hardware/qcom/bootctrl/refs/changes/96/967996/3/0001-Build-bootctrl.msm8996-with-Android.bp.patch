@@ -1,0 +1,33 @@
+From b229dfc102d5ea8e659514c61f6520ab3f9f777c Mon Sep 17 00:00:00 2001
+From: Tao Bao <tbao@google.com>
+Date: Fri, 10 May 2019 09:39:32 -0700
+Subject: [PATCH] Build bootctrl.msm8996 with Android.bp.
+
+Android.mk itself will be removed in a separate CL.
+
+Bug: 34254109
+Test: TreeHugger
+Test: Sideloading a package on sailfish.
+Change-Id: I864bd626d25723bd390b2453022d9cd47a54d2a2
+Merged-In: I864bd626d25723bd390b2453022d9cd47a54d2a2
+(cherry picked from commit e3818e1e44e3f2b4b0296132dbc185da92f99c66)
+---
+ Android.mk | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/Android.mk b/Android.mk
+index 4b94b7a..e1794d5 100644
+--- a/Android.mk
++++ b/Android.mk
+@@ -1,8 +1,3 @@
+-# Preset TARGET_USES_HARDWARE_QCOM_BOOTCTRL for existing platforms.
+-ifneq ($(filter msm8996,$(TARGET_BOARD_PLATFORM)),)
+-TARGET_USES_HARDWARE_QCOM_BOOTCTRL := true
+-endif
+-
+ ifeq ($(strip $(TARGET_USES_HARDWARE_QCOM_BOOTCTRL)),true)
+ # TODO:  Find a better way to separate build configs for ADP vs non-ADP devices
+ ifneq ($(BOARD_IS_AUTOMOTIVE),true)
+-- 
+2.13.0
+

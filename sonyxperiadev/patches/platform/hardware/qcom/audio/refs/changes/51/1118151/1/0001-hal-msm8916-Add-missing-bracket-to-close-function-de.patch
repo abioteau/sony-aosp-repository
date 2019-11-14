@@ -1,0 +1,30 @@
+From b7c1366360089d6cd1b4b18c70085a802a6a0544 Mon Sep 17 00:00:00 2001
+From: MarijnS95 <marijns95@gmail.com>
+Date: Wed, 4 Sep 2019 15:04:44 +0200
+Subject: [PATCH] hal: msm8916: Add missing bracket to close function
+ definition.
+
+Got lost in 6469882bc7e9064ffd1fcd16a44f67e93381c801.
+
+Test: Compilation succeeds.
+Change-Id: I8296a8fb551097fabf72115d2cec0849671b91ea
+Signed-off-by: MarijnS95 <marijns95@gmail.com>
+---
+ hal/msm8916/platform.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/hal/msm8916/platform.c b/hal/msm8916/platform.c
+index 3602b97..4fa5c34 100644
+--- a/hal/msm8916/platform.c
++++ b/hal/msm8916/platform.c
+@@ -1570,6 +1570,7 @@ static int platform_get_meta_info_key_from_list(void *platform, char *mod_name)
+         }
+     }
+     return key;
++}
+ 
+ int platform_set_effect_config_data(snd_device_t snd_device,
+                                       struct audio_effect_config effect_config,
+-- 
+2.13.0
+
