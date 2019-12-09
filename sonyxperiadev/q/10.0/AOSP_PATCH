@@ -1,6 +1,4 @@
-cd build/make
-git fetch http://android.googlesource.com/platform/build refs/changes/28/970728/8 && git cherry-pick FETCH_HEAD
-cd ../../hardware/qcom/data/ipacfg-mgr/sdm845
+cd hardware/qcom/data/ipacfg-mgr/sdm845
 git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/data/ipacfg-mgr refs/changes/23/834623/1 && git cherry-pick FETCH_HEAD
 cd ../../../gps
 git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/47/728147/2 && git cherry-pick FETCH_HEAD
