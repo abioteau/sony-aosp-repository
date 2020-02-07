@@ -2,8 +2,6 @@ cd hardware/qcom/data/ipacfg-mgr/sdm845
 git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/data/ipacfg-mgr refs/changes/23/834623/1 && git cherry-pick FETCH_HEAD
 cd ../../../gps
 git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/47/728147/2 && git cherry-pick FETCH_HEAD
-git revert --no-edit 484979c524067125b56d59afb102003ff48e3702
-git revert --no-edit f475797d3c031ae97a393fa3e899034836fe7ba6
 git revert --no-edit 35a95e0a9bc9aeab1bb1847180babda2da5fbf90
 git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/gps refs/changes/39/804439/1 && git cherry-pick FETCH_HEAD
 cd ../audio
@@ -18,10 +16,7 @@ cd ../media
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/39/728339/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/54/813054/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/media refs/changes/55/813055/1 && git cherry-pick FETCH_HEAD
-cd sdm845
-git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/media refs/changes/80/832780/1 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/media refs/changes/84/832784/1 && git cherry-pick FETCH_HEAD
-cd ../../bootctrl
+cd ../bootctrl
 git fetch http://android.googlesource.com/platform/hardware/qcom/bootctrl refs/changes/01/965401/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/bootctrl refs/changes/93/968693/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/qcom/bootctrl refs/changes/96/967996/3 && git cherry-pick FETCH_HEAD
