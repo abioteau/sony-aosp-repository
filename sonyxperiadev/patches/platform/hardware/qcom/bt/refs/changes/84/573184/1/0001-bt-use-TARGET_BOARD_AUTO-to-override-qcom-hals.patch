@@ -25,5 +25,5 @@ index 5c7c040..86248b3 100644
      include $(call all-named-subdir-makefiles,msm8960)
    else ifneq ($(filter msm8994,$(TARGET_BOARD_PLATFORM)),)
 -- 
-2.13.0
+2.15.1
 

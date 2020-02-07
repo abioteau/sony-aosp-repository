@@ -124,5 +124,5 @@ index d7591255..29378c64 100644
  		"exynos-m2":      "${config.ArmClangCortexA53Cflags}",
  		"denver":         "${config.ArmClangCortexA15Cflags}",
 -- 
-2.13.0
+2.15.1
 

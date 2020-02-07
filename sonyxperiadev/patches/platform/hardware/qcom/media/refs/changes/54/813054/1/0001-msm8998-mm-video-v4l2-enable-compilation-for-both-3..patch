@@ -768,5 +768,5 @@ index 0bdd914..c5fceb8 100644
  
      if (ioctl(m_nDriver_fd, VIDIOC_ENCODER_CMD, &enc)) {
 -- 
-2.13.0
+2.15.1
 

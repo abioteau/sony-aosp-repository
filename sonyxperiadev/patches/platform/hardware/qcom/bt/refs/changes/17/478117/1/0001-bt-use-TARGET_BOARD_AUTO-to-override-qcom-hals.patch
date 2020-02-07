@@ -24,5 +24,5 @@ index c2d1878..68705a7 100644
      include $(call all-named-subdir-makefiles,msm8960)
    else
 -- 
-2.13.0
+2.15.1
 

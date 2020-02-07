@@ -101,5 +101,5 @@ index 645da6da..37920bb8 100644
 +LOCAL_PACK_MODULE_RELOCATIONS := false
 +include $(BUILD_EXECUTABLE)
 -- 
-2.13.0
+2.15.1
 

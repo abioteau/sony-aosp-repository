@@ -29,5 +29,5 @@ index 4b94b7a..e1794d5 100644
  # TODO:  Find a better way to separate build configs for ADP vs non-ADP devices
  ifneq ($(BOARD_IS_AUTOMOTIVE),true)
 -- 
-2.13.0
+2.15.1
 

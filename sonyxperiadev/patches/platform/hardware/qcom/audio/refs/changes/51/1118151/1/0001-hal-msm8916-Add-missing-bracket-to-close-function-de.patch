@@ -26,5 +26,5 @@ index 3602b97..4fa5c34 100644
  int platform_set_effect_config_data(snd_device_t snd_device,
                                        struct audio_effect_config effect_config,
 -- 
-2.13.0
+2.15.1
 

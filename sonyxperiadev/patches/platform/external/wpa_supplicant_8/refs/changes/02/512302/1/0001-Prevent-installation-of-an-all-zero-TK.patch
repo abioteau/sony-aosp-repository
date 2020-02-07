@@ -88,5 +88,5 @@ index b605da92..899dc459 100644
  	u8 anonce[WPA_NONCE_LEN]; /* ANonce from the last 1/4 msg */
  	int renew_snonce;
 -- 
-2.13.0
+2.15.1
 

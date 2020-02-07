@@ -33,5 +33,5 @@ index e1cd555..578cb31 100644
  ifeq ($(TARGET_BOARD_PLATFORM),msm8610)
  libmm-venc-def += -DMAX_RES_720P
 -- 
-2.13.0
+2.15.1
 

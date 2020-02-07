@@ -43,5 +43,5 @@ index 0b1a2db8..bd0b5172 100644
  	    wnmsleep_ie->status == WNM_STATUS_SLEEP_EXIT_ACCEPT_GTK_UPDATE) {
  		wpa_printf(MSG_DEBUG, "Successfully recv WNM-Sleep Response "
 -- 
-2.13.0
+2.15.1
 

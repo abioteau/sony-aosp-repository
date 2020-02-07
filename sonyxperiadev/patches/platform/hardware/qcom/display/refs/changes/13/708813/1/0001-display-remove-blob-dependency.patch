@@ -27,5 +27,5 @@ index 2f2e1cac..71a4071a 100644
  LOCAL_CLANG  := true
  LOCAL_MODULE := lights.$(TARGET_BOARD_PLATFORM)
 -- 
-2.13.0
+2.15.1
 

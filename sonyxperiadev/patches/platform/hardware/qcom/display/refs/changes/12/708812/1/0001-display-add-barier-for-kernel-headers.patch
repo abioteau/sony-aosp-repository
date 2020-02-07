@@ -37,5 +37,5 @@ index ebcfc8a0..cb6b4f5e 100644
  LOCAL_COPY_HEADERS_TO         := qcom/display
  LOCAL_COPY_HEADERS            := drm_master.h drm_res_mgr.h drm_lib_loader.h drm_logger.h drm_interface.h
 -- 
-2.13.0
+2.15.1
 

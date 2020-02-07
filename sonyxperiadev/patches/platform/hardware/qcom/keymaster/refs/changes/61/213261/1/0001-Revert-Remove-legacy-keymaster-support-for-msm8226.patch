@@ -23,5 +23,5 @@ index 38b086b..d900b75 100644
  keymaster-def := -fvisibility=hidden -Wall
  ifeq ($(TARGET_BOARD_PLATFORM),msm8084)
 -- 
-2.13.0
+2.15.1
 

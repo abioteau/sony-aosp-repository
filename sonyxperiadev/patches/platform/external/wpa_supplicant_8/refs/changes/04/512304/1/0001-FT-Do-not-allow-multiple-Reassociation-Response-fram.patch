@@ -83,5 +83,5 @@ index 899dc459..5293ca4b 100644
  	u8 target_ap[ETH_ALEN]; /* over-the-DS target AP */
  	int set_ptk_after_assoc;
 -- 
-2.13.0
+2.15.1
 

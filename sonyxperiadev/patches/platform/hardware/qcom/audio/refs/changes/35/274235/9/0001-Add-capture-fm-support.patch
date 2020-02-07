@@ -232,5 +232,5 @@ index ebbe9d2..707d19d 100644
 +int platform_update_usecase_from_source(int source, audio_usecase_t usecase);
  #endif // AUDIO_PLATFORM_API_H
 -- 
-2.13.0
+2.15.1
 

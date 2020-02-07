@@ -30,5 +30,5 @@ index c22edfec6..872c5ab9f 100644
 +namespace.default.search.paths = /odm/${LIB}:/system/${LIB}:/vendor/${LIB}
 +namespace.default.asan.search.paths = /data/asan/odm/${LIB}:/odm/${LIB}:/data/asan/system/${LIB}:/system/${LIB}:/data/asan/vendor/${LIB}:/vendor/${LIB}
 -- 
-2.13.0
+2.15.1
 

@@ -37,5 +37,5 @@ index 7de498e..66bce7f 100755
  else
  LOCAL_SRC_FILES         += src/$(MM_CORE_TARGET)/qc_registry_table.c
 -- 
-2.13.0
+2.15.1
 

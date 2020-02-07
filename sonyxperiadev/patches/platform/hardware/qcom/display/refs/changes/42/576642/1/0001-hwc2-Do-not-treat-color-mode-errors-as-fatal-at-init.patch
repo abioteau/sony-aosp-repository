@@ -25,5 +25,5 @@ index a3e142a0..cff98d2b 100644
  
  void HWCDisplayPrimary::ProcessBootAnimCompleted() {
 -- 
-2.13.0
+2.15.1
 

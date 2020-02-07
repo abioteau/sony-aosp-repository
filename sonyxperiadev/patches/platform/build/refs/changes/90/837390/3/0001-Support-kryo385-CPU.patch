@@ -32,5 +32,5 @@ index c31906a0a..9514edb29 100644
  # Check for cores that implement armv8-2a ISAs.
  ifneq (,$(filter $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT), $(KNOWN_ARMv82a_CORES)))
 -- 
-2.13.0
+2.15.1
 

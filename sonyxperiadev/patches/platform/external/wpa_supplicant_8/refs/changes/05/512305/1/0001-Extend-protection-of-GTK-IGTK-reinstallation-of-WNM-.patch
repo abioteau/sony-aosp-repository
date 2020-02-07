@@ -185,5 +185,5 @@ index 5293ca4b..b061638d 100644
  
  	struct eapol_sm *eapol; /* EAPOL state machine from upper level code */
 -- 
-2.13.0
+2.15.1
 

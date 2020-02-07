@@ -870,5 +870,5 @@ index 0000000..bf82243
 +
 +const unsigned int SIZE_OF_CORE = sizeof(core) / sizeof(omx_core_cb_type);
 -- 
-2.13.0
+2.15.1
 

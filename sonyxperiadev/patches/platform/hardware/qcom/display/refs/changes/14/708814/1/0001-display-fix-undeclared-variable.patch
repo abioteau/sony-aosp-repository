@@ -34,5 +34,5 @@ index 5fe1d86c..90a736ec 100644
    if (ret) {
      DLOGE("WB config failed\n");
 -- 
-2.13.0
+2.15.1
 

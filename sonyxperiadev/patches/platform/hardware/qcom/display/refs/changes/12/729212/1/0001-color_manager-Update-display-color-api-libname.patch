@@ -27,5 +27,5 @@ index 0bfd29f9..16d1911b 100644
  // This macro defines variable name of display color APIs function tables
  // This macro shall be used to specify name of the variable in dlsym().
 -- 
-2.13.0
+2.15.1
 

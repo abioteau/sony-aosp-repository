@@ -22,10 +22,12 @@ diff --git a/src/nfa/dm/nfa_dm_act.c b/src/nfa/dm/nfa_dm_act.c
 index 05745b0..45363e2 100644
 --- a/src/nfa/dm/nfa_dm_act.c
 +++ b/src/nfa/dm/nfa_dm_act.c
-@@ -883,6 +883,28 @@ BOOLEAN nfa_dm_act_send_vsc(tNFA_DM_MSG *p_data)
+@@ -881,6 +881,28 @@ BOOLEAN nfa_dm_act_send_vsc(tNFA_DM_MSG *p_data)
+     return (FALSE);
+ }
  
- /*******************************************************************************
- **
++/*******************************************************************************
++**
 +** Function         nfa_dm_act_send_nxp
 +**
 +** Description      Send the NXP NCI command to the NCI command queue
@@ -46,19 +48,19 @@ index 05745b0..45363e2 100644
 +    return (FALSE);
 +}
 +
-+/*******************************************************************************
-+**
- ** Function         nfa_dm_start_polling
+ /*******************************************************************************
  **
- ** Description      Start polling
+ ** Function         nfa_dm_start_polling
 diff --git a/src/nfa/dm/nfa_dm_api.c b/src/nfa/dm/nfa_dm_api.c
 index d2751ad..37e4561 100644
 --- a/src/nfa/dm/nfa_dm_api.c
 +++ b/src/nfa/dm/nfa_dm_api.c
-@@ -1187,6 +1187,52 @@ tNFA_STATUS NFA_SendVsCommand (UINT8            oid,
+@@ -1185,6 +1185,52 @@ tNFA_STATUS NFA_SendVsCommand (UINT8            oid,
+     return (NFA_STATUS_FAILED);
+ }
  
- /*******************************************************************************
- **
++/*******************************************************************************
++**
 +** Function         NFA_SendNxpNciCommand
 +**
 +** Description      This function is called to send an NXP NCI Vendor Specific
@@ -103,11 +105,9 @@ index d2751ad..37e4561 100644
 +    return (NFA_STATUS_FAILED);
 +}
 +
-+/*******************************************************************************
-+**
- ** Function         NFA_SetTraceLevel
+ /*******************************************************************************
  **
- ** Description      This function sets the trace level for NFA.  If called with
+ ** Function         NFA_SetTraceLevel
 diff --git a/src/nfa/dm/nfa_dm_main.c b/src/nfa/dm/nfa_dm_main.c
 index 851329a..ee06a0e 100644
 --- a/src/nfa/dm/nfa_dm_main.c
@@ -289,10 +289,12 @@ index d0a9fd4..b93b68e 100644
  
  
  /******************************************************************************
-@@ -450,6 +469,37 @@ void nci_proc_prop_rsp (BT_HDR *p_msg)
+@@ -448,6 +467,37 @@ void nci_proc_prop_rsp (BT_HDR *p_msg)
+         (*p_cback) ((tNFC_VS_EVT) (NCI_RSP_BIT|op_code), p_msg->len, p_evt);
+ }
  
- /*******************************************************************************
- **
++/*******************************************************************************
++**
 +** Function         nci_proc_prop_nxp_rsp
 +**
 +** Description      Process NXP NCI responses
@@ -322,11 +324,9 @@ index d0a9fd4..b93b68e 100644
 +    nfc_ncif_update_window ();
 +}
 +
-+/*******************************************************************************
-+**
- ** Function         nci_proc_prop_ntf
+ /*******************************************************************************
  **
- ** Description      Process NCI notifications in the Proprietary group
+ ** Function         nci_proc_prop_ntf
 diff --git a/src/nfc/nfc/nfc_ncif.c b/src/nfc/nfc/nfc_ncif.c
 index e89189f..e8c8983 100644
 --- a/src/nfc/nfc/nfc_ncif.c
@@ -432,5 +432,5 @@ index 90cef25..a98be9e 100644
  
  #endif /* NFC_INCLUDED == TRUE */
 -- 
-2.13.0
+2.15.1
 

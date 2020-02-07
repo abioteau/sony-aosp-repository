@@ -29,5 +29,5 @@ index b686885fb..8c8d9f2ab 100644
  try_loading_again:
      for (size_t i = 0; i < arraysize(firmware_dirs); i++) {
 -- 
-2.13.0
+2.15.1
 

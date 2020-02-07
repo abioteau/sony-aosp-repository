@@ -69,5 +69,5 @@ index a4f3943..e2cc44e 100644
  
          strlcpy(hw_info->type, "", sizeof(hw_info->type));
 -- 
-2.13.0
+2.15.1
 

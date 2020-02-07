@@ -1324,5 +1324,5 @@ index 9f799cc..330ef9f 100644
  else
  LOCAL_SRC_FILES   += venc/src/video_encoder_device.cpp
 -- 
-2.13.0
+2.15.1
 
