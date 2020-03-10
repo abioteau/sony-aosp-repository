@@ -100,6 +100,8 @@ git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/pla
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/frameworks/base/refs/changes/96/1147496/2/*.patch`
 cd ../../system/extras && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/extras/refs/changes/52/1117052/1/*.patch`
+cd ../sepolicy && repo start $GIT_BRANCH .
+git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/system/sepolicy/refs/changes/00/1185400/1/*.patch`
 cd ../../packages/apps/DeskClock && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/packages/apps/DeskClock/refs/changes/26/987326/1/*.patch`
 cd ../Messaging && repo start $GIT_BRANCH .

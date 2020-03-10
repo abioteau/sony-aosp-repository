@@ -1,0 +1,30 @@
+From 668b7bf07a69e51a6c190d6b366d574b9e4af1d4 Mon Sep 17 00:00:00 2001
+From: Felix <google@ix5.org>
+Date: Tue, 10 Dec 2019 15:49:13 +0100
+Subject: [PATCH] property_contexts: Remove compatible guard
+
+It makes no sense to guard these labels, they should apply on all API
+levels.
+
+Change-Id: Id0eb85aed487a78f6dbd6a16f8b5f261918472ee
+---
+ property_contexts.mk | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/property_contexts.mk b/property_contexts.mk
+index eb19d2080..6a9742043 100644
+--- a/property_contexts.mk
++++ b/property_contexts.mk
+@@ -8,9 +8,7 @@ LOCAL_MODULE_PATH := $(TARGET_OUT)/etc/selinux
+ include $(BUILD_SYSTEM)/base_rules.mk
+ 
+ plat_pcfiles := $(call build_policy, property_contexts, $(PLAT_PRIVATE_POLICY))
+-ifeq ($(PRODUCT_COMPATIBLE_PROPERTY),true)
+ plat_pcfiles += $(LOCAL_PATH)/public/property_contexts
+-endif
+ 
+ plat_property_contexts.tmp := $(intermediates)/plat_property_contexts.tmp
+ $(plat_property_contexts.tmp): PRIVATE_PC_FILES := $(plat_pcfiles)
+-- 
+2.15.1
+
