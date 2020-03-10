@@ -31,6 +31,8 @@ git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/
 git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/96/1147496/2 && git cherry-pick FETCH_HEAD
 cd ../../system/extras
 git fetch http://android.googlesource.com/platform/system/extras refs/changes/52/1117052/1 && git cherry-pick FETCH_HEAD
+cd ../sepolicy
+git fetch http://android.googlesource.com/platform/system/sepolicy refs/changes/00/1185400/1 && git cherry-pick FETCH_HEAD
 cd ../../packages/apps/DeskClock
 git fetch http://android.googlesource.com/platform/packages/apps/DeskClock refs/changes/26/987326/1 && git cherry-pick FETCH_HEAD
 cd ../Messaging
