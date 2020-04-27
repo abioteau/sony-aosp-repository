@@ -22,7 +22,7 @@ Change-Id: I202051ab5d7273a33be0aa32b0bfdbbb1f53693f
  4 files changed, 79 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index d97d5b16a..324a82614 100644
+index d97d5b16ae..324a826147 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
 @@ -804,13 +804,22 @@ status_t ACodec::allocateBuffersOnPort(OMX_U32 portIndex) {
@@ -124,7 +124,7 @@ index d97d5b16a..324a82614 100644
  
      if (err == OK) {
 diff --git a/media/libstagefright/Android.mk b/media/libstagefright/Android.mk
-index 244584211..a290617a5 100644
+index 244584211d..a290617a53 100644
 --- a/media/libstagefright/Android.mk
 +++ b/media/libstagefright/Android.mk
 @@ -123,6 +123,10 @@ LOCAL_SHARED_LIBRARIES += \
@@ -139,7 +139,7 @@ index 244584211..a290617a5 100644
  
  # enable experiments only in userdebug and eng builds
 diff --git a/media/libstagefright/CameraSource.cpp b/media/libstagefright/CameraSource.cpp
-index e087249e1..a7dcecfc1 100644
+index e087249e18..a7dcecfc1b 100644
 --- a/media/libstagefright/CameraSource.cpp
 +++ b/media/libstagefright/CameraSource.cpp
 @@ -1247,6 +1247,10 @@ void CameraSource::processBufferQueueFrame(BufferItem& buffer) {
@@ -154,7 +154,7 @@ index e087249e1..a7dcecfc1 100644
      // buffer queue.
      switch (mVideoBufferMode) {
 diff --git a/media/libstagefright/SurfaceMediaSource.cpp b/media/libstagefright/SurfaceMediaSource.cpp
-index 15ff5697d..0e9b4e6cf 100644
+index 15ff5697d9..0e9b4e6cf7 100644
 --- a/media/libstagefright/SurfaceMediaSource.cpp
 +++ b/media/libstagefright/SurfaceMediaSource.cpp
 @@ -129,7 +129,11 @@ status_t SurfaceMediaSource::setFrameRate(int32_t fps)

@@ -18,7 +18,7 @@ Change-Id: I352293e525f75dde500ac8e71ee49209710030c3
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/media/libstagefright/SurfaceMediaSource.cpp b/media/libstagefright/SurfaceMediaSource.cpp
-index 4f1ef3043..ce07ad951 100644
+index 4f1ef30435..ce07ad9517 100644
 --- a/media/libstagefright/SurfaceMediaSource.cpp
 +++ b/media/libstagefright/SurfaceMediaSource.cpp
 @@ -388,9 +388,12 @@ void SurfaceMediaSource::signalBufferReturned(MediaBuffer *buffer) {

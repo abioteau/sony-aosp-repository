@@ -27,7 +27,7 @@ Change-Id: I4fcc8907ea235b7e83af26122b4da97ca5117816
  5 files changed, 24 insertions(+)
 
 diff --git a/camera/cameraserver/Android.mk b/camera/cameraserver/Android.mk
-index 7e36c5e74..aca7a190c 100644
+index 7e36c5e74a..aca7a190c6 100644
 --- a/camera/cameraserver/Android.mk
 +++ b/camera/cameraserver/Android.mk
 @@ -14,6 +14,9 @@
@@ -46,7 +46,7 @@ index 7e36c5e74..aca7a190c 100644
  include $(BUILD_EXECUTABLE)
 +endif
 diff --git a/media/mediaserver/Android.mk b/media/mediaserver/Android.mk
-index 1738df80d..5eae8cf82 100644
+index 1738df80dc..5eae8cf82c 100644
 --- a/media/mediaserver/Android.mk
 +++ b/media/mediaserver/Android.mk
 @@ -42,4 +42,8 @@ LOCAL_INIT_RC := mediaserver.rc
@@ -59,7 +59,7 @@ index 1738df80d..5eae8cf82 100644
 +
  include $(BUILD_EXECUTABLE)
 diff --git a/media/mediaserver/main_mediaserver.cpp b/media/mediaserver/main_mediaserver.cpp
-index ecddc4827..0abe6ac95 100644
+index ecddc48272..0abe6ac959 100644
 --- a/media/mediaserver/main_mediaserver.cpp
 +++ b/media/mediaserver/main_mediaserver.cpp
 @@ -25,6 +25,9 @@
@@ -83,7 +83,7 @@ index ecddc4827..0abe6ac95 100644
      ProcessState::self()->startThreadPool();
      IPCThreadState::self()->joinThreadPool();
 diff --git a/services/camera/libcameraservice/Android.mk b/services/camera/libcameraservice/Android.mk
-index 8d7f71cef..9c4cc1c8d 100644
+index 8d7f71cef9..9c4cc1c8d0 100644
 --- a/services/camera/libcameraservice/Android.mk
 +++ b/services/camera/libcameraservice/Android.mk
 @@ -80,6 +80,10 @@ LOCAL_EXPORT_C_INCLUDE_DIRS := \
@@ -98,7 +98,7 @@ index 8d7f71cef..9c4cc1c8d 100644
  
  include $(BUILD_SHARED_LIBRARY)
 diff --git a/services/camera/libcameraservice/CameraService.cpp b/services/camera/libcameraservice/CameraService.cpp
-index d0df6d109..8ad6cacb8 100644
+index d0df6d109e..8ad6cacb88 100644
 --- a/services/camera/libcameraservice/CameraService.cpp
 +++ b/services/camera/libcameraservice/CameraService.cpp
 @@ -831,7 +831,11 @@ String8 CameraService::toString(std::set<userid_t> intSet) {

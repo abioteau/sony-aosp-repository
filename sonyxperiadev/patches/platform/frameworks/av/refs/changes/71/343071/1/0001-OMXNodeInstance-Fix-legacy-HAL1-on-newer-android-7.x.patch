@@ -11,7 +11,7 @@ Change-Id: I53985a966b891b902437f71d4ebccbd68138329e
  2 files changed, 34 insertions(+)
 
 diff --git a/media/libstagefright/omx/Android.mk b/media/libstagefright/omx/Android.mk
-index e4fbd815c..8fc788f4b 100644
+index e4fbd815c7..8fc788f4bc 100644
 --- a/media/libstagefright/omx/Android.mk
 +++ b/media/libstagefright/omx/Android.mk
 @@ -31,6 +31,12 @@ LOCAL_SHARED_LIBRARIES :=               \
@@ -28,7 +28,7 @@ index e4fbd815c..8fc788f4b 100644
  LOCAL_CFLAGS += -Werror -Wall
  LOCAL_CLANG := true
 diff --git a/media/libstagefright/omx/OMXNodeInstance.cpp b/media/libstagefright/omx/OMXNodeInstance.cpp
-index 43a50ae0c..2fa99897b 100644
+index 43a50ae0c2..2fa99897b3 100644
 --- a/media/libstagefright/omx/OMXNodeInstance.cpp
 +++ b/media/libstagefright/omx/OMXNodeInstance.cpp
 @@ -795,7 +795,11 @@ status_t OMXNodeInstance::useBuffer(
