@@ -1,10 +1,6 @@
 cd vendor/qcom/opensource/data/ipacfg-mgr/sdm845
 git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/data/ipacfg-mgr refs/changes/23/834623/1 && git cherry-pick FETCH_HEAD
-cd ../../../../../../hardware/qcom/gps
-git fetch http://android.googlesource.com/platform/hardware/qcom/gps refs/changes/47/728147/2 && git cherry-pick FETCH_HEAD
-git revert --no-edit 35a95e0a9bc9aeab1bb1847180babda2da5fbf90
-git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/gps refs/changes/39/804439/1 && git cherry-pick FETCH_HEAD
-cd ../audio
+cd ../../../../../../hardware/qcom/audio
 git revert --no-edit 39a2b8a03c0a8a44940ac732f636d9cc1959eff2
 git revert --no-edit d0d5c9135fed70a25a42f09f0e32b056bc7b15a8
 git revert --no-edit 8e9b92d2c87e9d1cd96ef153853287cb79d5934c
