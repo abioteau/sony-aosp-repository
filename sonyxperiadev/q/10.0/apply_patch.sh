@@ -52,12 +52,12 @@ GIT_BRANCH=$5
 
 mkdir -p $AOSP_WORKSPACE
 cd $AOSP_WORKSPACE
-~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-10.0.0_r33
+~/bin/repo init -u $AOSP_MIRROR_URL/platform/manifest.git --repo-url $REPO_MIRROR_URL/git-repo.git -b android-10.0.0_r35
 
 sed -i -e "/^  <!-- Sony AOSP addons -->/d; /^<\/manifest/ s/\(.*\)/  <!-- Sony AOSP addons -->\n\1/" .repo/manifests/default.xml
 git clone $GITHUB_MIRROR_URL/abioteau/local_manifests
 cd local_manifests
-git checkout -f android-10.0.0_r33
+git checkout -f android-10.0.0_r35
 sed -i "s/fetch=\".*:\/\/github.com\/\(.*\)\"/fetch=\"$(echo $GITHUB_MIRROR_REL_URL | sed 's/\//\\\//g')\/\1\"/" *.xml
 find *.xml | xargs -I {} sed -i -e "/^  <include name=\"{}\"\/>/d; /^<\/manifest/ s/\(.*\)/  <include name=\"{}\"\/>\n\1/" ../.repo/manifests/default.xml
 cp *.xml ../.repo/manifests/.
@@ -69,11 +69,7 @@ rm -rf local_manifests
 
 cd vendor/qcom/opensource/data/ipacfg-mgr/sdm845 && repo start $GIT_BRANCH .
 git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/data/ipacfg-mgr/refs/changes/23/834623/1/*.patch`
-cd ../../../../../../hardware/qcom/gps && repo start $GIT_BRANCH .
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/gps/refs/changes/47/728147/2/*.patch`
-git revert --no-edit --no-commit 35a95e0a9bc9aeab1bb1847180babda2da5fbf90 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 35a95e0a9bc9aeab1bb1847180babda2da5fbf90)" --date "$(git log -1 --format="%ad" 35a95e0a9bc9aeab1bb1847180babda2da5fbf90)" && unset GIT_COMMITTER_DATE
-git am -3 --committer-date-is-author-date `ls $ROOTDIR/sonyxperiadev/patches/platform/hardware/qcom/sdm845/gps/refs/changes/39/804439/1/*.patch`
-cd ../audio && repo start $GIT_BRANCH .
+cd ../../../../../../hardware/qcom/audio && repo start $GIT_BRANCH .
 git revert --no-edit --no-commit 39a2b8a03c0a8a44940ac732f636d9cc1959eff2 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 39a2b8a03c0a8a44940ac732f636d9cc1959eff2)" --date "$(git log -1 --format="%ad" 39a2b8a03c0a8a44940ac732f636d9cc1959eff2)" && unset GIT_COMMITTER_DATE
 git revert --no-edit --no-commit d0d5c9135fed70a25a42f09f0e32b056bc7b15a8 && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" d0d5c9135fed70a25a42f09f0e32b056bc7b15a8)" --date "$(git log -1 --format="%ad" d0d5c9135fed70a25a42f09f0e32b056bc7b15a8)" && unset GIT_COMMITTER_DATE
 git revert --no-edit --no-commit 8e9b92d2c87e9d1cd96ef153853287cb79d5934c && export GIT_COMMITTER_DATE="`date +"2017-01-01 08:00:00 +0200"`" && git commit --no-edit --author "$(git log -1 --format="%an <%ae>" 8e9b92d2c87e9d1cd96ef153853287cb79d5934c)" --date "$(git log -1 --format="%ad" 8e9b92d2c87e9d1cd96ef153853287cb79d5934c)" && unset GIT_COMMITTER_DATE
