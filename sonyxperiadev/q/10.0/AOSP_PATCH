@@ -16,7 +16,9 @@ git fetch http://android.googlesource.com/platform/hardware/qcom/bootctrl refs/c
 cd ../../nxp/nfc
 git fetch http://android.googlesource.com/platform/hardware/nxp/nfc refs/changes/77/980177/3 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/hardware/nxp/nfc refs/changes/69/980169/2 && git cherry-pick FETCH_HEAD
-cd ../../../frameworks/base
+cd ../../interfaces
+git fetch http://android.googlesource.com/platform/hardware/interfaces refs/changes/90/1320090/1 && git cherry-pick FETCH_HEAD
+cd ../../frameworks/base
 git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/75/728575/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/05/728605/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/40/824340/2 && git cherry-pick FETCH_HEAD
