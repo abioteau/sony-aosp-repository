@@ -1,0 +1,33 @@
+From 3861f7958bec14685cde5b8fee4e590cece76d68 Mon Sep 17 00:00:00 2001
+From: Marijn Suijten <marijns95@gmail.com>
+Date: Thu, 28 May 2020 23:55:25 +0200
+Subject: [PATCH] [android10-dev] thermal: Init module to NULL
+
+It was this way on Android 9, and we don't want to force
+everyone to include a thermal.default module.
+
+See https://github.com/sonyxperiadev/bug_tracker/issues/470#issuecomment-535689477
+
+Signed-off-by: Marijn Suijten <marijns95@gmail.com>
+Signed-off-by: Felix <google@ix5.org>
+Change-Id: I250006ba6fe9d91e765dde1e4534d5d87aaab879
+---
+ thermal/1.0/default/Thermal.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/thermal/1.0/default/Thermal.cpp b/thermal/1.0/default/Thermal.cpp
+index 2dd00905e..a5a7980af 100644
+--- a/thermal/1.0/default/Thermal.cpp
++++ b/thermal/1.0/default/Thermal.cpp
+@@ -180,7 +180,7 @@ Return<void> Thermal::getCoolingDevices(getCoolingDevices_cb _hidl_cb) {
+ }
+ 
+ IThermal* HIDL_FETCH_IThermal(const char* /* name */) {
+-  thermal_module_t* module;
++  thermal_module_t* module = NULL;
+   status_t err = hw_get_module(THERMAL_HARDWARE_MODULE_ID,
+                                const_cast<hw_module_t const**>(
+                                    reinterpret_cast<hw_module_t**>(&module)));
+-- 
+2.15.1
+
