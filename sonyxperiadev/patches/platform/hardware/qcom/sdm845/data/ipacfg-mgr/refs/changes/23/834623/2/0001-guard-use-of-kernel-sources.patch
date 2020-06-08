@@ -1,0 +1,65 @@
+From 0f42902cbc526d6d5badcece2add39d5badd1537 Mon Sep 17 00:00:00 2001
+From: Alin Jerpelea <alin.jerpelea@sony.com>
+Date: Thu, 22 Nov 2018 03:06:11 +0100
+Subject: [PATCH] guard use of kernel sources
+
+kernel is not compiled at build time and it should not be a dependency
+Test: compiled OK without kernel sources
+
+Change-Id: Ie8e892c5a7cca28cc58cbead88a9796ebc80a9f8
+Signed-off-by: Alin Jerpelea <alin.jerpelea@sony.com>
+---
+ ipacm/src/Android.mk   | 2 ++
+ ipanat/src/Android.mk  | 3 +++
+ ipanat/test/Android.mk | 2 ++
+ 3 files changed, 7 insertions(+)
+
+diff --git a/ipacm/src/Android.mk b/ipacm/src/Android.mk
+index cff0960..c6196a2 100644
+--- a/ipacm/src/Android.mk
++++ b/ipacm/src/Android.mk
+@@ -14,8 +14,10 @@ include $(CLEAR_VARS)
+ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../src
+ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../inc
+ 
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+ LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ LOCAL_CFLAGS += -DFEATURE_IPA_ANDROID
+ LOCAL_CFLAGS += -DFEATURE_IPACM_HAL -Wall -Werror -Wno-error=macro-redefined -Wno-enum-compare
+diff --git a/ipanat/src/Android.mk b/ipanat/src/Android.mk
+index 4e955c0..c6caaee 100644
+--- a/ipanat/src/Android.mk
++++ b/ipanat/src/Android.mk
+@@ -10,8 +10,11 @@ LOCAL_PATH := $(call my-dir)
+ include $(CLEAR_VARS)
+ 
+ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../inc
++
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+ LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ LOCAL_SRC_FILES := ipa_nat_drv.c \
+                    ipa_nat_drvi.c
+diff --git a/ipanat/test/Android.mk b/ipanat/test/Android.mk
+index b8ae6a4..e2b1888 100644
+--- a/ipanat/test/Android.mk
++++ b/ipanat/test/Android.mk
+@@ -10,8 +10,10 @@ include $(CLEAR_VARS)
+ LOCAL_C_INCLUDES := $(LOCAL_PATH)/
+ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../ipanat/inc
+ 
++ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
+ LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+ LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
++endif
+ 
+ LOCAL_MODULE := ipa_nat_test
+ LOCAL_SRC_FILES := ipa_nat_test000.c \
+-- 
+2.15.1
+

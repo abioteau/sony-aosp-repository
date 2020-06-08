@@ -1,0 +1,40 @@
+From 6ec651f12a9b67a9d2e41c2fe4d9a71c29d1cf34 Mon Sep 17 00:00:00 2001
+From: Sangho Yoon <sangho.yoon@lge.com>
+Date: Thu, 9 Aug 2018 14:32:27 +0200
+Subject: [PATCH] Fix bug Device that can't support adoptable storage cannot
+ read the sdcard.
+
+Only Primary storag and adoptable storage can get visible flag.
+so, Unless Device support adoptable stoarge, it cannot have visible path for
+sdcard.
+In refrernce, Adoptable storage cannot support FBE.
+
+If device cannot get visible path for sdcard, 3rd app and MTP cannot
+read sdcard even though they have READ_EXTERNAL_STORAGE permission.
+
+this fixing is releasing visible condition for all sdcard.
+
+Test: Check MountFlags is VISIBLE on Log.
+
+Change-Id: I7afe5078650fe646e79fced7456f90d4af8a449a
+Signed-off-by: Sangho Yoon <sangho.yoon@lge.com>
+---
+ services/core/java/com/android/server/StorageManagerService.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/services/core/java/com/android/server/StorageManagerService.java b/services/core/java/com/android/server/StorageManagerService.java
+index deff7ef7d39..72f40cc0351 100644
+--- a/services/core/java/com/android/server/StorageManagerService.java
++++ b/services/core/java/com/android/server/StorageManagerService.java
+@@ -1284,6 +1284,8 @@ class StorageManagerService extends IStorageManager.Stub
+             // public API requirement of being in a stable location.
+             if (vol.disk.isAdoptable()) {
+                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
++            } else if (vol.disk.isSd()) {
++                vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
+             }
+ 
+             vol.mountUserId = mCurrentUserId;
+-- 
+2.15.1
+
