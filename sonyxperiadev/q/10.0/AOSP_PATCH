@@ -1,5 +1,5 @@
 cd vendor/qcom/opensource/data/ipacfg-mgr/sdm845
-git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/data/ipacfg-mgr refs/changes/23/834623/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/hardware/qcom/sdm845/data/ipacfg-mgr refs/changes/23/834623/2 && git cherry-pick FETCH_HEAD
 cd ../../../../../../hardware/qcom/audio
 git revert --no-edit 39a2b8a03c0a8a44940ac732f636d9cc1959eff2
 git revert --no-edit d0d5c9135fed70a25a42f09f0e32b056bc7b15a8
@@ -19,10 +19,8 @@ git fetch http://android.googlesource.com/platform/hardware/nxp/nfc refs/changes
 cd ../../interfaces
 git fetch http://android.googlesource.com/platform/hardware/interfaces refs/changes/90/1320090/1 && git cherry-pick FETCH_HEAD
 cd ../../frameworks/base
-git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/75/728575/1 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/05/728605/1 && git cherry-pick FETCH_HEAD
+git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/48/1295748/1 && git cherry-pick FETCH_HEAD
 git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/40/824340/2 && git cherry-pick FETCH_HEAD
-git fetch http://android.googlesource.com/platform/frameworks/base refs/changes/96/1147496/2 && git cherry-pick FETCH_HEAD
 cd ../../system/extras
 git fetch http://android.googlesource.com/platform/system/extras refs/changes/52/1117052/1 && git cherry-pick FETCH_HEAD
 cd ../sepolicy
